@@ -1,0 +1,161 @@
+---
+import { Icon } from 'astro-icon/components';
+import Logo from '~/components/Logo.astro';
+import { headerData } from '~/navigation';
+import { CTA } from '~/data/brand';
+import { getPermalink, trimSlash } from '~/utils/permalinks';
+
+const current = `/${trimSlash(new URL(Astro.url).pathname)}`;
+const isActive = (href?: string) => !!href && trimSlash(href) !== '' && current.startsWith(`/${trimSlash(href)}`);
+---
+
+<header id="site-header" class="sticky top-0 z-40 bg-[#f7f7f3]/95 border-b border-black/5 backdrop-saturate-150">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 lg:h-[72px] flex items-center gap-3">
+    <a href={getPermalink('/')} class="flex items-center min-h-[48px] shrink-0">
+      <Logo height={40} />
+    </a>
+
+    <nav aria-label="Main" class="hidden lg:block ml-auto">
+      <ul class="flex items-center gap-1 font-heading font-semibold text-[0.93rem]">
+        {
+          headerData.links.map((l) =>
+            'links' in l && l.links ? (
+              <li class="relative pp-dd">
+                <button
+                  type="button"
+                  class="pp-dd__btn inline-flex items-center gap-1 min-h-[44px] px-3 rounded-full hover:bg-black/5"
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                >
+                  {l.text}
+                  <Icon name="tabler:chevron-down" class="w-4 h-4" />
+                </button>
+                <ul class="pp-dd__menu hidden absolute right-0 mt-1 min-w-[220px] rounded-xl bg-white shadow-xl border border-black/5 p-2">
+                  {l.links.map((s) => (
+                    <li>
+                      <a
+                        href={s.href}
+                        class:list={[
+                          'block rounded-lg px-3 py-2.5 hover:bg-green-50',
+                          { 'text-primary': isActive(s.href) },
+                        ]}
+                        aria-current={isActive(s.href) ? 'page' : undefined}
+                      >
+                        {s.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ) : (
+              <li>
+                <a
+                  href={l.href}
+                  class:list={[
+                    'inline-flex items-center min-h-[44px] px-3 rounded-full hover:bg-black/5',
+                    { 'bg-black/5 text-primary': isActive(l.href) },
+                  ]}
+                  aria-current={isActive(l.href) ? 'page' : undefined}
+                >
+                  {l.text}
+                </a>
+              </li>
+            )
+          )
+        }
+      </ul>
+    </nav>
+
+    <a
+      href={getPermalink('/contact')}
+      class="btn-primary ml-auto lg:ml-3 !py-2.5 !px-5 text-sm whitespace-nowrap"
+      data-placement="header"
+    >
+      <span class="hidden sm:inline">{CTA.primary}</span><span class="sm:hidden">{CTA.primaryShort}</span>
+    </a>
+
+    <button
+      type="button"
+      id="pp-menu-toggle"
+      class="lg:hidden inline-grid place-items-center w-12 h-12 rounded-xl border border-black/10 bg-white text-primary"
+      aria-expanded="false"
+      aria-controls="pp-mobile-nav"
+    >
+      <Icon name="tabler:menu-2" class="w-6 h-6 pp-icon-open" />
+      <Icon name="tabler:x" class="w-6 h-6 pp-icon-close hidden" />
+      <span class="sr-only">Menu</span>
+    </button>
+  </div>
+
+  <div id="pp-mobile-nav" class="lg:hidden border-t border-black/5 bg-page" hidden>
+    <nav aria-label="Mobile" class="max-w-7xl mx-auto px-4 sm:px-6 pb-6 max-h-[calc(100dvh-64px)] overflow-y-auto">
+      <ul class="font-heading font-semibold text-lg text-primary">
+        {
+          headerData.links.flatMap((l) =>
+            'links' in l && l.links
+              ? l.links.map((s) => (
+                  <li>
+                    <a href={s.href} class="flex items-center min-h-[52px] border-b border-black/5">
+                      {s.text}
+                    </a>
+                  </li>
+                ))
+              : [
+                  <li>
+                    <a href={l.href} class="flex items-center min-h-[52px] border-b border-black/5">
+                      {l.text}
+                    </a>
+                  </li>,
+                ]
+          )
+        }
+      </ul>
+      <a href={getPermalink('/contact')} class="btn-primary w-full mt-5" data-placement="mobile_nav">{CTA.primary}</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('pp-menu-toggle');
+  const panel = document.getElementById('pp-mobile-nav');
+  const setOpen = (open: boolean) => {
+    if (!toggle || !panel) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+    toggle.querySelector('.pp-icon-open')?.classList.toggle('hidden', open);
+    toggle.querySelector('.pp-icon-close')?.classList.toggle('hidden', !open);
+    document.body.classList.toggle('overflow-hidden', open);
+    if (open) panel.querySelector<HTMLElement>('a')?.focus();
+  };
+  toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (toggle?.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      toggle.focus();
+    }
+    document.querySelectorAll('.pp-dd__btn[aria-expanded="true"]').forEach((b) => {
+      b.setAttribute('aria-expanded', 'false');
+      b.nextElementSibling?.classList.add('hidden');
+      (b as HTMLElement).focus();
+    });
+  });
+  panel?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  // Desktop dropdown: click/keyboard toggle (not hover-only), closes on outside click or focus leaving.
+  document.querySelectorAll<HTMLElement>('.pp-dd').forEach((dd) => {
+    const btn = dd.querySelector<HTMLButtonElement>('.pp-dd__btn')!;
+    const menu = dd.querySelector<HTMLElement>('.pp-dd__menu')!;
+    const set = (open: boolean) => {
+      btn.setAttribute('aria-expanded', String(open));
+      menu.classList.toggle('hidden', !open);
+    };
+    btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+    dd.addEventListener('focusout', (e) => {
+      if (!dd.contains(e.relatedTarget as Node)) set(false);
+    });
+    document.addEventListener('click', (e) => {
+      if (!dd.contains(e.target as Node)) set(false);
+    });
+  });
+</script>

@@ -1,9 +1,20 @@
+# PromdiPreneur main site. Merging/deploying this does NOT move promdipreneur.com: the domain only moves when Allan
+# approves (docs/DEPLOYMENT.md). Deploy previews + branch deploys are noindex with a visible preview ribbon.
 [build]
   publish = "dist"
   command = "npm run build"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
 [build.processing.html]
   pretty_urls = false
-[[headers]]
-  for = "/_astro/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+
+[context.deploy-preview.environment]
+  PUBLIC_PREVIEW = "1"
+[context.branch-deploy.environment]
+  PUBLIC_PREVIEW = "1"
+
+[functions]
+  node_bundler = "esbuild"

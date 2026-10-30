@@ -1,0 +1,30 @@
+---
+/** Clearly labelled visual placeholder for items without an approved image. Never presented as a real screenshot. */
+export interface Props {
+  label: string;
+  steps?: string[];
+  note?: string;
+}
+const { label, steps = [], note = 'Illustration' } = Astro.props;
+---
+
+<div
+  class="relative h-full w-full grid place-items-center p-5 bg-[radial-gradient(circle_at_80%_10%,rgba(24,185,87,.25),transparent_55%)] bg-[#004c25] text-white"
+  role="img"
+  aria-label={`${label}${steps.length ? ': ' + steps.join(', ') : ''} (${note.toLowerCase()})`}
+>
+  {
+    steps.length ? (
+      <div class="grid grid-cols-2 gap-2 w-full max-w-xs">
+        {steps.map((s) => (
+          <span class="rounded-xl border border-white/20 bg-white/[0.07] text-center text-sm font-semibold font-heading px-2 py-3">
+            {s}
+          </span>
+        ))}
+      </div>
+    ) : (
+      <span class="font-heading font-semibold text-center">{label}</span>
+    )
+  }
+  <span class="absolute right-2.5 bottom-1.5 text-[0.68rem] text-white/75">{note}</span>
+</div>

@@ -1,0 +1,55 @@
+---
+export interface Props {
+  id?: string;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  tone?: 'page' | 'white' | 'tint' | 'forest';
+  narrow?: boolean;
+  headingLevel?: 'h1' | 'h2';
+  class?: string;
+}
+const {
+  id,
+  eyebrow,
+  title,
+  intro,
+  tone = 'page',
+  narrow = false,
+  headingLevel = 'h2',
+  class: className = '',
+} = Astro.props;
+const H = headingLevel;
+const bg = { page: 'bg-page', white: 'bg-white', tint: 'bg-[#eef4ee]', forest: 'bg-[#004c25] text-[#e3ede7]' }[tone];
+const dark = tone === 'forest';
+---
+
+<section
+  id={id}
+  class:list={[bg, 'py-16 md:py-24', className]}
+  aria-labelledby={title && id ? `${id}-title` : undefined}
+>
+  <div class:list={['mx-auto px-4 sm:px-6', narrow ? 'max-w-3xl' : 'max-w-7xl']}>
+    {
+      (eyebrow || title || intro) && (
+        <div class="max-w-3xl mb-10 md:mb-14">
+          {eyebrow && <p class={dark ? 'pp-eyebrow-dark' : 'pp-eyebrow'}>{eyebrow}</p>}
+          {title && (
+            <H
+              id={id ? `${id}-title` : undefined}
+              class:list={[
+                'font-extrabold tracking-tight',
+                H === 'h1' ? 'text-4xl md:text-5xl' : 'text-3xl md:text-[2.5rem] leading-tight',
+                { '!text-white': dark },
+              ]}
+            >
+              {title}
+            </H>
+          )}
+          {intro && <p class:list={['mt-4 text-lg', dark ? 'text-[#cfe0d6]' : 'text-muted']}>{intro}</p>}
+        </div>
+      )
+    }
+    <slot />
+  </div>
+</section>

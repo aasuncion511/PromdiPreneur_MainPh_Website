@@ -1,79 +1,79 @@
 ---
+import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
-import HeroText from '~/components/widgets/HeroText.astro';
-import ContactUs from '~/components/widgets/Contact.astro';
-import Features2 from '~/components/widgets/Features2.astro';
+import InquiryForm from '~/components/promdi/InquiryForm.astro';
+import TrackedLink from '~/components/promdi/TrackedLink.astro';
+import { BRAND, DESTINATIONS, FEATURES } from '~/data/brand';
 
 const metadata = {
-  title: 'Contact',
+  title: 'Ask Us About Your Business',
+  description:
+    'Tell PromdiPreneur what’s slowing your business down. Free, no obligation. Send a question, message us on Facebook, or email admin@promdipreneur.com.',
 };
+const booking = DESTINATIONS.discoveryBooking;
 ---
 
 <Layout metadata={metadata}>
-  <!-- HeroText Widget ******************* -->
+  <section class="py-12 md:py-20" aria-labelledby="contact-title">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-[.85fr_1.15fr] gap-10 lg:gap-16 items-start">
+      <div>
+        <p class="pp-eyebrow">Ask a question</p>
+        <h1 id="contact-title" class="text-4xl md:text-5xl font-extrabold leading-tight">
+          What’s one business problem you’d like to solve?
+        </h1>
+        <p class="mt-5 text-lg text-muted">
+          Tell us what’s happening. A missed inquiry problem? Repetitive paperwork? Confusing bookings? Not sure what
+          system you need? Send us a message. We’ll gladly share practical tips or point you in the right direction.
+        </p>
+        <ul class="mt-6 space-y-2 font-medium text-primary">
+          {
+            [
+              'No sales pitch required.',
+              'No obligation to purchase.',
+              'We read each inquiry and respond personally when available.',
+            ].map((t) => (
+              <li class="flex gap-2">
+                <Icon name="tabler:check" class="w-5 h-5 mt-0.5 shrink-0 text-[#0b7339]" />
+                {t}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-8 rounded-2xl bg-[#eef4ee] p-5 space-y-3">
+          <TrackedLink dest="messenger" placement="contact" class="btn w-full bg-white"
+            ><Icon name="tabler:brand-messenger" class="w-5 h-5 mr-2" />Prefer Messenger? Chat with us on Facebook</TrackedLink
+          >
+          <p class="text-center text-sm">
+            Or email <TrackedLink dest="email" placement="contact" class="underline text-[#0b7339]"
+              >{BRAND.email}</TrackedLink
+            >
+          </p>
+        </div>
 
-  <HeroText tagline="Contact" title="Let's Connect!" />
-
-  <ContactUs
-    id="form"
-    title="Drop us a message today!"
-    subtitle="For quicker answers, explore our FAQs section. You may find the solution you're looking  for right there! If not, our support team is delighted to help you."
-    inputs={[
-      {
-        type: 'text',
-        name: 'name',
-        label: 'Name',
-      },
-      {
-        type: 'email',
-        name: 'email',
-        label: 'Email',
-      },
-    ]}
-    textarea={{
-      label: 'Message',
-    }}
-    disclaimer={{
-      label:
-        'By submitting this contact form, you acknowledge and agree to the collection of your personal information.',
-    }}
-    description="Our support team typically responds within 24 business hours."
-  />
-
-  <!-- Features2 Widget ************** -->
-
-  <Features2
-    title="We are here to help!"
-    items={[
-      {
-        title: 'General support',
-        description: `Chat with us for inquiries related to account management, website navigation, payment issues, accessing purchased templates or general questions about the website's functionality.`,
-      },
-      {
-        title: 'Contact sales',
-        description:
-          'Chat with us for questions about purchases, customization options, licensing for commercial use, inquiries about specific template, etc.',
-      },
-      {
-        title: 'Technical support',
-        description:
-          'Chat with us when facing issues like template installation, problems editing difficulties, compatibility issues with software or download errors, or other technical challenges related to using the templates.',
-      },
-      {
-        title: 'Phone',
-        description: '+1 (234) 567-890',
-        icon: 'tabler:headset',
-      },
-      {
-        title: 'Email',
-        description: 'contact@support.com',
-        icon: 'tabler:mail',
-      },
-      {
-        title: 'Location',
-        description: '1234 Lorem Ipsum St, 12345, Miami, EEUU',
-        icon: 'tabler:map-pin',
-      },
-    ]}
-  />
+        <div id="discovery" class="mt-8 pp-card p-5">
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <Icon name="tabler:calendar-event" class="w-5 h-5" /> Prefer to talk it through?
+          </h2>
+          {
+            FEATURES.bookingLive && booking.url ? (
+              <>
+                <p class="mt-1 text-muted">Book a free Business Systems Discovery call at a time that suits you.</p>
+                <TrackedLink dest="discoveryBooking" placement="contact_booking" class="btn-primary mt-4">
+                  {booking.label}
+                </TrackedLink>
+              </>
+            ) : (
+              <p class="mt-1 text-muted">
+                Online booking for a Business Systems Discovery call is <strong>coming soon</strong>. For now, send your
+                question with the form and we’ll suggest a time to talk if it helps.
+              </p>
+            )
+          }
+        </div>
+      </div>
+      <div class="pp-card p-5 md:p-8 shadow-xl">
+        <InquiryForm />
+      </div>
+    </div>
+  </section>
 </Layout>

@@ -1,0 +1,12 @@
+---
+const { status } = Astro.props as { status: string };
+const live = /available|built|live/i.test(status);
+const progress = /development|concept|coming|pending/i.test(status);
+---
+
+<span
+  class:list={[
+    'pp-badge',
+    live ? 'bg-green-50 text-[#0b7339]' : progress ? 'bg-[#f6ecdf] text-[#754000]' : 'bg-[#eef4ee] text-[#004c25]',
+  ]}>{status}</span
+>

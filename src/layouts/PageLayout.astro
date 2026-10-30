@@ -1,10 +1,7 @@
 ---
 import Layout from '~/layouts/Layout.astro';
-import Header from '~/components/widgets/Header.astro';
-import Footer from '~/components/widgets/Footer.astro';
-import Announcement from '~/components/widgets/Announcement.astro';
-
-import { headerData, footerData } from '~/navigation';
+import Header from '~/components/promdi/Header.astro';
+import Footer from '~/components/promdi/Footer.astro';
 
 import type { MetaData } from '~/types';
 
@@ -12,20 +9,29 @@ export interface Props {
   metadata?: MetaData;
 }
 
-const { metadata } = Astro.props;
+// Preview builds (PUBLIC_PREVIEW=1, set for Netlify deploy previews/branch deploys) are never indexable.
+const preview = import.meta.env.PUBLIC_PREVIEW === '1';
+const { metadata = {} } = Astro.props;
+const meta: MetaData = preview ? { ...metadata, robots: { index: false, follow: false } } : metadata;
 ---
 
-<Layout metadata={metadata}>
-  <slot name="announcement">
-    <Announcement />
-  </slot>
-  <slot name="header">
-    <Header {...headerData} isSticky showRssFeed showToggleTheme />
-  </slot>
-  <main>
+<Layout metadata={meta}>
+  {
+    preview && (
+      <div
+        class="bg-[#4d3300] text-[#fff3dc] text-center text-xs font-semibold tracking-wide py-1.5 px-3 font-heading"
+        role="note"
+      >
+        Preview for approval — not the live site
+      </div>
+    )
+  }
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 btn-primary"
+    >Skip to content</a
+  >
+  <Header />
+  <main id="main" tabindex="-1" class="outline-none">
     <slot />
   </main>
-  <slot name="footer">
-    <Footer {...footerData} />
-  </slot>
+  <Footer />
 </Layout>

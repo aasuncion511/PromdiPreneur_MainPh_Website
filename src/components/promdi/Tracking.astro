@@ -1,0 +1,153 @@
+---
+/**
+ * Conversion tracking provisions. Consent-first and PII-safe:
+ * - GA4 (PUBLIC_GA4_ID): loads only after the visitor clicks Allow.
+ * - Umami (PUBLIC_UMAMI_WEBSITE_ID + PUBLIC_UMAMI_SRC): cookieless; also waits for Allow, for one simple rule.
+ * - Neither configured: nothing loads, no banner, every event is a no-op.
+ * Events carry only placement / link_destination / form / error_type. Never names, emails or messages.
+ * Also: first-touch UTM capture + forwarding to product funnels without overwriting their own parameters.
+ * Event dictionary: docs/TRACKING.md.
+ */
+const ga4 = (import.meta.env.PUBLIC_GA4_ID || '').trim();
+const umamiId = (import.meta.env.PUBLIC_UMAMI_WEBSITE_ID || '').trim();
+const umamiSrc = (import.meta.env.PUBLIC_UMAMI_SRC || '').trim();
+const config = { ga4: /^G-[A-Z0-9]{4,}$/.test(ga4) ? ga4 : '', umamiId, umamiSrc: umamiId ? umamiSrc : '' };
+const anyAnalytics = Boolean(config.ga4 || config.umamiSrc);
+---
+
+{
+  anyAnalytics && (
+    <div
+      id="pp-consent"
+      class="hidden fixed z-50 bottom-4 left-1/2 -translate-x-1/2 w-[min(640px,calc(100%-24px))] bg-white border border-black/10 rounded-2xl shadow-2xl p-4 flex flex-wrap gap-3 items-center text-sm"
+      role="region"
+      aria-label="Analytics preferences"
+    >
+      <p class="flex-1 min-w-[260px] text-muted">
+        May we count visits and clicks to improve this site? We never send your name, email or message to analytics.{' '}
+        <a href="/privacy#analytics-and-cookies" class="underline">
+          Details
+        </a>
+      </p>
+      <div class="flex gap-2">
+        <button type="button" class="btn !py-2 !px-4 text-sm" data-consent="denied">
+          No thanks
+        </button>
+        <button type="button" class="btn-primary !py-2 !px-4 text-sm" data-consent="granted">
+          Allow
+        </button>
+      </div>
+    </div>
+  )
+}
+
+<script is:inline define:vars={{ config }}>
+  (() => {
+    const UTM = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+    const ALLOWED = ['placement', 'link_destination', 'form', 'error_type'];
+    const safely = (fn, fallback = null) => {
+      try {
+        return fn();
+      } catch {
+        return fallback; // storage blocked (private mode) or malformed data: degrade quietly
+      }
+    };
+
+    // First-touch attribution for this browser session.
+    let touch = safely(() => JSON.parse(sessionStorage.getItem('pp-first-touch') || 'null'));
+    if (!touch) {
+      const u = new URL(location.href);
+      touch = { landingPage: u.origin + u.pathname };
+      UTM.forEach((k) => {
+        const v = (u.searchParams.get(k) || '').trim().slice(0, 150);
+        if (v) touch[k] = v;
+      });
+      const r = safely(() => document.referrer && new URL(document.referrer));
+      if (r && r.origin !== u.origin) touch.referrer = (r.origin + r.pathname).slice(0, 300);
+      safely(() => sessionStorage.setItem('pp-first-touch', JSON.stringify(touch)));
+    }
+    window.ppAttribution = () => touch;
+
+    // Forward approved UTM keys; the destination's own parameters always win.
+    document.querySelectorAll('a[data-forward-utm]').forEach((a) =>
+      safely(() => {
+        const dest = new URL(a.href);
+        let changed = false;
+        UTM.forEach((k) => {
+          if (touch[k] && !dest.searchParams.has(k)) {
+            dest.searchParams.set(k, touch[k]);
+            changed = true;
+          }
+        });
+        if (changed) a.href = dest.toString();
+      })
+    );
+
+    // Consent + loaders.
+    const KEY = 'pp-analytics-consent';
+    const consent = () => safely(() => localStorage.getItem(KEY));
+    let loaded = false;
+    const load = () => {
+      if (loaded) return;
+      loaded = true;
+      if (config.ga4) {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          // gtag expects the arguments object itself
+          // eslint-disable-next-line prefer-rest-params
+          window.dataLayer.push(arguments);
+        };
+        window.gtag('js', new Date());
+        window.gtag('config', config.ga4, { allow_google_signals: false, allow_ad_personalization_signals: false });
+        const s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(config.ga4);
+        document.head.appendChild(s);
+      }
+      if (config.umamiSrc) {
+        const m = document.createElement('script');
+        m.defer = true;
+        m.src = config.umamiSrc;
+        m.setAttribute('data-website-id', config.umamiId);
+        document.head.appendChild(m);
+      }
+    };
+
+    window.ppTrack = (name, params) => {
+      if (!loaded) return;
+      const safe = {};
+      ALLOWED.forEach((k) => {
+        if (params && typeof params[k] === 'string' && params[k]) safe[k] = params[k].slice(0, 100);
+      });
+      if (window.gtag) window.gtag('event', name, { transport_type: 'beacon', ...safe });
+      if (window.umami && window.umami.track) window.umami.track(name, safe);
+      (window.ppEventLog = window.ppEventLog || []).push([name, safe]); // QA only; never sent anywhere
+    };
+
+    const banner = document.getElementById('pp-consent');
+    const settings = document.querySelector('[data-open-consent]');
+    if (banner) {
+      settings?.classList.remove('hidden');
+      if (consent() === 'granted') load();
+      else if (consent() === null) banner.classList.remove('hidden');
+      banner.addEventListener('click', (e) => {
+        const btn = e.target.closest && e.target.closest('[data-consent]');
+        if (!btn) return;
+        const choice = btn.getAttribute('data-consent');
+        safely(() => localStorage.setItem(KEY, choice));
+        banner.classList.add('hidden');
+        if (choice === 'granted') load();
+      });
+      settings?.addEventListener('click', () => banner.classList.remove('hidden'));
+    }
+
+    // Click tracking: outbound links rendered by TrackedLink, plus internal CTAs with data-track.
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest && e.target.closest('a[data-event], [data-track]');
+      if (!a) return;
+      const name = a.getAttribute('data-event') || a.getAttribute('data-track');
+      const host = safely(() => (a.href && a.href.startsWith('mailto:') ? 'email' : new URL(a.href).host), '');
+      window.ppTrack(name, { placement: a.getAttribute('data-placement') || '', link_destination: host });
+    });
+  })();
+</script>

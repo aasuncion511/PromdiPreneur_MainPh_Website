@@ -1,0 +1,145 @@
+---
+/**
+ * Free guide capture: first name, email, business type, optional business name (handoff v1.1 §15).
+ * INACTIVE while FEATURES.ebookLive is false: fields are visible but disabled, nothing is submitted, and the page
+ * says plainly that the guide is not available yet. When live, it posts to /api/guide-request (→ GHL upsert + tag,
+ * GHL workflow delivers the guide) and only then shows /free-guide/thank-you. No download link lives on this site.
+ */
+import TrackedLink from './TrackedLink.astro';
+import { FEATURES } from '~/data/brand';
+import { BUSINESS_TYPES } from '../../../server/guide.ts';
+import { getPermalink } from '~/utils/permalinks';
+
+const live = FEATURES.ebookLive;
+const { placement = 'free_guide' } = Astro.props;
+---
+
+<form
+  id="pp-guide"
+  class="grid gap-4"
+  novalidate
+  data-live={live ? '1' : '0'}
+  data-thanks={getPermalink('/free-guide/thank-you')}
+  data-placement={placement}
+>
+  {
+    !live && (
+      <div class="rounded-xl border border-[#ecd3a3] bg-[#fff6e5] text-[#4d3300] p-4 text-sm" role="note">
+        <p class="font-heading font-bold text-base">The guide is being finalized.</p>
+        <p class="mt-1">
+          Requests open once the final guide is ready. Nothing is collected or sent from this form yet. Want it sooner,
+          or have a question now?{' '}
+          <TrackedLink dest="messenger" placement={`${placement}_inactive`} class="underline font-semibold">
+            Message us on Facebook
+          </TrackedLink>
+          .
+        </p>
+      </div>
+    )
+  }
+  <fieldset
+    disabled={!live}
+    class="grid gap-4 disabled:opacity-80"
+    aria-describedby={live ? undefined : 'pp-guide-inactive'}
+  >
+    <legend class="sr-only">Request the free business guide</legend>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label for="g-firstName" class="pp-label">First name *</label>
+        <input id="g-firstName" name="firstName" class="pp-field" autocomplete="given-name" maxlength="80" required />
+      </div>
+      <div>
+        <label for="g-email" class="pp-label">Email *</label>
+        <input
+          id="g-email"
+          name="email"
+          type="email"
+          inputmode="email"
+          class="pp-field"
+          autocomplete="email"
+          maxlength="254"
+          required
+        />
+      </div>
+    </div>
+    <div>
+      <label for="g-businessType" class="pp-label">Type of business *</label>
+      <select id="g-businessType" name="businessType" class="pp-field" required>
+        <option value="">Choose one…</option>
+        {BUSINESS_TYPES.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+    <div>
+      <label for="g-businessName" class="pp-label"
+        >Business name <span class="font-normal text-muted">(optional)</span></label
+      >
+      <input id="g-businessName" name="businessName" class="pp-field" autocomplete="organization" maxlength="120" />
+    </div>
+    <label class="flex items-start gap-3 text-sm text-muted min-h-[44px]">
+      <input name="consent" type="checkbox" required class="w-5 h-5 mt-0.5 accent-[#004c25] shrink-0" />
+      <span
+        >Email me the guide and a few practical follow-up tips. I can unsubscribe anytime. <a
+          href={getPermalink('/privacy')}
+          class="underline text-[#0b7339]">Privacy Policy</a
+        > *</span
+      >
+    </label>
+    <div class="absolute -left-[10000px] w-px h-px overflow-hidden" aria-hidden="true">
+      <label>Leave this empty <input type="text" name="pp_extra_info" tabindex="-1" autocomplete="off" /></label>
+    </div>
+    <button type="submit" class="btn-primary w-full text-lg"
+      >{live ? 'Send Me the Free Guide' : 'Available soon'}</button
+    >
+  </fieldset>
+  <p id="pp-guide-inactive" class="sr-only">{live ? '' : 'This form is not active yet.'}</p>
+  <div id="pp-guide-status" role="status" aria-live="polite" tabindex="-1" class="outline-none"></div>
+</form>
+
+<script>
+  const form = document.getElementById('pp-guide') as HTMLFormElement | null;
+  if (form && form.dataset.live === '1') {
+    const status = document.getElementById('pp-guide-status')!;
+    const track = (n: string, p: Record<string, string> = {}) =>
+      window.ppTrack?.(n, { form: 'free_guide', placement: form.dataset.placement || '', ...p });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const data = {
+        firstName: String(fd.get('firstName') || ''),
+        email: String(fd.get('email') || ''),
+        businessType: String(fd.get('businessType') || ''),
+        businessName: String(fd.get('businessName') || ''),
+        consent: fd.get('consent') === 'on',
+        pp_extra_info: String(fd.get('pp_extra_info') || ''),
+        source: window.ppAttribution?.() ?? {},
+      };
+      status.innerHTML = '';
+      try {
+        const res = await fetch('/api/guide-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok === true) {
+          track('ebook_request');
+          location.assign(form.dataset.thanks!);
+          return;
+        }
+        const msg =
+          body.error === 'validation'
+            ? Object.values(body.fields || {}).join(' ')
+            : 'Your request was not sent. Please try again, or message us on Facebook.';
+        const p = document.createElement('p');
+        p.className = 'rounded-xl border border-[#efc2bd] bg-[#fdf0ee] text-[#5a1710] p-3 text-sm';
+        p.textContent = msg;
+        status.appendChild(p);
+        status.focus();
+        track('form_submit_failed', { error_type: String(body.error || res.status) });
+      } catch {
+        status.textContent = 'We couldn’t reach our server. Please try again.';
+        track('form_submit_failed', { error_type: 'network' });
+      }
+    });
+  }
+</script>

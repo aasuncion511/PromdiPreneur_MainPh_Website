@@ -1,0 +1,66 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Section from '~/components/promdi/Section.astro';
+import WorkCard from '~/components/promdi/WorkCard.astro';
+import CtaBand from '~/components/promdi/CtaBand.astro';
+import TrackedLink from '~/components/promdi/TrackedLink.astro';
+import { WORK } from '~/data/catalog';
+
+const metadata = {
+  title: 'Our Work: Real Business Systems',
+  description:
+    'Business systems PromdiPreneur has built and supported: Fresh Start Cleaning Services, PromdiPreneur Payroll, MinBizCon 2026 QR check-in and more.',
+};
+const built = WORK.filter((w) => w.status !== 'In development' && w.status !== 'Working concept');
+const progress = WORK.filter((w) => w.status === 'In development' || w.status === 'Working concept');
+---
+
+<Layout metadata={metadata}>
+  <Section
+    id="work"
+    headingLevel="h1"
+    eyebrow="Our Work"
+    title="Built around real business work—not just software."
+    intro="Every project below is real. Each is labelled honestly: built, supported, or still in development. We show what was built, not invented results."
+  >
+    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        built.map((w) => (
+          <li>
+            <WorkCard item={w} placement="our_work" headingLevel="h2" />
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+  {
+    progress.length > 0 && (
+      <Section
+        id="in-progress"
+        tone="white"
+        title="In progress"
+        intro="Work that is being built now. No client results are claimed for these."
+      >
+        <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {progress.map((w) => (
+            <li>
+              <WorkCard item={w} placement="our_work_progress" />
+            </li>
+          ))}
+        </ul>
+      </Section>
+    )
+  }
+  <Section id="more" narrow>
+    <p class="text-lg text-muted">
+      Detailed case studies live on our international portfolio.
+      <TrackedLink dest="portfolio" placement="our_work_footer" class="pp-text-link"
+        >View International Portfolio</TrackedLink
+      >
+    </p>
+    <p class="mt-2 text-sm text-muted">
+      Client logos, screenshots and results are only shown with the client’s permission.
+    </p>
+  </Section>
+  <CtaBand title="Want something like this for your business?" placement="our_work_final" />
+</Layout>

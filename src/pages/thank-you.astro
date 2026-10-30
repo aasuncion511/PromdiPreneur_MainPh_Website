@@ -1,0 +1,47 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '~/layouts/PageLayout.astro';
+import Section from '~/components/promdi/Section.astro';
+import TrackedLink from '~/components/promdi/TrackedLink.astro';
+import { BRAND } from '~/data/brand';
+import { getPermalink } from '~/utils/permalinks';
+
+const metadata = { title: 'Thank you', robots: { index: false, follow: false } };
+---
+
+<Layout metadata={metadata}>
+  <Section id="ty" headingLevel="h1" narrow title="Thank you. We received your question.">
+    <p class="text-lg text-muted">
+      A real person at {BRAND.name} will read your message and reply personally when available. There’s no obligation and
+      no sales pitch required.
+    </p>
+    <p id="ty-messenger" class="hidden mt-4 rounded-xl bg-[#eef4ee] p-4">
+      You chose Messenger. Our page can’t message you first, so please
+      <TrackedLink dest="messenger" placement="thank_you" class="underline text-[#0b7339]"
+        >start a chat with PromdiPreneur on Facebook</TrackedLink
+      > and say hi.
+    </p>
+    <h2 class="mt-10 text-xl font-bold">While you wait</h2>
+    <ul class="mt-3 space-y-2">
+      <li>
+        <TrackedLink dest="shop" placement="thank_you" class="pp-text-link"
+          >Browse ready-to-use tools in the Digital Shop</TrackedLink
+        >
+      </li>
+      <li>
+        <a href={getPermalink('/our-work')} class="pp-text-link"
+          >See examples of our work <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
+        >
+      </li>
+      <li><a href={getPermalink('/')} class="pp-text-link">Back to the homepage</a></li>
+    </ul>
+  </Section>
+</Layout>
+<script>
+  try {
+    if (sessionStorage.getItem('pp-inquiry-sent') === 'messenger')
+      document.getElementById('ty-messenger')?.classList.remove('hidden');
+  } catch {
+    /* generic copy */
+  }
+</script>

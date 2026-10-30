@@ -1,0 +1,17 @@
+---
+import { CTA } from '~/data/brand';
+import { getPermalink } from '~/utils/permalinks';
+const {
+  title = 'You don’t have to figure out every business problem alone.',
+  body = 'Tell us what you need help with. No sales pitch, no obligation.',
+  placement = 'final_cta',
+} = Astro.props;
+---
+
+<section class="bg-gradient-to-r from-[#002e19] via-[#004c25] to-[#0a5c32] text-[#e1ece5] py-16 md:py-20 text-center">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <h2 class="!text-white text-3xl md:text-4xl font-extrabold">{title}</h2>
+    <p class="mt-4 text-lg">{body}</p>
+    <a href={getPermalink('/contact')} class="btn-light mt-8" data-placement={placement}>{CTA.primary}</a>
+  </div>
+</section>

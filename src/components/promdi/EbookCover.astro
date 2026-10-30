@@ -1,0 +1,43 @@
+---
+/**
+ * Free guide cover. Until the approved artwork is supplied (FEATURES.ebookLive / docs/EBOOK.md), this renders a
+ * clearly labelled PLACEHOLDER — not a mock-up of a real cover. To activate: pass `src` with the approved image.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import logo from '~/assets/images/brand/mark-512.webp';
+
+export interface Props {
+  src?: ImageMetadata;
+  alt?: string;
+  size?: 'md' | 'lg';
+}
+const { src, alt = 'Cover of the PromdiPreneur free business guide', size = 'md' } = Astro.props;
+const w = size === 'lg' ? 'w-[min(300px,70vw)]' : 'w-[min(220px,60vw)]';
+---
+
+<figure class:list={[w, 'mx-auto']}>
+  {
+    src ? (
+      <Image src={src} alt={alt} class="w-full h-auto rounded-lg shadow-2xl" widths={[300, 600]} sizes="300px" />
+    ) : (
+      <div
+        class="relative aspect-[3/4] rounded-lg shadow-2xl overflow-hidden bg-gradient-to-b from-[#004c25] to-[#002e19] text-white p-5 flex flex-col"
+        role="img"
+        aria-label="Placeholder for the free business guide cover. Final cover artwork coming soon."
+      >
+        <Image src={logo} alt="" width={48} height={48} class="w-10 h-10 object-contain" />
+        <p class="mt-auto font-heading font-extrabold text-xl leading-tight">Free Business Guide</p>
+        <p class="mt-1 text-xs text-[#bfe9cf] tracking-[0.14em] font-bold">FROM DISKARTE TO SYSTEMS.</p>
+        <span class="absolute top-3 right-3 rotate-0 bg-[#f6ecdf] text-[#754000] text-[0.65rem] font-bold uppercase tracking-wider rounded-full px-2 py-1">
+          Cover placeholder
+        </span>
+      </div>
+    )
+  }
+  {
+    !src && (
+      <figcaption class="mt-3 text-center text-xs text-muted">Final title and cover artwork coming soon.</figcaption>
+    )
+  }
+</figure>

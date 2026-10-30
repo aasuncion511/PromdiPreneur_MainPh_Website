@@ -1,0 +1,52 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Section from '~/components/promdi/Section.astro';
+import TrackedLink from '~/components/promdi/TrackedLink.astro';
+import { BRAND, FEATURES } from '~/data/brand';
+import { getPermalink } from '~/utils/permalinks';
+
+// Shown after a successful guide request. While the guide is inactive it must NOT claim anything was sent.
+const metadata = { title: 'Your Free Business Guide', robots: { index: false, follow: false } };
+---
+
+<Layout metadata={metadata}>
+  <Section
+    id="ty"
+    headingLevel="h1"
+    narrow
+    title={FEATURES.ebookLive ? 'Check your email for your free guide.' : 'The free guide isn’t available yet.'}
+  >
+    {
+      FEATURES.ebookLive ? (
+        <div class="space-y-4 text-lg text-muted">
+          <p>
+            We’ve received your request. The guide is on its way to the email you entered—it usually arrives within a
+            few minutes.
+          </p>
+          <p>
+            Not in your inbox? Check Promotions or Spam, then email{' '}
+            <TrackedLink dest="email" placement="guide_thank_you" class="underline">
+              {BRAND.email}
+            </TrackedLink>
+            .
+          </p>
+        </div>
+      ) : (
+        <div class="space-y-4 text-lg text-muted">
+          <p>Nothing has been sent and no details were collected—requests open once the final guide is ready.</p>
+          <p>
+            In the meantime,{' '}
+            <a href={getPermalink('/contact')} class="underline text-[#0b7339]">
+              ask us a question
+            </a>{' '}
+            or{' '}
+            <TrackedLink dest="shop" placement="guide_thank_you" class="underline text-[#0b7339]">
+              browse our business tools
+            </TrackedLink>
+            .
+          </p>
+        </div>
+      )
+    }
+  </Section>
+</Layout>

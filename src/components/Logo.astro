@@ -1,9 +1,27 @@
 ---
-import { SITE } from 'astrowind:config';
+import { Image } from 'astro:assets';
+import logo from '~/assets/images/brand/promdipreneur-logo-480.webp';
+import { BRAND } from '~/data/brand';
+
+// Approved salakot + lightbulb lockup, always at its native 480:214 ratio (height drives width).
+const { height = 44, showRole = true } = Astro.props;
 ---
 
-<span
-  class="self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white"
->
-  🚀 {SITE?.name}
+<span class="flex items-center gap-3">
+  <Image
+    src={logo}
+    alt={BRAND.name}
+    height={height}
+    width={Math.round((480 / 214) * height)}
+    class="object-contain shrink-0"
+    loading="eager"
+    widths={[Math.round((480 / 214) * height), Math.round((480 / 214) * height * 2)]}
+  />
+  {
+    showRole && (
+      <span class="hidden xl:block text-[0.72rem] leading-tight font-semibold text-muted max-w-[12rem] border-l border-gray-300 pl-3 font-heading">
+        {BRAND.role}
+      </span>
+    )
+  }
 </span>

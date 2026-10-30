@@ -1,0 +1,18 @@
+# Pending assets and integrations
+
+Everything below has a placeholder or an inactive state in the site. None of them shows a fake link, a fake download or a fake result.
+
+| #   | Item                                                           | Current state on the site                                                                                                           | To activate                                    |
+| --- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1   | **Master Build Handoff v3.0**                                  | Not available to the build. Built from V2.0 brand governance + Allan's 30 Oct instructions + Architecture v1.1 (for structure only) | Share v3.0. I'll reconcile any differences     |
+| 2   | **Free guide: final PDF, title, cover, GHL delivery workflow** | Landing page, homepage section, nav entry and placeholder cover built. Form disabled, endpoint returns `inactive`                   | `docs/EBOOK.md` → Activation                   |
+| 3   | **Resend email + Netlify site** (contact form)                 | Form built and tested end-to-end locally. Without credentials it refuses honestly                                                   | `docs/DEPLOYMENT.md` § B                       |
+| 4   | **GHL credentials + custom field IDs**                         | Adapter built and tested with mocks. Sync is skipped when not configured                                                            | `docs/GHL_INTEGRATION.md`                      |
+| 5   | **PH Discovery booking calendar**                              | `/contact#discovery` says "Online booking … coming soon"                                                                            | Calendar URL → `DESTINATIONS.discoveryBooking` |
+| 6   | **Analytics ID** (GA4 and/or Umami)                            | Off: no banner, no scripts                                                                                                          | `PUBLIC_GA4_ID` / `PUBLIC_UMAMI_*`             |
+| 7   | **Messenger link**                                             | `facebook.com/Promdipreneur` (m.me unverified from the build environment)                                                           | Confirm m.me opens the chat                    |
+| 8   | **Photos**                                                     | 2017 founder portrait + own product screenshots (cropped, no prices)                                                                | Newer portrait / real work photos if wanted    |
+| 9   | **Car Rental OS visual**                                       | Labelled illustration. The dashboard screenshot was not used: it shows large sample revenue figures that would read as fake proof   | A screenshot with neutral sample data          |
+| 10  | **MinBizCon visual**                                           | Labelled illustration (the scanner screenshot carries the retired brand name)                                                       | Optional new capture                           |
+| 11  | **Privacy Policy review**                                      | Plain-English, describes the real data flows. Not legal advice                                                                      | Review / OK                                    |
+| 12  | **Socri, dealership concept**                                  | Not shown (client permission required)                                                                                              | Written permission                             |

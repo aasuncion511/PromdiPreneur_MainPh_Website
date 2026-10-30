@@ -1,0 +1,275 @@
+---
+/**
+ * "Ask a question" form → POST /api/inquiry (netlify/functions/inquiry.mts → server/inquiry-core.ts).
+ * Success is shown ONLY when the server confirms the inquiry was stored and the admin email was accepted.
+ * Otherwise the visitor sees "not sent" with Messenger and email fallbacks. No fake success, ever.
+ */
+import TrackedLink from './TrackedLink.astro';
+import { BRAND } from '~/data/brand';
+import { getPermalink } from '~/utils/permalinks';
+const preview = import.meta.env.PUBLIC_PREVIEW === '1';
+---
+
+<form id="pp-inquiry" class="grid gap-5" novalidate data-thanks={getPermalink('/thank-you')}>
+  {
+    preview && (
+      <p class="rounded-xl border border-[#ecd3a3] bg-[#fff6e5] text-[#4d3300] text-sm p-3" role="note">
+        <strong>Preview build:</strong> this form is not connected to the live inbox yet. Submitting shows the real
+        failure state with the Messenger and email fallbacks.
+      </p>
+    )
+  }
+  <div
+    id="pp-inquiry-summary"
+    class="hidden rounded-xl border-2 border-[#a3261b] bg-[#fdf0ee] p-3 text-sm"
+    tabindex="-1"
+    role="alert"
+  >
+  </div>
+  <p class="text-sm text-muted">Fields marked * are required.</p>
+  <div class="grid sm:grid-cols-2 gap-5">
+    <div>
+      <label for="f-name" class="pp-label">Name *</label>
+      <input
+        id="f-name"
+        name="name"
+        class="pp-field"
+        autocomplete="name"
+        maxlength="100"
+        required
+        aria-describedby="f-name-err"
+      />
+      <p id="f-name-err" class="pp-err hidden text-sm text-[#a3261b] mt-1 font-medium"></p>
+    </div>
+    <div>
+      <label for="f-email" class="pp-label">Email *</label>
+      <input
+        id="f-email"
+        name="email"
+        type="email"
+        inputmode="email"
+        class="pp-field"
+        autocomplete="email"
+        maxlength="254"
+        required
+        aria-describedby="f-email-err"
+      />
+      <p id="f-email-err" class="pp-err hidden text-sm text-[#a3261b] mt-1 font-medium"></p>
+    </div>
+  </div>
+  <div>
+    <label for="f-businessName" class="pp-label"
+      >Business name <span class="font-normal text-muted">(optional)</span></label
+    >
+    <input id="f-businessName" name="businessName" class="pp-field" autocomplete="organization" maxlength="120" />
+  </div>
+  <div>
+    <label for="f-message" class="pp-label">What’s slowing down your business? *</label>
+    <textarea
+      id="f-message"
+      name="message"
+      rows="5"
+      class="pp-field"
+      maxlength="3000"
+      required
+      placeholder="e.g. We get inquiries on Messenger and Viber, and some never get a reply…"
+      aria-describedby="f-message-err"></textarea>
+    <p id="f-message-err" class="pp-err hidden text-sm text-[#a3261b] mt-1 font-medium"></p>
+  </div>
+  <fieldset>
+    <legend class="pp-label">How would you prefer we reply?</legend>
+    <div class="flex flex-wrap gap-x-6">
+      <label class="inline-flex items-center gap-2 min-h-[44px]"
+        ><input type="radio" name="replyPreference" value="email" checked class="w-5 h-5 accent-[#004c25]" /> Email</label
+      >
+      <label class="inline-flex items-center gap-2 min-h-[44px]"
+        ><input type="radio" name="replyPreference" value="messenger" class="w-5 h-5 accent-[#004c25]" /> Facebook Messenger</label
+      >
+    </div>
+    <p id="f-messenger-note" class="hidden mt-2 rounded-xl bg-[#eef4ee] p-3 text-sm text-muted">
+      Our page can’t message you first, so after sending please
+      <TrackedLink dest="messenger" placement="form_reply_note" class="underline"
+        >open a chat with PromdiPreneur on Facebook</TrackedLink
+      >
+      and say hi. We’ll also reply by email.
+    </p>
+  </fieldset>
+  <div>
+    <label class="flex items-start gap-3 min-h-[44px] text-sm text-muted">
+      <input
+        id="f-consent"
+        name="privacyConsent"
+        type="checkbox"
+        required
+        class="w-5 h-5 mt-0.5 accent-[#004c25] shrink-0"
+        aria-describedby="f-consent-err"
+      />
+      <span
+        >I agree to be contacted about this inquiry and understand how my information will be used. <a
+          href={getPermalink('/privacy')}
+          class="underline text-[#0b7339]">Privacy Policy</a
+        > *</span
+      >
+    </label>
+    <p id="f-consent-err" class="pp-err hidden text-sm text-[#a3261b] mt-1 font-medium"></p>
+  </div>
+  <div class="absolute -left-[10000px] w-px h-px overflow-hidden" aria-hidden="true">
+    <label>Leave this empty <input type="text" name="pp_extra_info" tabindex="-1" autocomplete="off" /></label>
+  </div>
+  <button type="submit" class="btn-primary w-full text-lg">Send My Question</button>
+  <div id="pp-inquiry-status" tabindex="-1" role="status" aria-live="polite" class="outline-none">
+    <div
+      id="pp-inquiry-error"
+      class="hidden rounded-xl border border-[#efc2bd] bg-[#fdf0ee] text-[#5a1710] p-4 text-sm"
+    >
+      <p><strong>Your message was not sent.</strong> <span data-msg></span></p>
+      <div class="flex flex-wrap gap-2 mt-3">
+        <button type="submit" class="btn !py-2 !px-4 text-sm bg-white">Try again</button>
+        <TrackedLink dest="messenger" placement="form_error" class="btn !py-2 !px-4 text-sm bg-white"
+          >Messenger</TrackedLink
+        >
+        <TrackedLink dest="email" placement="form_error" class="btn !py-2 !px-4 text-sm bg-white"
+          >{BRAND.email}</TrackedLink
+        >
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  const form = document.getElementById('pp-inquiry') as HTMLFormElement | null;
+  if (form) {
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const COPY: Record<string, string> = {
+      rate_limited:
+        'We’ve received several messages from your connection in the last hour. Please try again later, or reach us directly below.',
+      too_fast: 'That was quick! Please check your message and press Send again.',
+      not_configured:
+        'Our form isn’t accepting messages right now. Please reach us directly below—we’d still love to hear from you.',
+      network: 'We couldn’t reach our server. Please check your connection and try again, or reach us directly below.',
+      default: 'Sorry, your message didn’t go through. Please try again, or reach us directly below.',
+    };
+    const renderedAt = Date.now();
+    let started = false;
+    let sending = false;
+    const track = (n: string, p: Record<string, string> = {}) => window.ppTrack?.(n, { form: 'inquiry', ...p });
+    form.addEventListener('focusin', () => {
+      if (!started) {
+        started = true;
+        track('lead_form_start', { placement: 'contact' });
+      }
+    });
+    form
+      .querySelectorAll<HTMLInputElement>('input[name=replyPreference]')
+      .forEach((r) =>
+        r.addEventListener('change', () =>
+          document.getElementById('f-messenger-note')!.classList.toggle('hidden', r.value !== 'messenger' || !r.checked)
+        )
+      );
+    const setErr = (field: string, msg: string) => {
+      const input = form.querySelector<HTMLInputElement>(`[name=${field}]`);
+      const p = document.getElementById(`f-${field === 'privacyConsent' ? 'consent' : field}-err`);
+      input?.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      if (p) {
+        p.textContent = msg;
+        p.classList.toggle('hidden', !msg);
+      }
+    };
+    const summary = document.getElementById('pp-inquiry-summary')!;
+    const errorBox = document.getElementById('pp-inquiry-error')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+
+    const fail = (key: string) => {
+      errorBox.querySelector('[data-msg]')!.textContent = COPY[key] ?? COPY.default;
+      errorBox.classList.remove('hidden');
+      track('lead_form_submit_error', { placement: 'contact', error_type: key.slice(0, 40) });
+      document.getElementById('pp-inquiry-status')!.focus();
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (sending) return;
+      const fd = new FormData(form);
+      const data = {
+        name: String(fd.get('name') || '').trim(),
+        email: String(fd.get('email') || '').trim(),
+        businessName: String(fd.get('businessName') || '').trim(),
+        message: String(fd.get('message') || '').trim(),
+        replyPreference: fd.get('replyPreference') === 'messenger' ? 'messenger' : 'email',
+        privacyConsent: fd.get('privacyConsent') === 'on',
+        pp_extra_info: String(fd.get('pp_extra_info') || ''),
+      };
+      const errs: Record<string, string> = {};
+      if (!data.name) errs.name = 'Please tell us your name.';
+      if (!EMAIL_RE.test(data.email))
+        errs.email = data.email
+          ? 'That email address doesn’t look right. Please check it.'
+          : 'Please enter your email so we can reply.';
+      if (data.message.length < 10)
+        errs.message = data.message
+          ? 'Please add a bit more detail so we can help.'
+          : 'Please tell us a little about what’s slowing your business down.';
+      if (!data.privacyConsent) errs.privacyConsent = 'Please agree to be contacted about this inquiry.';
+      ['name', 'email', 'message', 'privacyConsent'].forEach((f) => setErr(f, errs[f] || ''));
+      errorBox.classList.add('hidden');
+      const keys = Object.keys(errs);
+      if (keys.length) {
+        summary.innerHTML = '';
+        const p = document.createElement('p');
+        p.className = 'font-bold text-[#5a1710]';
+        p.textContent = `Please check ${keys.length === 1 ? 'one thing' : keys.length + ' things'}:`;
+        const ul = document.createElement('ul');
+        ul.className = 'list-disc pl-5 mt-1';
+        keys.forEach((k) => {
+          const li = document.createElement('li');
+          li.textContent = errs[k];
+          ul.appendChild(li);
+        });
+        summary.append(p, ul);
+        summary.classList.remove('hidden');
+        summary.focus();
+        return;
+      }
+      summary.classList.add('hidden');
+      sending = true;
+      button.disabled = true;
+      button.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/inquiry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            ...data,
+            source: window.ppAttribution?.() ?? { landingPage: location.href },
+            elapsedMs: Date.now() - renderedAt,
+          }),
+        });
+        let body: { ok?: boolean; error?: string; fields?: Record<string, string> } = {};
+        try {
+          body = await res.json();
+        } catch {
+          /* non-JSON = failure */
+        }
+        if (res.ok && body.ok === true) {
+          track('lead_form_submit_success', { placement: 'contact' });
+          try {
+            sessionStorage.setItem('pp-inquiry-sent', data.replyPreference);
+          } catch {
+            /* thank-you falls back to generic copy */
+          }
+          location.assign(form.dataset.thanks!);
+          return;
+        }
+        if (body.error === 'validation' && body.fields)
+          Object.entries(body.fields).forEach(([f, m]) => setErr(f, String(m)));
+        fail(body.error || `http_${res.status}`);
+      } catch {
+        fail('network');
+      } finally {
+        sending = false;
+        button.disabled = false;
+        button.textContent = 'Send My Question';
+      }
+    });
+  }
+</script>

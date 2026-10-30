@@ -1,0 +1,91 @@
+---
+import { Icon } from 'astro-icon/components';
+import Logo from '~/components/Logo.astro';
+import TrackedLink from './TrackedLink.astro';
+import { BRAND } from '~/data/brand';
+import { getPermalink } from '~/utils/permalinks';
+
+const year = new Date().getFullYear();
+const col = (title: string, links: { text: string; href: string }[]) => ({ title, links });
+const explore = col('Explore', [
+  { text: 'Services', href: getPermalink('/services') },
+  { text: 'Our Work', href: getPermalink('/our-work') },
+  { text: 'Products', href: getPermalink('/products') },
+  { text: 'About', href: getPermalink('/about') },
+  { text: 'Contact', href: getPermalink('/contact') },
+]);
+const resources = col('Resources', [
+  { text: 'Free Business Guide', href: getPermalink('/free-guide') },
+  { text: 'All Resources', href: getPermalink('/resources') },
+]);
+---
+
+<footer class="bg-white border-t border-black/5 text-[0.95rem]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
+    <div class="sm:col-span-2 lg:col-span-3">
+      <Logo height={52} showRole={false} />
+      <p class="mt-4 text-muted max-w-sm"><strong class="text-default">{BRAND.role}.</strong> {BRAND.promise}</p>
+      <p class="pp-tagline mt-5">{BRAND.tagline}</p>
+    </div>
+    {
+      [explore, resources].map((c) => (
+        <div class="lg:col-span-2">
+          <h2 class="pp-footer-h">{c.title}</h2>
+          <ul>
+            {c.links.map((l) => (
+              <li>
+                <a href={l.href} class="pp-footer-link">
+                  {l.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+    <div class="lg:col-span-2">
+      <h2 class="pp-footer-h">Business Tools</h2>
+      <ul>
+        <li><TrackedLink dest="shop" placement="footer" class="pp-footer-link">Digital Shop</TrackedLink></li>
+        <li><TrackedLink dest="kits" placement="footer" class="pp-footer-link">Cleaning Business Kits</TrackedLink></li>
+        <li>
+          <TrackedLink dest="payroll" placement="footer" class="pp-footer-link">PromdiPreneur Payroll</TrackedLink>
+        </li>
+      </ul>
+    </div>
+    <div class="sm:col-span-2 lg:col-span-3">
+      <h2 class="pp-footer-h">Contact</h2>
+      <ul>
+        <li>
+          <TrackedLink dest="email" placement="footer" class="pp-footer-link"
+            ><Icon name="tabler:mail" class="w-4 h-4 mr-1.5 shrink-0" />{BRAND.email}</TrackedLink
+          >
+        </li>
+        <li>
+          <TrackedLink dest="facebook" placement="footer" class="pp-footer-link"
+            ><Icon name="tabler:brand-facebook" class="w-4 h-4 mr-1.5" />Facebook</TrackedLink
+          >
+        </li>
+        <li>
+          <TrackedLink dest="portfolio" placement="footer" class="pp-footer-link">International portfolio</TrackedLink>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div
+    class="max-w-7xl mx-auto px-4 sm:px-6 py-4 border-t border-black/5 flex flex-wrap gap-x-6 gap-y-1 justify-between text-sm text-muted"
+  >
+    <p>© {year} {BRAND.name} · {BRAND.location}</p>
+    <p class="flex flex-wrap items-center gap-x-4">
+      <a href={getPermalink('/privacy')} class="underline underline-offset-2 inline-flex min-h-[44px] items-center"
+        >Privacy Policy</a
+      >
+      <a href={getPermalink('/terms')} class="underline underline-offset-2 inline-flex min-h-[44px] items-center"
+        >Terms</a
+      >
+      <button type="button" class="underline underline-offset-2 min-h-[44px] hidden" data-open-consent
+        >Analytics settings</button
+      >
+    </p>
+  </div>
+</footer>

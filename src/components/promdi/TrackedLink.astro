@@ -1,0 +1,45 @@
+---
+/**
+ * Every outbound link goes through here. The real href is in the static HTML (works with JS or analytics
+ * blocked); Tracking.astro adds approved UTM keys on page load and records the click without delaying navigation.
+ * A destination with no approved URL renders as plain text with a "coming soon" note — never as a dead link.
+ */
+import { DESTINATIONS, type DestinationId } from '~/data/brand';
+
+export interface Props {
+  dest: DestinationId;
+  placement: string;
+  href?: string;
+  event?: string;
+  class?: string;
+  ariaLabel?: string;
+}
+
+const { dest, placement, href, event, class: className, ariaLabel } = Astro.props;
+const d = DESTINATIONS[dest];
+const url = href ?? d.url;
+const isMail = url?.startsWith('mailto:');
+---
+
+{
+  url ? (
+    <a
+      href={url}
+      class={className}
+      aria-label={ariaLabel}
+      data-dest={dest}
+      data-event={event ?? d.event}
+      data-placement={placement}
+      data-forward-utm={d.forwardUtm ? '' : undefined}
+      {...(isMail ? {} : { target: '_blank', rel: 'noopener' })}
+    >
+      <slot />
+      {!isMail && <span class="sr-only"> (opens in a new tab)</span>}
+    </a>
+  ) : (
+    <span class={className} aria-disabled="true" data-dest={dest} data-pending>
+      <slot />
+      <span class="sr-only"> (not available yet)</span>
+    </span>
+  )
+}

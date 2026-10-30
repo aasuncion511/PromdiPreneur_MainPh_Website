@@ -1,0 +1,67 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '~/layouts/PageLayout.astro';
+import Section from '~/components/promdi/Section.astro';
+import ProductCard from '~/components/promdi/ProductCard.astro';
+import CtaBand from '~/components/promdi/CtaBand.astro';
+import TrackedLink from '~/components/promdi/TrackedLink.astro';
+import { PRODUCTS, type ProductCategory } from '~/data/catalog';
+
+const metadata = {
+  title: 'Digital Products & Business Tools',
+  description:
+    'Ready-to-use business tools for Filipino SMEs: PromdiPreneur Payroll, Cleaning Business Kits and more. Buy and use today.',
+};
+const order: ProductCategory[] = ['Apps & Business Systems', 'Business-in-a-Box', 'Online Store'];
+// Hide empty categories (handoff v1.1 §20). No filters while the catalog is small.
+const groups = order
+  .map((c) => ({ category: c, items: PRODUCTS.filter((p) => p.category === c).sort((a, b) => a.order - b.order) }))
+  .filter((g) => g.items.length);
+---
+
+<Layout metadata={metadata}>
+  <Section
+    id="products"
+    headingLevel="h1"
+    eyebrow="Digital Products Store"
+    title="Prefer a ready-to-use tool? Start here."
+    intro="Practical templates, manuals and systems you can put to work in your business today. Prices, checkout and delivery are handled securely on each product page."
+  >
+    <TrackedLink dest="shop" placement="products_hero" class="btn-primary">
+      Visit the Digital Shop <Icon name="tabler:external-link" class="w-4 h-4 ml-2" />
+    </TrackedLink>
+  </Section>
+  {
+    groups.map((g, i) => (
+      <Section
+        id={g.category.toLowerCase().replace(/[^a-z]+/g, '-')}
+        tone={i % 2 ? 'page' : 'white'}
+        title={g.category}
+      >
+        <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {g.items.map((p) => (
+            <li>
+              <ProductCard product={p} placement="products" detailed />
+            </li>
+          ))}
+        </ul>
+      </Section>
+    ))
+  }
+  <Section id="custom" narrow>
+    <div class="rounded-2xl bg-[#eef4ee] p-6 md:p-8">
+      <h2 class="text-2xl font-bold">Need something built for your business instead?</h2>
+      <p class="mt-2 text-muted">
+        Ready-made tools fit many businesses. When yours needs a custom system, that’s what our services are for.
+      </p>
+      <a href="/services" class="pp-text-link mt-2"
+        >See our services <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
+      >
+    </div>
+  </Section>
+  <CtaBand
+    title="Not sure which tool fits?"
+    body="Tell us what your business does and where it’s stuck. We’ll point you to the right one."
+    placement="products_final"
+  />
+</Layout>
