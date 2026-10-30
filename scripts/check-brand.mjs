@@ -10,7 +10,7 @@ const RULES = [
     [/\bBASA\b/i, /Business Automation Solutions? Architect/i, /Business Automation Systems Architect/i],
   ],
   ['prices on the hub', [/₱\s?\d/, /\bPHP\s?\d/]],
-  ['AstroWind demo content', [/AstroWind/, /onwidget/i, /Lorem ipsum/i, /pixabay/i, /Tailwind CSS template/i]],
+  ['AstroWind demo content', [/AstroWind/, /onwidget/i, /8D46E7/i, /Lorem ipsum/i, /pixabay/i, /Tailwind CSS template/i]],
   ['fake ebook download', [/href="[^"]*\.pdf"/i, /download="/i]],
 ];
 const TEXT = new Set(['.html', '.js', '.css', '.txt', '.xml', '.astro', '.ts', '.md', '.mjs']);
