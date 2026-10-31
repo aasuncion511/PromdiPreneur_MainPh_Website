@@ -5,6 +5,8 @@ The Philippine-facing website for **PromdiPreneur, Business Systems & Automation
 Built on [AstroWind](https://github.com/onwidget/astrowind) (Astro 5 + Tailwind, MIT). All demo content has been removed. The site is static and fast, with two small Netlify Functions for lead capture. It links to the existing GHL product funnels without changing them.
 
 > **Status: preview for approval. Not deployed to promdipreneur.com.** See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+>
+> **Finale phase (on hold):** the "Ask PromdiPreneur" AI assistant (OpenAI) is planned as the last build, after launch. See [`docs/FINALE_AI_ASSISTANT.md`](docs/FINALE_AI_ASSISTANT.md).
 
 ## Pages
 
@@ -32,7 +34,7 @@ server/                  inquiry pipeline, guide pipeline, GHL adapter, CSV expo
 netlify/functions/       /api/inquiry, /api/guide-request, /api/inquiries.csv
 scripts/                 postbuild (robots/_headers), check-brand, local QA server, e2e suite
 docs/                    BRAND_STANDARD, EBOOK, GHL_INTEGRATION, TRACKING, DEPLOYMENT, HOSTING_OPTIONS,
-                         PARITY_AND_INTEGRATION_MAP, QA_REPORT, PENDING
+                         PARITY_AND_INTEGRATION_MAP, QA_REPORT, PENDING, FINALE_AI_ASSISTANT
 ```
 
 Adding a product means adding a record in `src/data/catalog.ts`, plus a destination in `src/data/brand.ts` if needed. No page redesign is required.
