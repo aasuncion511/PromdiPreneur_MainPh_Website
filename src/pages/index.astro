@@ -79,6 +79,21 @@ const FAQS = [
     a: 'We talk through how inquiries, sales and daily work move in your business, and where they leak. You get a straight answer on what to fix first — even if you don’t hire us.',
   },
 ];
+// Client quotes supplied by Allan (2026-11-01). Socri's two statements are combined into one quote; confirm wording,
+// attribution and permission with each client before launch.
+const TESTIMONIALS = [
+  {
+    quote:
+      'Dati, nalilito ang mga customer namin sa packages at inclusions, at may tumatawag kahit outside business hours na hindi ko na masagot. Ngayon, organized na lahat sa website at automated na ang pagsagot sa inquiries. Kahit hindi na sila tumawag, malinaw na sa kanila. No missed inquiries na — better chances of booking.',
+    who: 'Socri Private Resort',
+    context: 'Website + automated inquiry replies',
+  },
+  {
+    quote: 'Thank you talaga. Imagine kung wala ang QR codes ninyo sa registration — disaster talaga.',
+    who: '35th MinBizCon organizing team',
+    context: 'Digital QR check-in, Mindanao Business Conference 2026',
+  },
+];
 // Homepage v2 §3.6
 const INDUSTRIES = [
   { slug: 'cleaning', name: 'Cleaning & Services', setup: 'Booking, quotes, crew schedule' },
@@ -498,6 +513,32 @@ const STEPS = [
       <TrackedLink dest="portfolio" placement="home_results" class="pp-text-link mt-10 font-bold">
         See all 10 projects in the full portfolio →
       </TrackedLink>
+    </div>
+  </section>
+
+  <!-- 7b. Client voices (Allan, 2026-11-01): real quotes supplied by Allan; lightly edited for flow -->
+  <section id="testimonials" class="bg-[#eef4ee]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-[88px]">
+      <p class="text-center font-heading text-sm font-bold tracking-[0.08em] text-[#663300]">SABI NG MGA KLIYENTE</p>
+      <h2 class="mt-2.5 text-center !text-[#00330f] text-3xl md:text-[2.5rem] font-extrabold leading-tight">
+        Hindi lang kami ang nagsasabi.
+      </h2>
+      <ul class="mt-10 grid md:grid-cols-2 gap-5">
+        {
+          TESTIMONIALS.map((t) => (
+            <li>
+              <figure class="h-full rounded-[20px] border border-[#e3e8e4] bg-white p-7 flex flex-col gap-5">
+                <Icon name="tabler:quote" class="w-9 h-9 text-[#1db259]" aria-hidden="true" />
+                <blockquote class="flex-1 text-lg leading-relaxed text-default">“{t.quote}”</blockquote>
+                <figcaption class="border-t border-[#e3e8e4] pt-4">
+                  <span class="block font-heading font-bold text-[#00330f]">{t.who}</span>
+                  <span class="block text-sm text-muted">{t.context}</span>
+                </figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
