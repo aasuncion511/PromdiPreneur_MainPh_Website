@@ -4,15 +4,19 @@ import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 import Section from '~/components/promdi/Section.astro';
 import ProductCard from '~/components/promdi/ProductCard.astro';
-import WorkCard from '~/components/promdi/WorkCard.astro';
 import EbookCover from '~/components/promdi/EbookCover.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import portrait from '~/assets/images/profile/allan-2017-800.webp';
 import headshot from '~/assets/images/profile/allan-minbizcon-800.webp';
 import crewPhoto from '~/assets/images/hub/fresh-start-crew-1512.webp';
+import steamClean from '~/assets/images/hub/fresh-start-steam-clean.webp';
+import payrollDash from '~/assets/images/hub/payroll-dashboard-demo.webp';
+import payrollMenu from '~/assets/images/hub/payroll-menu.webp';
+import minbizDesk from '~/assets/images/hub/minbizcon-desk-1100.webp';
+import minbizPass from '~/assets/images/hub/minbizcon-pass-blurred.webp';
+import minbizBanner from '~/assets/images/hub/minbizcon-partner-banner.webp';
 import { BRAND, CTA, EBOOK } from '~/data/brand';
-import { PRODUCTS, WORK } from '~/data/catalog';
-import { SEQUENCE } from '~/data/services';
+import { PRODUCTS } from '~/data/catalog';
 import { getPermalink } from '~/utils/permalinks';
 
 // Homepage v2 front revision (docs/HOMEPAGE_V2.md), built section by section with Allan's approval.
@@ -35,8 +39,22 @@ const LEAKS = [
   },
   { problem: 'Lahat dumadaan sa’yo. Hindi ka maka-day off.', fix: 'Simple SOPs and checklists your team follows.' },
 ];
+// Homepage v2 §3.6
+const INDUSTRIES = [
+  { slug: 'cleaning', name: 'Cleaning & Services', setup: 'Booking, quotes, crew schedule' },
+  { slug: 'food', name: 'Food Business', setup: 'Orders, payments, repeat buyers' },
+  { slug: 'trading', name: 'Trading & Supply', setup: 'Quotations, inventory, re-orders' },
+  { slug: 'events', name: 'Events & Conferences', setup: 'Registration, QR check-in, attendance' },
+  { slug: 'rentals', name: 'Rentals & Resorts', setup: 'Date checks, reservation fees, calendar' },
+  { slug: 'clinics', name: 'Clinics & Salons', setup: 'Appointments, reminders, no-show handling' },
+];
+// Homepage v2 §3.8
+const STEPS = [
+  { title: 'Free Discovery Call', body: 'We find where your sales and time are leaking.' },
+  { title: 'Map the Process', body: 'A clear map: steps, owners, tools — before we build.' },
+  { title: 'Build, Train, Improve', body: 'We set it up, train your team, and stay to fine-tune.' },
+];
 const featuredProducts = PRODUCTS.filter((p) => p.featured).sort((a, b) => a.order - b.order);
-const featuredWork = WORK.filter((w) => w.featured);
 ---
 
 <Layout metadata={metadata}>
@@ -325,47 +343,149 @@ const featuredWork = WORK.filter((w) => w.featured);
     </div>
   </section>
 
-  <!-- D. Operating sequence -->
-  <Section id="how" tone="forest" eyebrow="How we work" title="Technology comes after we understand your business.">
-    <p class="-mt-8 mb-10 font-heading font-bold text-sm uppercase tracking-[0.08em] text-[#f1c98d]">
-      {BRAND.principle.join(' → ')}
-    </p>
-    <ol class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {
-        SEQUENCE.map((s, i) => (
-          <li class="rounded-2xl border border-white/15 bg-white/[0.06] p-6">
-            <span class="font-heading font-extrabold text-3xl text-[#7fe0a4]" aria-hidden="true">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <h3 class="mt-3 !text-white text-lg font-bold">{s.title}</h3>
-            <p class="mt-1 text-[#d3e3d9]">{s.body}</p>
-          </li>
-        ))
-      }
-    </ol>
-  </Section>
+  <!-- 6. Industry picker (Homepage v2 §3.6). Tiles go to Discovery for now (Allan, 2026-11-01). -->
+  <section class="bg-[#00441b] text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-[72px]">
+      <h2 class="!text-white text-center text-3xl md:text-4xl font-extrabold">Ano ang negosyo mo?</h2>
+      <ul class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        {
+          INDUSTRIES.map((t) => (
+            <li>
+              <a
+                href={getPermalink('/discovery')}
+                class="flex h-full flex-col gap-1.5 rounded-2xl border border-white/20 bg-white/[0.08] p-[22px] text-white transition-colors hover:bg-white/[0.14] hover:border-white/40"
+                data-event="industry_tile_click"
+                data-placement={`industry_${t.slug}`}
+              >
+                <span class="font-heading text-lg font-bold">{t.name}</span>
+                <span class="text-sm text-[#c9dccf]">{t.setup}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 
-  <!-- E. Real work -->
-  <Section
-    id="work"
-    tone="white"
-    eyebrow="Our Work"
-    title="Real systems, honestly labelled."
-    intro="Built around real business work—not just software. Each project shows its actual status."
-  >
-    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {
-        featuredWork.map((w) => (
-          <li>
-            <WorkCard item={w} placement="home_work" />
-          </li>
-        ))
-      }
-    </ul>
-    <a href={getPermalink('/work')} class="pp-text-link mt-6"
-      >See all our work, including Socri and Car Rental OS <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
-    >
-  </Section>
+  <!-- 7. Results (Homepage v2 §3.7) -->
+  <section id="results" class="scroll-mt-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-[88px]">
+      <p class="font-heading text-sm font-bold tracking-[0.08em] text-[#00441b]">REAL WORK, NOT MOCKUPS</p>
+      <h2 class="mt-2.5 !text-[#00330f] text-3xl md:text-[2.5rem] font-extrabold leading-tight">
+        We run our own businesses on these systems.
+      </h2>
+      <ul class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+        <li class="flex flex-col gap-3.5">
+          <Image
+            src={steamClean}
+            alt="Fresh Start cleaner steam-cleaning a sofa in a condo unit"
+            widths={[480, 760]}
+            sizes="(min-width: 1024px) 380px, (min-width: 768px) 45vw, 100vw"
+            class="w-full h-60 object-cover object-[center_40%] rounded-[18px]"
+            loading="lazy"
+          />
+          <p class="font-heading text-[13px] font-bold text-[#00441b]">FRESH START CLEANING · CDO</p>
+          <h3 class="!text-default text-[22px] font-bold leading-snug">Instant replies, 24/7 — handled by AI</h3>
+          <p class="text-muted">About 7 bookings every week: 4 sofa, 2 house/apartment, 1 mattress.</p>
+        </li>
+        <li class="flex flex-col gap-3.5">
+          <div class="relative h-60 rounded-[18px] overflow-hidden border border-[#e3e8e4] bg-white">
+            <Image
+              src={payrollDash}
+              alt="PromdiPreneur Payroll dashboard in Google Sheets showing a finalized period with net payroll and withholding tax totals (demo data)"
+              widths={[480, 760, 1200]}
+              sizes="(min-width: 1024px) 380px, (min-width: 768px) 45vw, 100vw"
+              class="w-full h-full object-cover object-left-top"
+              loading="lazy"
+            />
+            <Image
+              src={payrollMenu}
+              alt="Promdipreneur Payroll menu: Prepare, Validate, Finalize, Mark Paid, and email payslips"
+              widths={[300]}
+              sizes="150px"
+              class="absolute right-2.5 bottom-2.5 w-[150px] rounded-lg border border-[#e3e8e4] shadow-[0_8px_20px_rgba(0,0,0,.25)]"
+              loading="lazy"
+            />
+            <span
+              class="absolute left-2.5 bottom-2.5 rounded-md bg-[#00330f]/90 px-2 py-1 text-[11px] font-semibold text-white"
+              >Demo data</span
+            >
+          </div>
+          <p class="font-heading text-[13px] font-bold text-[#00441b]">PROMDIPRENEUR PAYROLL</p>
+          <h3 class="!text-default text-[22px] font-bold leading-snug">Payroll in 4 clicks every cutoff</h3>
+          <p class="text-muted">
+            Prepare → validate → finalize → mark paid. Payslips emailed straight from Google Sheets.
+          </p>
+        </li>
+        <li class="flex flex-col gap-3.5">
+          <div class="relative h-60 rounded-[18px] overflow-hidden">
+            <Image
+              src={minbizDesk}
+              alt="MinBizCon 2026 registration desk with walk-in and QR check-in lanes"
+              widths={[480, 760, 1100]}
+              sizes="(min-width: 1024px) 380px, (min-width: 768px) 45vw, 100vw"
+              class="w-full h-full object-cover object-[center_55%]"
+              loading="lazy"
+            />
+            <Image
+              src={minbizPass}
+              alt="Sample digital check-in pass emailed to an attendee, personal details blurred"
+              widths={[184]}
+              sizes="92px"
+              class="absolute right-3 bottom-3 w-[92px] rounded-lg shadow-[0_8px_20px_rgba(0,0,0,.4)]"
+              loading="lazy"
+            />
+          </div>
+          <p class="font-heading text-[13px] font-bold text-[#00441b]">
+            MINBIZCON 2026 · 35TH MINDANAO BUSINESS CONFERENCE
+          </p>
+          <h3 class="!text-default text-[22px] font-bold leading-snug">1 attendee. 1 QR. 1 scan.</h3>
+          <p class="text-muted">
+            3-day check-in planned for ~800 participants. Each attendee got a digital pass by email.
+          </p>
+          <div class="flex items-center gap-3">
+            <Image
+              src={minbizBanner}
+              alt="PromdiPreneur logo on the MinBizCon event partners banner, labelled Digital Check-In Partner"
+              widths={[220]}
+              sizes="110px"
+              class="w-[110px] h-[70px] object-cover rounded-[10px] border border-[#e3e8e4]"
+              loading="lazy"
+            />
+            <span class="text-sm font-semibold text-[#00441b]">Official Digital Check-In Partner</span>
+          </div>
+        </li>
+      </ul>
+      <TrackedLink dest="portfolio" placement="home_results" class="pp-text-link mt-10 font-bold">
+        See all 10 projects in the full portfolio →
+      </TrackedLink>
+    </div>
+  </section>
+
+  <!-- 8. How it works (Homepage v2 §3.8) -->
+  <section id="how" class="bg-page">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-[88px]">
+      <h2 class="!text-[#00330f] text-center text-3xl md:text-[2.5rem] font-extrabold leading-tight">
+        Ayusin muna ang proseso. Saka i-automate.
+      </h2>
+      <ol class="mt-10 grid md:grid-cols-3 gap-5">
+        {
+          STEPS.map((st, i) => (
+            <li class="rounded-[20px] border border-[#e3e8e4] bg-white p-7 flex flex-col gap-3">
+              <span class="font-heading text-[44px] font-extrabold leading-none text-[#663300]" aria-hidden="true">
+                {i + 1}
+              </span>
+              <h3 class="!text-[#00330f] text-xl font-bold">
+                <span class="sr-only">Step {i + 1}: </span>
+                {st.title}
+              </h3>
+              <p class="text-[15px] leading-normal text-muted">{st.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
 
   <!-- F. Products -->
   <Section
