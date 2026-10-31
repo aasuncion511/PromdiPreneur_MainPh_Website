@@ -1,5 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import logoWhite from '~/assets/images/brand/promdipreneur-logo-white-1200.webp';
 import TrackedLink from './TrackedLink.astro';
 import { BRAND, CTA } from '~/data/brand';
 import { getPermalink } from '~/utils/permalinks';
@@ -21,12 +23,19 @@ const resources = col('Resources', [
 ---
 
 <!-- Homepage v2 §3.14: deep footer green, no "Cagayan de Oro" here (Allan). The logo only works on light
-     backgrounds, so the footer uses the wordmark in text. Link columns stay so About and the ebook remain reachable
+     backgrounds, so the footer uses the white (reversed) version, made from the official logo (Allan OK 2026-11-01). Link columns stay so About and the ebook remain reachable
      after the nav was cut to 4 links (decision 2A). -->
 <footer class="bg-[#00260a] text-[#c9dccf] text-[0.95rem]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
     <div class="sm:col-span-2 lg:col-span-3">
-      <p class="font-heading text-2xl font-extrabold text-white">PromdiPreneur</p>
+      <Image
+        src={logoWhite}
+        alt="PromdiPreneur"
+        widths={[240, 480]}
+        sizes="200px"
+        class="h-[90px] w-auto"
+        loading="lazy"
+      />
       <p class="mt-3 max-w-sm"><strong class="text-white">{BRAND.role}.</strong> {BRAND.promise}</p>
       <p class="mt-5 font-heading text-xs font-extrabold tracking-[0.16em] text-[#5fd68f]">{BRAND.tagline}</p>
     </div>

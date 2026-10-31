@@ -18,7 +18,11 @@ Allowed event properties: `placement`, `link_destination`, `form`, `error_type`.
 | `outbound_payroll_click`       | Payroll page or live demo link                                                   | GHL orders / licences                |
 | `outbound_portfolio_click`     | International portfolio link                                                     | n/a                                  |
 | `case_study_click`             | "Read the case study"                                                            | n/a                                  |
-| `contact_messenger_click`      | Messenger / Facebook link                                                        | Facebook inbox                       |
+| `discovery_cta_click`          | Any "Book a Free Discovery Call" / "Free Discovery Call" link to `/discovery`    | GHL calendar bookings / inquiries    |
+| `contact_messenger_click`      | Messenger link (m.me/Promdipreneur), incl. the sticky phone button               | Facebook inbox                       |
+| `contact_facebook_click`       | Facebook page link                                                               | n/a                                  |
+| `contact_linkedin_click`       | Allan's LinkedIn                                                                 | n/a                                  |
+| `industry_tile_click`          | Homepage "Ano ang negosyo mo?" tile (`placement=industry_<slug>`)                | n/a                                  |
 | `contact_email_click`          | mailto admin@                                                                    | Inbox                                |
 | `lead_form_start`              | First focus in the contact form                                                  | n/a                                  |
 | `lead_form_submit_success`     | **Only** after the server confirms the inquiry was stored and the email was sent | Inquiry store / GHL                  |

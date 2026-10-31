@@ -128,7 +128,7 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
   facebook: {
     url: 'https://www.facebook.com/Promdipreneur',
     label: 'PromdiPreneur on Facebook',
-    event: 'contact_messenger_click',
+    event: 'contact_facebook_click',
     kind: 'social',
     forwardUtm: false,
     status: 'unverified',

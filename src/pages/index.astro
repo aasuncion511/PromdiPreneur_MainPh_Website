@@ -754,6 +754,21 @@ const STEPS = [
     </div>
   </section>
 
+  <!-- FAQPage structured data (Allan, 2026-11-01): same questions and answers as shown above -->
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: FAQS.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    })}
+  />
+
   <!-- 13. Final CTA (Homepage v2 §3.13) -->
   <section id="book" class="scroll-mt-20 bg-[#00330f] text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-[88px] text-center flex flex-col items-center gap-5">

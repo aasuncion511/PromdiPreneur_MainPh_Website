@@ -2,6 +2,8 @@
 import Layout from '~/layouts/Layout.astro';
 import Header from '~/components/promdi/Header.astro';
 import Footer from '~/components/promdi/Footer.astro';
+import TrackedLink from '~/components/promdi/TrackedLink.astro';
+import { Icon } from 'astro-icon/components';
 
 import type { MetaData } from '~/types';
 
@@ -12,6 +14,8 @@ export interface Props {
 // Preview builds (PUBLIC_PREVIEW=1, set for Netlify deploy previews/branch deploys) are never indexable.
 const preview = import.meta.env.PUBLIC_PREVIEW === '1';
 const { metadata = {} } = Astro.props;
+// Sticky Messenger button on phones (Allan, 2026-11-01). Hidden on thank-you pages, where the visitor already acted.
+const showSticky = !/thank-you/.test(Astro.url.pathname);
 const meta: MetaData = preview ? { ...metadata, robots: { index: false, follow: false } } : metadata;
 ---
 
@@ -34,4 +38,21 @@ const meta: MetaData = preview ? { ...metadata, robots: { index: false, follow: 
     <slot />
   </main>
   <Footer />
+  {
+    showSticky && (
+      <>
+        <div class="h-20 lg:hidden" aria-hidden="true" />
+        <aside aria-label="Quick contact" class="lg:hidden">
+          <TrackedLink
+            dest="messenger"
+            placement="sticky_mobile"
+            class="pp-sticky-msg lg:hidden fixed bottom-4 right-4 z-30 inline-flex items-center gap-2 min-h-[52px] rounded-full bg-[#00441b] px-5 font-heading text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(0,0,0,.3)] ring-2 ring-white"
+          >
+            <Icon name="tabler:brand-messenger" class="w-5 h-5" aria-hidden="true" />
+            Message us
+          </TrackedLink>
+        </aside>
+      </>
+    )
+  }
 </Layout>

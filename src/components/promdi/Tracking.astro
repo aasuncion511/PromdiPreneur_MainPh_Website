@@ -150,10 +150,14 @@ const anyAnalytics = Boolean(config.ga4 || config.umamiSrc);
     }
 
     // Click tracking: outbound links rendered by TrackedLink, plus internal CTAs with data-track.
+    // Homepage v2 (Allan, 2026-11-01): every link to /discovery without its own event counts as discovery_cta_click,
+    // so Discovery and Messenger clicks are separate events.
     document.addEventListener('click', (e) => {
-      const a = e.target.closest && e.target.closest('a[data-event], [data-track]');
+      const a =
+        e.target.closest &&
+        e.target.closest('a[data-event], [data-track], a[href="/discovery"], a[href^="/discovery#"]');
       if (!a) return;
-      const name = a.getAttribute('data-event') || a.getAttribute('data-track');
+      const name = a.getAttribute('data-event') || a.getAttribute('data-track') || 'discovery_cta_click';
       const host = safely(() => (a.href && a.href.startsWith('mailto:') ? 'email' : new URL(a.href).host), '');
       window.ppTrack(name, { placement: a.getAttribute('data-placement') || '', link_destination: host });
     });

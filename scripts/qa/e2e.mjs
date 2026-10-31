@@ -268,6 +268,22 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
     'analytics: case_study_click fired',
     (await events(page)).some((x) => x[0] === 'case_study_click')
   );
+  // Homepage v2: Discovery and Messenger clicks are separate events (navigation blocked so the log survives).
+  await page.goto(BASE + '/');
+  await page.evaluate(() => window.addEventListener('click', (e) => e.preventDefault()));
+  await page.locator('section a[data-placement=hero]', { hasText: 'Book a Free Discovery Call' }).click();
+  await page.locator('header a[data-placement=header]').click();
+  await page.locator('a[data-dest=messenger][data-placement=hero]').click();
+  {
+    const ev = await events(page);
+    const d = ev.filter((x) => x[0] === 'discovery_cta_click').map((x) => x[1].placement);
+    const m = ev.filter((x) => x[0] === 'contact_messenger_click').map((x) => x[1].placement);
+    check(
+      'analytics: discovery_cta_click (hero, header) and contact_messenger_click (hero) are separate events',
+      JSON.stringify(d) === '["hero","header"]' && JSON.stringify(m) === '["hero"]',
+      JSON.stringify(ev)
+    );
+  }
   check(
     'links: legacy flyer and international booking widget not linked anywhere',
     !(await page.content()).includes('run.app') && !(await page.content()).includes('ireOpOYGzupk7E9wo3zy')
@@ -529,6 +545,11 @@ for (const [label, q, txt] of [
     (await page.locator('#pp-menu-toggle').getAttribute('aria-expanded')) === 'true' &&
       (await page.locator('#pp-mobile-nav a', { hasText: 'Pricing' }).isVisible()) &&
       (await page.locator('#pp-mobile-nav a[data-placement=mobile_nav]').getAttribute('href')) === '/discovery'
+  );
+  check(
+    'mobile: sticky Messenger button visible on phones → m.me (tracked sticky_mobile)',
+    (await page.locator('a[data-placement=sticky_mobile]').isVisible()) &&
+      (await page.locator('a[data-placement=sticky_mobile]').getAttribute('href')) === 'https://m.me/Promdipreneur'
   );
   await page.screenshot({ path: join(out, 'mobile-menu-open.png') });
   await page.keyboard.press('Escape');
