@@ -140,25 +140,27 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
       !/\bBASA\b|Solutions Architect/i.test(body)
   );
   check(
-    'home: v2 hero (H1, Discovery CTA → /discovery, Messenger → m.me) + ebook card with real cover → ebook page',
+    'home: v2 hero (H1, Discovery CTA → /discovery, Messenger → m.me)',
     (await page.locator('h1').innerText()).includes('Kulang ka sa sistema.') &&
       (await page
         .locator('section a[data-placement=hero]', { hasText: 'Book a Free Discovery Call' })
         .getAttribute('href')) === '/discovery' &&
       (await page.locator('a[data-dest=messenger][data-placement=hero]').getAttribute('href')) ===
-        'https://m.me/Promdipreneur' &&
-      (await page.locator('#free-ebook h2').innerText()) === 'The Business Opening Checklist PH' &&
-      (await page
-        .locator('#free-ebook img[alt*="Cover of the free ebook"]')
-        .scrollIntoViewIfNeeded()
-        .then(() => page.waitForTimeout(400))
-        .then(() =>
-          page
-            .locator('#free-ebook img[alt*="Cover of the free ebook"]')
-            .evaluate((i) => i.complete && i.naturalWidth > 0)
-        )) &&
-      (await page.locator('#free-ebook a', { hasText: 'Get Free Guide' }).getAttribute('href')) ===
-        '/resources/free-ebook'
+        'https://m.me/Promdipreneur'
+  );
+  check(
+    'home: pricing shows 5 packages with exact §3.9 prices; GROW marked most popular; cost box says Metro Manila',
+    JSON.stringify(
+      await page.locator('#pricing ul > li').evaluateAll((lis) => lis.map((l) => l.innerText.replace(/\s+/g, ' ')))
+    ).match(
+      /₱2,800.*₱7,500.*₱3,500.*₱15,000.*₱3,500.*₱15,000.*MOST POPULAR.*₱8,000.*₱25,000.*from ₱10,000.*from ₱35,000/
+    ) !== null && (await page.locator('#pricing').innerText()).includes('sa Metro Manila?')
+  );
+  check(
+    'home: DIY strip → payroll, kits (tracked outbound) and the free ebook page',
+    (await page.locator('#store a[data-dest=payroll]').getAttribute('href')) === 'https://payroll.promdipreneur.com/' &&
+      (await page.locator('#store a[data-dest=kits]').getAttribute('href')) === 'https://kits.promdipreneur.com/' &&
+      (await page.locator('#store a[data-track=ebook_cta_click]').getAttribute('href')) === '/resources/free-ebook'
   );
   check(
     'logo: keeps its 480:214 aspect ratio',

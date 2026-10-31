@@ -9,12 +9,17 @@ const RULES = [
     'retired brand terms',
     [/\bBASA\b/i, /Business Automation Solutions? Architect/i, /Business Automation Systems Architect/i],
   ],
-  ['prices on the hub', [/₱\s?\d/, /\bPHP\s?\d/]],
+  ['prices outside the Pricing section', [/₱\s?\d/, /\bPHP\s?\d/]],
   [
     'AstroWind demo content',
     [/AstroWind/, /onwidget/i, /8D46E7/i, /Lorem ipsum/i, /pixabay/i, /Tailwind CSS template/i],
   ],
 ];
+// Prices are allowed ONLY in the homepage Pricing section (Allan, 2026-11-01, homepage v2 decision 1):
+// the source of truth is src/data/pricing.ts, and in the build only <section id="pricing"> may show ₱ amounts.
+const PRICE_SOURCE = join('src', 'data', 'pricing.ts');
+const stripPricing = (f, text) =>
+  f.endsWith('.html') ? text.replace(/<section\b[^>]*\bid="?pricing"?[^>]*>[\s\S]*?<\/section>/, '') : text;
 const TEXT = new Set(['.html', '.js', '.css', '.txt', '.xml', '.astro', '.ts', '.md', '.mjs']);
 const walk = (d) =>
   readdirSync(d).flatMap((f) => {
@@ -27,13 +32,16 @@ for (const dir of ['dist', 'src']) {
   const files = walk(join(root, dir));
   for (const [label, res] of RULES) {
     const hits = [];
-    for (const f of files)
-      readFileSync(f, 'utf8')
+    for (const f of files) {
+      if (label === 'prices outside the Pricing section' && relative(root, f) === PRICE_SOURCE) continue;
+      const text = readFileSync(f, 'utf8');
+      (label === 'prices outside the Pricing section' ? stripPricing(f, text) : text)
         .split('\n')
         .forEach(
           (line, i) =>
             res.some((r) => r.test(line)) && hits.push(`${relative(root, f)}:${i + 1}: ${line.trim().slice(0, 110)}`)
         );
+    }
     console.log(`${hits.length ? 'FAIL' : 'PASS'}  ${dir}/: ${label} (${hits.length})`);
     hits.slice(0, 15).forEach((h) => console.log('      ' + h));
     if (hits.length) failed = true;

@@ -3,8 +3,6 @@ import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 import Section from '~/components/promdi/Section.astro';
-import ProductCard from '~/components/promdi/ProductCard.astro';
-import EbookCover from '~/components/promdi/EbookCover.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import portrait from '~/assets/images/profile/allan-2017-800.webp';
 import headshot from '~/assets/images/profile/allan-minbizcon-800.webp';
@@ -15,8 +13,8 @@ import payrollMenu from '~/assets/images/hub/payroll-menu.webp';
 import minbizDesk from '~/assets/images/hub/minbizcon-desk-1100.webp';
 import minbizPass from '~/assets/images/hub/minbizcon-pass-blurred.webp';
 import minbizBanner from '~/assets/images/hub/minbizcon-partner-banner.webp';
-import { BRAND, CTA, EBOOK } from '~/data/brand';
-import { PRODUCTS } from '~/data/catalog';
+import { CTA, EBOOK } from '~/data/brand';
+import { COST_BARS, COST_FOOTNOTE, PACKAGES } from '~/data/pricing';
 import { getPermalink } from '~/utils/permalinks';
 
 // Homepage v2 front revision (docs/HOMEPAGE_V2.md), built section by section with Allan's approval.
@@ -54,7 +52,6 @@ const STEPS = [
   { title: 'Map the Process', body: 'A clear map: steps, owners, tools — before we build.' },
   { title: 'Build, Train, Improve', body: 'We set it up, train your team, and stay to fine-tune.' },
 ];
-const featuredProducts = PRODUCTS.filter((p) => p.featured).sort((a, b) => a.order - b.order);
 ---
 
 <Layout metadata={metadata}>
@@ -487,50 +484,151 @@ const featuredProducts = PRODUCTS.filter((p) => p.featured).sort((a, b) => a.ord
     </div>
   </section>
 
-  <!-- F. Products -->
-  <Section
-    id="tools"
-    tone="tint"
-    eyebrow="Digital Store"
-    title="Prefer a ready-to-use tool? Start here."
-    intro="Practical templates, manuals and systems you can put to work in your business today."
-  >
-    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {
-        featuredProducts.map((p) => (
-          <li>
-            <ProductCard product={p} placement="home_store" />
-          </li>
-        ))
-      }
-    </ul>
-    <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
-      <p class="text-sm text-muted">Prices, checkout and delivery are handled on each product page.</p>
-      <a href={getPermalink('/products')} class="pp-text-link"
-        >View the Digital Store <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
-      >
-    </div>
-  </Section>
-
-  <!-- G. Free ebook -->
-  <Section id="free-ebook" tone="white">
-    <div class="grid md:grid-cols-[auto_1fr] gap-10 items-center rounded-3xl bg-[#eef4ee] p-6 md:p-12">
-      <EbookCover size="md" />
-      <div class="max-w-xl">
-        <p class="pp-eyebrow">Free guide · PDF</p>
-        <h2 class="text-3xl md:text-4xl font-extrabold">{EBOOK.title}</h2>
-        <p class="mt-4 text-lg text-muted">
-          109 practical checks for planning and running a better-prepared small business.
+  <!-- 9. Pricing (Homepage v2 §3.9). All ₱ amounts come from src/data/pricing.ts. -->
+  <section id="pricing" class="scroll-mt-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-[88px]">
+      <div class="text-center flex flex-col items-center gap-3">
+        <p class="font-heading text-sm font-bold tracking-[0.08em] text-[#663300]">PROMDIPRENEUR SME GROWTH SYSTEM</p>
+        <h2 class="!text-[#00330f] text-3xl md:text-[2.5rem] font-extrabold leading-tight">
+          Piliin ang problemang gusto mong ayusin.
+        </h2>
+        <p class="text-lg text-muted">
+          One-time setup + monthly care plan. We maintain it — hindi ka iiwan after go-live.
         </p>
+      </div>
+
+      <ul class="mt-12 grid sm:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
+        {
+          PACKAGES.map((p) => (
+            <li
+              class:list={[
+                'relative rounded-[20px] p-6 flex flex-col gap-2.5 sm:grid sm:grid-rows-subgrid sm:row-span-4 sm:gap-y-2.5 sm:content-start',
+                p.dark
+                  ? 'bg-[#00330f] text-white border border-[#00330f]'
+                  : p.popular
+                    ? 'bg-[#f4faf6] border-2 border-[#00441b]'
+                    : 'border border-[#e3e8e4]',
+              ]}
+            >
+              {p.popular && (
+                <span class="absolute -top-3 left-5 rounded-full bg-[#1db259] px-3 py-1 text-xs font-bold text-[#00330f]">
+                  MOST POPULAR
+                </span>
+              )}
+              <p
+                class:list={[
+                  'font-heading text-[13px] font-extrabold tracking-[0.06em]',
+                  p.dark ? 'text-[#5fd68f]' : 'text-[#00441b]',
+                ]}
+              >
+                {p.name}
+              </p>
+              <h3 class:list={['text-lg font-bold leading-snug', p.dark ? '!text-white' : '!text-[#00330f]']}>
+                {p.headline}
+              </h3>
+              <p
+                class:list={[
+                  'flex flex-col justify-center gap-0.5 py-2.5 border-y',
+                  p.dark ? 'border-white/15' : p.popular ? 'border-[#c9dccf]' : 'border-[#e3e8e4]',
+                ]}
+              >
+                <span class:list={['font-heading text-[26px] font-extrabold', p.dark ? 'text-white' : 'text-default']}>
+                  {p.from && (
+                    <span class:list={['text-sm font-semibold', p.dark ? 'text-[#c9dccf]' : 'text-muted']}>from </span>
+                  )}
+                  {p.monthly}
+                  <span class:list={['text-sm font-semibold', p.dark ? 'text-[#c9dccf]' : 'text-muted']}>/mo</span>
+                </span>
+                <span class:list={['text-[13px]', p.dark ? 'text-[#c9dccf]' : 'text-muted']}>
+                  + {p.from ? 'from ' : ''}
+                  {p.setup} one-time setup
+                </span>
+              </p>
+              <p class:list={['text-sm leading-snug', p.dark ? 'text-[#c9dccf]' : 'text-muted']}>{p.bestFor}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- Cost perspective (Metro Manila figure, said in the headline: Allan decision 4A) -->
+      <div class="mt-10 rounded-3xl bg-[#00330f] text-white p-7 md:p-9 grid lg:grid-cols-2 gap-8 items-center">
+        <div class="flex flex-col gap-3.5">
+          <p class="font-heading text-[13px] font-bold tracking-[0.08em] text-[#5fd68f]">ISIPIN MO ITO</p>
+          <h3 class="!text-white text-2xl md:text-[30px] font-extrabold leading-tight">
+            Magkano kung mag-hire ka ng 2 hanggang 4 na CSR at sales rep sa Metro Manila?
+          </h3>
+          <p class="leading-relaxed text-[#c9dccf]">
+            Your system replies, follows up and reminds customers 24/7 — walang day off, walang absent. Your people
+            focus on closing and serving.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3.5">
+          <ul class="flex flex-col gap-3.5">
+            {
+              COST_BARS.map((c) => (
+                <li class="flex flex-col gap-1.5">
+                  <span class="flex justify-between gap-3 text-sm">
+                    <span class:list={[c.ours ? 'font-semibold text-white' : 'text-[#c9dccf]']}>{c.label}</span>
+                    <span class:list={['font-bold', c.ours ? 'text-[#5fd68f]' : 'text-white']}>{c.amount}</span>
+                  </span>
+                  <span
+                    class:list={['block h-3.5 rounded-full', c.ours ? 'bg-[#1db259] min-w-[20px]' : 'bg-[#8a4a14]']}
+                    style={`width:${c.pct}%`}
+                    aria-hidden="true"
+                  />
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-1 font-heading text-lg font-extrabold">Wala pang kalahati ng sweldo ng isang rep.</p>
+          <p class="text-xs leading-normal text-[#9fbfab]">{COST_FOOTNOTE}</p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-page px-6 py-5">
+        <p class="text-[15px] text-default">
+          <span class="font-bold">Hindi sigurado kung alin?</span> Start with a free Discovery Call — we’ll recommend the
+          right package.
+        </p>
+        <a href={getPermalink('/discovery')} class="btn-primary !py-3 !px-5 text-[15px]" data-placement="pricing"
+          >Book Free Call</a
+        >
+      </div>
+      <p class="mt-6 text-center text-[13px] text-muted">
+        SMS, calls, WhatsApp, AI usage, payment fees and third-party subscriptions are billed separately at actual cost.
+      </p>
+    </div>
+  </section>
+
+  <!-- 10. DIY strip (Homepage v2 §3.10). Existing store/ebook destinations and tracking. -->
+  <section id="store" class="scroll-mt-20 bg-[#eef4ee]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-14 grid lg:grid-cols-[1fr_auto] gap-6 items-center">
+      <div>
+        <h2 class="!text-[#00330f] text-2xl md:text-[28px] font-extrabold">DIY muna? Start with a ready-made tool.</h2>
+        <p class="mt-2 text-muted">Templates and systems you can use today.</p>
+      </div>
+      <div class="flex flex-col sm:flex-row flex-wrap gap-3">
+        <TrackedLink
+          dest="payroll"
+          placement="home_diy"
+          class="inline-flex items-center min-h-[48px] rounded-[14px] border border-[#c9dccf] bg-white px-[18px] py-3.5 text-[15px] font-semibold text-[#00330f] hover:border-[#00441b]"
+          >Payroll Workbook →</TrackedLink
+        >
+        <TrackedLink
+          dest="kits"
+          placement="home_diy"
+          class="inline-flex items-center min-h-[48px] rounded-[14px] border border-[#c9dccf] bg-white px-[18px] py-3.5 text-[15px] font-semibold text-[#00330f] hover:border-[#00441b]"
+          >Cleaning Business Kits →</TrackedLink
+        >
         <a
           href={getPermalink(EBOOK.route)}
-          class="btn-primary mt-6"
+          class="inline-flex items-center min-h-[48px] rounded-[14px] bg-[#1db259] px-[18px] py-3.5 text-[15px] font-bold text-[#00330f] hover:bg-[#3fc777]"
           data-track="ebook_cta_click"
-          data-placement="home_ebook">{CTA.ebook}</a
+          data-placement="home_diy">Free: 109-point Business Checklist →</a
         >
       </div>
     </div>
-  </Section>
+  </section>
 
   <!-- H. Founder -->
   <Section id="about">
