@@ -9,9 +9,10 @@ import EbookCover from '~/components/promdi/EbookCover.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import portrait from '~/assets/images/profile/allan-2017-800.webp';
 import headshot from '~/assets/images/profile/allan-minbizcon-800.webp';
+import crewPhoto from '~/assets/images/hub/fresh-start-crew-1512.webp';
 import { BRAND, CTA, EBOOK } from '~/data/brand';
 import { PRODUCTS, WORK } from '~/data/catalog';
-import { CAPABILITIES, PROBLEMS, SEQUENCE } from '~/data/services';
+import { SEQUENCE } from '~/data/services';
 import { getPermalink } from '~/utils/permalinks';
 
 // Homepage v2 front revision (docs/HOMEPAGE_V2.md), built section by section with Allan's approval.
@@ -22,6 +23,18 @@ const metadata = {
   description:
     'Websites, customer inquiries, sales follow-ups and daily operations: PromdiPreneur implements practical systems that help Filipino businesses stay organized and grow.',
 };
+// Homepage v2 §3.3: before/after cards.
+const LEAKS = [
+  {
+    problem: 'Inquiries sa FB, Viber, text — may hindi nasasagot. Bumibili sila sa iba.',
+    fix: 'One inbox. Auto-reply in seconds. Walang naiiwan.',
+  },
+  {
+    problem: 'Nagpadala ng quote… tapos wala na. Lumamig ang lead.',
+    fix: 'Automatic follow-ups until they say yes or no.',
+  },
+  { problem: 'Lahat dumadaan sa’yo. Hindi ka maka-day off.', fix: 'Simple SOPs and checklists your team follows.' },
+];
 const featuredProducts = PRODUCTS.filter((p) => p.featured).sort((a, b) => a.order - b.order);
 const featuredWork = WORK.filter((w) => w.featured);
 ---
@@ -160,67 +173,157 @@ const featuredWork = WORK.filter((w) => w.featured);
     </div>
   </section>
 
-  <!-- B. Problems -->
-  <Section
-    id="problems"
-    tone="white"
-    title="Sound familiar?"
-    intro="These are the everyday problems we help business owners fix."
-  >
-    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      {
-        PROBLEMS.map((p) => (
-          <li class="pp-card p-6">
-            <span class="inline-grid place-items-center w-12 h-12 rounded-xl bg-green-50 text-primary">
-              <Icon name={p.icon} class="w-6 h-6" />
-            </span>
-            <h3 class="mt-4 text-lg font-bold">{p.title}</h3>
-            <p class="mt-1 text-muted">{p.body}</p>
-          </li>
-        ))
-      }
-    </ul>
-    <div
-      class="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#eef4ee] border-l-4 border-[#1db259] p-6"
-    >
-      <p class="font-heading font-semibold text-lg text-primary">
-        Don’t automate chaos. Organize the process first, then automate it.
-      </p>
-      <a href={getPermalink('/services')} class="pp-text-link"
-        >See how we fix it <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
-      >
+  <!-- 3. Where sales leak (Homepage v2 §3.3) -->
+  <section class="bg-white">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-[88px]">
+      <div class="text-center">
+        <h2 class="!text-[#00330f] text-3xl md:text-[2.5rem] font-extrabold leading-tight">
+          Saan nag-le-leak ang benta mo?
+        </h2>
+        <p class="mt-3 text-lg text-muted">Three problems we fix in almost every business we visit.</p>
+      </div>
+      <ul class="mt-10 grid md:grid-cols-3 gap-5">
+        {
+          LEAKS.map((l) => (
+            <li class="rounded-[20px] border border-[#e3e8e4] overflow-hidden flex flex-col">
+              <p class="flex gap-3 items-start bg-[#fbf3f1] p-6 text-[17px] leading-snug text-[#5a2a1f]">
+                <span class="grid place-items-center w-7 h-7 shrink-0 rounded-full bg-[#f2d6cf] text-[#9a2b14]">
+                  <Icon name="tabler:x" class="w-3.5 h-3.5" />
+                  <span class="sr-only">Problem:</span>
+                </span>
+                {l.problem}
+              </p>
+              <p class="flex gap-3 items-start p-6 text-[17px] leading-snug font-semibold text-default">
+                <span class="grid place-items-center w-7 h-7 shrink-0 rounded-full bg-[#dff3e6] text-[#00441b]">
+                  <Icon name="tabler:check" class="w-3.5 h-3.5" />
+                  <span class="sr-only">Fix:</span>
+                </span>
+                {l.fix}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
     </div>
-  </Section>
+  </section>
 
-  <!-- C. What we can implement -->
-  <Section
-    id="what-we-build"
-    eyebrow={BRAND.serviceFamily}
-    title="What we can build for your business"
-    intro="One connected system—not five separate gigs. Each part feeds the next, so nothing falls through the cracks."
-  >
-    <ol class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      {
-        CAPABILITIES.map((c, i) => (
-          <li class="pp-card p-5 relative">
-            <span class="inline-grid place-items-center w-11 h-11 rounded-xl bg-[#00441b] text-white">
-              <Icon name={c.icon} class="w-6 h-6" />
-            </span>
-            <h3 class="mt-4 font-bold">{c.name}</h3>
-            <p class="mt-1 text-sm text-muted">{c.short}</p>
-            {i < CAPABILITIES.length - 1 && (
-              <Icon
-                name="tabler:arrow-right"
-                class="hidden lg:block absolute -right-3.5 top-9 w-5 h-5 text-[#1db259]"
-                aria-hidden="true"
-              />
-            )}
-          </li>
-        ))
-      }
-    </ol>
-    <a href={getPermalink('/services')} class="btn-primary mt-8" data-placement="home_capabilities">{CTA.explore}</a>
-  </Section>
+  <!-- 4. Real-team photo band (Homepage v2 §3.4) -->
+  <section class="bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-16 md:pb-[88px]">
+      <figure class="relative rounded-3xl overflow-hidden bg-[#00330f] md:h-[460px]">
+        <Image
+          src={crewPhoto}
+          alt="Fresh Start Cleaning crew standing in front of a newly finished building"
+          widths={[640, 960, 1280, 1512]}
+          sizes="(min-width: 1280px) 1232px, calc(100vw - 32px)"
+          class="w-full h-[240px] sm:h-[320px] md:h-full object-cover object-[center_100%]"
+          loading="lazy"
+        />
+        <figcaption
+          class="md:absolute md:inset-x-0 md:bottom-0 p-6 md:p-8 md:bg-gradient-to-t md:pt-24 md:from-[rgba(0,30,15,.94)] md:via-[rgba(0,30,15,.7)] md:to-transparent flex flex-wrap justify-between items-end gap-4"
+        >
+          <span class="flex flex-col gap-1.5 max-w-[620px]">
+            <span class="font-heading text-[13px] font-bold tracking-[0.08em] text-[#5fd68f]"
+              >OUR OWN CREW · FRESH START CLEANING SERVICES</span
+            >
+            <span class="font-heading text-2xl md:text-[30px] leading-tight font-extrabold text-white"
+              >Hindi kami consultant na puro slides. May tauhan, may trabaho, may sistema.</span
+            >
+          </span>
+          <a href="#results" class="btn bg-white text-[#00330f] border-white font-bold hover:bg-green-50"
+            >See how we run it →</a
+          >
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 5. What we set up (Homepage v2 §3.5) -->
+  <section id="solutions" class="scroll-mt-20 bg-page">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-[88px]">
+      <div class="flex flex-wrap justify-between items-end gap-4">
+        <div>
+          <p class="font-heading text-sm font-bold tracking-[0.08em] text-[#00441b]">WHAT WE SET UP</p>
+          <h2 class="mt-2.5 !text-[#00330f] text-3xl md:text-[2.5rem] font-extrabold leading-tight">
+            From first message to paid job.
+          </h2>
+        </div>
+        <p class="text-[17px] text-muted max-w-[380px]">
+          One connected system, not five apps that don’t talk to each other. Built on GoHighLevel and Google Workspace —
+          and we prefer tools you already pay for.
+        </p>
+      </div>
+      <ul class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <li class="rounded-[20px] border border-[#e3e8e4] bg-white p-5 flex flex-col gap-4">
+          <div class="h-[150px] rounded-xl bg-[#eef4ee] p-3.5 flex flex-col gap-2" aria-hidden="true">
+            <div class="h-2.5 w-2/5 rounded bg-[#00441b]"></div>
+            <div class="h-[18px] w-[85%] rounded bg-[#c9dccf]"></div>
+            <div class="h-2.5 w-[65%] rounded bg-[#dbe6de]"></div>
+            <div class="mt-auto h-[30px] w-1/2 rounded-full bg-[#1db259]"></div>
+          </div>
+          <h3 class="!text-[#00330f] text-xl font-bold">Website &amp; Funnel</h3>
+          <p class="text-[15px] leading-normal text-muted">Mahanap ka online — and turn visitors into inquiries.</p>
+        </li>
+        <li class="rounded-[20px] border border-[#e3e8e4] bg-white p-5 flex flex-col gap-4">
+          <div class="h-[150px] rounded-xl bg-[#eef4ee] p-3 grid grid-cols-3 gap-2" aria-hidden="true">
+            {
+              [
+                ['NEW', 3],
+                ['QUOTED', 2],
+                ['BOOKED', 1],
+              ].map(([label, n]) => (
+                <div class="flex flex-col gap-1.5">
+                  <span class="text-[11px] font-bold text-[#00441b]">{label}</span>
+                  {Array.from({ length: Number(n) }).map(() => (
+                    <div class:list={['h-[26px] rounded-md', label === 'BOOKED' ? 'bg-[#1db259]' : 'bg-white']} />
+                  ))}
+                </div>
+              ))
+            }
+          </div>
+          <h3 class="!text-[#00330f] text-xl font-bold">CRM &amp; Follow-up</h3>
+          <p class="text-[15px] leading-normal text-muted">
+            Every lead in one board. Kita mo kung sino ang susunod na tatawagan.
+          </p>
+        </li>
+        <li class="rounded-[20px] border border-[#e3e8e4] bg-white p-5 flex flex-col gap-4">
+          <div
+            class="h-[150px] rounded-xl bg-[#eef4ee] p-3.5 flex flex-col justify-center items-start gap-1.5 text-xs"
+            aria-hidden="true"
+          >
+            <span class="rounded-lg border border-[#c9dccf] bg-white px-2.5 py-1.5 font-semibold">New inquiry</span>
+            <span class="ml-4 text-muted">↓</span>
+            <span class="ml-4 rounded-lg border border-[#c9dccf] bg-white px-2.5 py-1.5 font-semibold"
+              >Auto-reply + quote</span
+            >
+            <span class="ml-8 text-muted">↓</span>
+            <span class="ml-8 rounded-lg bg-[#00441b] px-2.5 py-1.5 font-semibold text-white">Admin notified</span>
+          </div>
+          <h3 class="!text-[#00330f] text-xl font-bold">Automation</h3>
+          <p class="text-[15px] leading-normal text-muted">
+            Paulit-ulit na trabaho, automatic na — same way, every time.
+          </p>
+        </li>
+        <li class="rounded-[20px] border border-[#e3e8e4] bg-white p-5 flex flex-col gap-4">
+          <div class="h-[150px] rounded-xl bg-[#eef4ee] p-3.5 flex items-end gap-2.5" aria-hidden="true">
+            {
+              [
+                ['35%', '#c9dccf'],
+                ['50%', '#c9dccf'],
+                ['45%', '#c9dccf'],
+                ['70%', '#00441b'],
+                ['90%', '#1db259'],
+              ].map(([h, c]) => <div class="flex-1 rounded-t-md" style={`height:${h};background:${c}`} />)
+            }
+          </div>
+          <h3 class="!text-[#00330f] text-xl font-bold">Operations &amp; Reports</h3>
+          <p class="text-[15px] leading-normal text-muted">
+            SOPs, records and a sales view you can check on your phone.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
 
   <!-- D. Operating sequence -->
   <Section id="how" tone="forest" eyebrow="How we work" title="Technology comes after we understand your business.">
