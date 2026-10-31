@@ -79,19 +79,19 @@ const FAQS = [
     a: 'We talk through how inquiries, sales and daily work move in your business, and where they leak. You get a straight answer on what to fix first — even if you don’t hire us.',
   },
 ];
-// Client quotes supplied by Allan (2026-11-01). Socri's two statements are combined into one quote; confirm wording,
-// attribution and permission with each client before launch.
+// Client quotes supplied by Allan with names (2026-11-01).
 const TESTIMONIALS = [
   {
+    // Website claim removed: Socri's website is not live yet (Allan, 2026-11-01). Automated replies are live.
     quote:
-      'Dati, nalilito ang mga customer namin sa packages at inclusions, at may tumatawag kahit outside business hours na hindi ko na masagot. Ngayon, organized na lahat sa website at automated na ang pagsagot sa inquiries. Kahit hindi na sila tumawag, malinaw na sa kanila. No missed inquiries na — better chances of booking.',
-    who: 'Socri Private Resort',
-    context: 'Website + automated inquiry replies',
+      'Dati, kahit outside business hours may tumatawag pero hindi ko na masagot. Ngayon, automated na ang pagsagot sa mga inquiries namin — better chances of booking.',
+    who: 'Ms. Sheila E.',
+    context: 'Socri Private Resort · automated inquiry replies',
   },
   {
     quote: 'Thank you talaga. Imagine kung wala ang QR codes ninyo sa registration — disaster talaga.',
-    who: '35th MinBizCon organizing team',
-    context: 'Digital QR check-in, Mindanao Business Conference 2026',
+    who: 'Ms. Janet',
+    context: '35th MinBizCon organizing team · digital QR check-in',
   },
 ];
 // Homepage v2 §3.6
@@ -129,6 +129,9 @@ const STEPS = [
         <p class="text-lg md:text-xl leading-relaxed text-[#c9dccf] max-w-xl">
           We set up your inquiries, follow-ups and daily operations — so sales stop slipping and the business runs even
           when you step away.
+        </p>
+        <p class="font-heading text-lg md:text-xl font-semibold leading-snug text-white max-w-xl">
+          Para makauwi ka nang maaga — at may pumapasok pa ring sales habang kasama mo ang pamilya.
         </p>
         <div class="flex flex-col sm:flex-row flex-wrap gap-3">
           <a href={getPermalink('/discovery')} class="btn-bright text-lg !px-7" data-placement="hero">{CTA.primary}</a>
