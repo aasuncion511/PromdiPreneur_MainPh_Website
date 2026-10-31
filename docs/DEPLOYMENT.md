@@ -4,7 +4,7 @@
 
 ## A. Preview (no production impact)
 
-- [ ] Netlify → Add new site → Import `aasuncion511/astrowind_promdi_website`, branch `feature/promdipreneur-site-v3`. Build settings come from `netlify.toml`.
+- [ ] Netlify → Add new site → Import `aasuncion511/PromdiPreneur_MainPh_Website`, branch `feature/promdipreneur-site-v3`. Build settings come from `netlify.toml`.
 - [ ] The branch deploy URL (`*.netlify.app`) is noindex: preview ribbon, robots Disallow and X-Robots-Tag.
 - [ ] Allan reviews every page on a phone and a desktop.
 
