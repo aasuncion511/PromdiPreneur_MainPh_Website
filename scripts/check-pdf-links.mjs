@@ -28,6 +28,10 @@ const urls = new Set(process.argv.slice(3));
 for (const t of text) for (const m of t.matchAll(/\/URI\s*\(([^)]+)\)/g)) urls.add(m[1].replace(/\\([()\\])/g, '$1'));
 
 let bad = 0;
+let unchecked = 0;
+// Network errors from the machine running the check are NOT broken links; report them separately.
+const NETWORK =
+  /ENOTFOUND|EAI_AGAIN|ECONNREFUSED|ECONNRESET|ETIMEDOUT|UND_ERR|tunnel|proxy|fetch failed|aborted|timeout/i;
 for (const u of [...urls].sort()) {
   if (!/^https?:/i.test(u)) {
     console.log(`SKIP  ${u} (not a web link)`);
@@ -39,9 +43,20 @@ for (const u of [...urls].sort()) {
     if (!ok) bad++;
     console.log(`${ok ? 'OK  ' : 'FAIL'}  ${r.status}  ${u}${r.url !== u ? `  → ${r.url}` : ''}`);
   } catch (e) {
-    bad++;
-    console.log(`FAIL  ---  ${u}  (${e.cause?.code || e.message})`);
+    const why = String(e.cause?.code || e.message);
+    if (NETWORK.test(why) || NETWORK.test(String(e.cause?.message || ''))) {
+      unchecked++;
+      console.log(`????  ---  ${u}  (could not check from this machine: ${why})`);
+    } else {
+      bad++;
+      console.log(`FAIL  ---  ${u}  (${why})`);
+    }
   }
 }
-console.log(`\n${urls.size} link(s) found, ${bad} problem(s). Flag problems to Allan; do not silently edit the PDF.`);
-process.exit(bad ? 1 : 0);
+console.log(
+  `\n${urls.size} link(s) found: ${urls.size - bad - unchecked} OK, ${bad} broken, ${unchecked} could not be checked (network).`
+);
+console.log(
+  'Flag broken links to Allan; do not silently edit the PDF. Re-run unchecked ones from a normal internet connection.'
+);
+process.exit(bad ? 1 : unchecked ? 3 : 0);

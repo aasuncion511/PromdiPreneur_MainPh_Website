@@ -1,6 +1,6 @@
 // Writes dist/robots.txt and dist/_headers (Netlify). Preview builds (PUBLIC_PREVIEW=1) are blocked from indexing
 // three ways: noindex meta (PageLayout), robots.txt Disallow, and an X-Robots-Tag header.
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 
 // Ebook guard (Final Ebook Addendum): the ebook may only be switched on when the PDF really ships with the site.
 const brand = readFileSync(new URL('../src/data/brand.ts', import.meta.url), 'utf8');
@@ -12,6 +12,12 @@ if (ebookLive && !(pdfPath && existsSync(new URL(`../dist${pdfPath}`, import.met
   );
   process.exit(1);
 }
+// Until the ebook is approved and live, the PDF is NOT published (it stays in the repo only), so it can't be
+// downloaded early by guessing the URL (Final Ebook Addendum §6 publishing gate).
+if (!ebookLive && pdfPath && existsSync(new URL(`../dist${pdfPath}`, import.meta.url))) {
+  rmSync(new URL(`../dist${pdfPath}`, import.meta.url));
+  console.log(`postbuild: ebook inactive, so ${pdfPath} was left out of this build`);
+}
 
 const site = 'https://promdipreneur.com';
 const preview = process.env.PUBLIC_PREVIEW === '1';
@@ -21,7 +27,7 @@ writeFileSync(
   new URL('robots.txt', dist),
   preview
     ? 'User-agent: *\nDisallow: /\n'
-    : `User-agent: *\nAllow: /\nDisallow: /thank-you\nDisallow: /free-guide/thank-you\n\nSitemap: ${site}/sitemap-index.xml\n`
+    : `User-agent: *\nAllow: /\nDisallow: /thank-you\nDisallow: /resources/free-ebook/thank-you\n\nSitemap: ${site}/sitemap-index.xml\n`
 );
 
 // AstroWind ships small inline scripts (scroll/menus), so script-src keeps 'unsafe-inline'; everything else is locked down.
@@ -53,7 +59,10 @@ ${preview ? '  X-Robots-Tag: noindex, nofollow\n' : ''}
 
 /thank-you
   X-Robots-Tag: noindex
-/free-guide/thank-you
+/resources/free-ebook/thank-you
+  X-Robots-Tag: noindex
+
+/resources/*.pdf
   X-Robots-Tag: noindex
 `
 );

@@ -425,6 +425,8 @@ for (const [label, q, txt] of [
     'ebook API: inactive → 503, nothing sent to GHL',
     api.status === 503 && (await api.json()).error === 'inactive' && read('ghl').length === 0
   );
+  const pdf = await fetch(BASE + '/resources/promdipreneur-business-opening-checklist-ph.pdf', { redirect: 'manual' });
+  check('ebook PDF: in the repo but NOT published while the ebook is inactive (no early download)', pdf.status === 404);
   await page.goto(BASE + '/resources/free-ebook/thank-you');
   const ty = await page.locator('main').innerText();
   check(
