@@ -80,10 +80,10 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1';
     <legend class="pp-label">How would you prefer we reply?</legend>
     <div class="flex flex-wrap gap-x-6">
       <label class="inline-flex items-center gap-2 min-h-[44px]"
-        ><input type="radio" name="replyPreference" value="email" checked class="w-5 h-5 accent-[#004c25]" /> Email</label
+        ><input type="radio" name="replyPreference" value="email" checked class="w-5 h-5 accent-[#00441b]" /> Email</label
       >
       <label class="inline-flex items-center gap-2 min-h-[44px]"
-        ><input type="radio" name="replyPreference" value="messenger" class="w-5 h-5 accent-[#004c25]" /> Facebook Messenger</label
+        ><input type="radio" name="replyPreference" value="messenger" class="w-5 h-5 accent-[#00441b]" /> Facebook Messenger</label
       >
     </div>
     <p id="f-messenger-note" class="hidden mt-2 rounded-xl bg-[#eef4ee] p-3 text-sm text-muted">
@@ -101,13 +101,13 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1';
         name="privacyConsent"
         type="checkbox"
         required
-        class="w-5 h-5 mt-0.5 accent-[#004c25] shrink-0"
+        class="w-5 h-5 mt-0.5 accent-[#00441b] shrink-0"
         aria-describedby="f-consent-err"
       />
       <span
         >I agree to be contacted about this inquiry and understand how my information will be used. <a
           href={getPermalink('/privacy')}
-          class="underline text-[#0b7339]">Privacy Policy</a
+          class="underline text-[#00441b]">Privacy Policy</a
         > *</span
       >
     </label>

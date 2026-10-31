@@ -23,7 +23,7 @@ const metadata = {
     title="We organize the process, then build the system that runs it."
     intro="We implement better ways for your business to manage inquiries, customers, sales, follow-ups and daily operations—using the right technology, explained in plain language."
   >
-    <p class="font-heading font-bold text-sm uppercase tracking-[0.08em] text-[#754000] -mt-6">
+    <p class="font-heading font-bold text-sm uppercase tracking-[0.08em] text-[#663300] -mt-6">
       {BRAND.principle.join(' → ')}
     </p>
     <nav aria-label="On this page" class="mt-8 flex flex-wrap gap-2">
@@ -31,7 +31,7 @@ const metadata = {
         SERVICE_GROUPS.map((g) => (
           <a
             href={`#${g.id}`}
-            class="rounded-full bg-white border border-black/10 px-4 py-2.5 font-heading font-semibold text-sm text-primary hover:border-[#004c25]"
+            class="rounded-full bg-white border border-black/10 px-4 py-2.5 font-heading font-semibold text-sm text-primary hover:border-[#00441b]"
           >
             {g.name}
           </a>
@@ -49,7 +49,7 @@ const metadata = {
       >
         <div class="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-[.8fr_1.2fr] gap-8 lg:gap-14">
           <div>
-            <span class="inline-grid place-items-center w-12 h-12 rounded-xl bg-[#004c25] text-white">
+            <span class="inline-grid place-items-center w-12 h-12 rounded-xl bg-[#00441b] text-white">
               <Icon name={g.icon} class="w-6 h-6" />
             </span>
             <h2 id={`${g.id}-title`} class="mt-4 text-3xl font-extrabold">
@@ -61,15 +61,15 @@ const metadata = {
           </div>
           <dl class="grid sm:grid-cols-3 gap-4">
             <div class="pp-card p-5">
-              <dt class="pp-badge !p-0 text-[#754000]">The problem</dt>
+              <dt class="pp-badge !p-0 text-[#663300]">The problem</dt>
               <dd class="mt-2">{g.problem}</dd>
             </div>
             <div class="pp-card p-5">
-              <dt class="pp-badge !p-0 text-[#0b7339]">What we do</dt>
+              <dt class="pp-badge !p-0 text-[#00441b]">What we do</dt>
               <dd class="mt-2">{g.whatWeDo}</dd>
             </div>
             <div class="pp-card p-5 bg-[#eef4ee]">
-              <dt class="pp-badge !p-0 text-[#004c25]">What changes for you</dt>
+              <dt class="pp-badge !p-0 text-[#00441b]">What changes for you</dt>
               <dd class="mt-2">{g.changes}</dd>
             </div>
           </dl>
@@ -110,7 +110,7 @@ const metadata = {
 
   <FAQs title="Questions business owners ask" items={SERVICE_FAQS} />
 
-  <section class="bg-gradient-to-r from-[#002e19] via-[#004c25] to-[#0a5c32] text-[#e1ece5] py-16 text-center">
+  <section class="bg-gradient-to-r from-[#00330f] via-[#00441b] to-[#0a5c32] text-[#e1ece5] py-16 text-center">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
       <h2 class="!text-white text-3xl md:text-4xl font-extrabold">Not sure where to start?</h2>
       <p class="mt-4 text-lg">That’s what the Discovery Session is for. Short, free, no obligation.</p>

@@ -105,27 +105,34 @@ h3 {
   text-wrap: balance;
 }
 :focus-visible {
-  outline: 3px solid #18b957;
+  outline: 3px solid #1db259;
   outline-offset: 3px;
 }
 @layer components {
   .btn {
-    @apply min-h-[48px] font-heading font-semibold border-[#004c25]/30 text-primary focus:ring-[#18b957] focus:ring-offset-white;
+    @apply min-h-[48px] font-heading font-semibold border-[#00441b]/30 text-primary focus:ring-[#1db259] focus:ring-offset-white;
   }
   .btn-primary {
     @apply btn bg-primary text-white border-primary hover:bg-secondary hover:border-secondary hover:text-white;
+  }
+  /* Homepage v2: bright-green CTA on dark sections. Text is deep green, never white (contrast 5.1:1). */
+  .btn-bright {
+    @apply btn bg-[#1db259] text-[#00330f] border-[#1db259] font-bold hover:bg-[#3fc777] hover:border-[#3fc777];
+  }
+  .btn-ghost-dark {
+    @apply btn bg-transparent text-white border-2 border-white/40 hover:bg-white/10 hover:border-white/70;
   }
   .btn-light {
     @apply btn bg-white text-primary border-white hover:bg-green-50;
   }
   .pp-eyebrow {
-    @apply font-heading font-bold uppercase text-xs tracking-[0.14em] text-[#754000] mb-3;
+    @apply font-heading font-bold uppercase text-xs tracking-[0.14em] text-[#663300] mb-3;
   }
   .pp-eyebrow-dark {
     @apply font-heading font-bold uppercase text-xs tracking-[0.14em] text-[#f1c98d] mb-3;
   }
   .pp-tagline {
-    @apply inline-block font-heading font-extrabold text-xs tracking-[0.16em] text-[#754000] px-3.5 py-2 rounded-full border border-dashed border-[#754000]/40;
+    @apply inline-block font-heading font-extrabold text-xs tracking-[0.16em] text-[#663300] px-3.5 py-2 rounded-full border border-dashed border-[#663300]/40;
   }
   .pp-card {
     @apply bg-white border border-black/[0.07] rounded-2xl shadow-sm;
@@ -134,16 +141,16 @@ h3 {
     @apply inline-flex items-center gap-1 font-heading font-bold uppercase text-[0.7rem] tracking-[0.08em] rounded-full px-2.5 py-1;
   }
   .pp-text-link {
-    @apply inline-flex items-center gap-1.5 min-h-[44px] font-heading font-semibold text-[#0b7339] hover:underline underline-offset-4;
+    @apply inline-flex items-center gap-1.5 min-h-[44px] font-heading font-semibold text-[#00441b] hover:underline underline-offset-4;
   }
   .pp-footer-h {
-    @apply font-heading text-xs font-bold uppercase tracking-[0.12em] text-[#754000] mb-2;
+    @apply font-heading text-xs font-bold uppercase tracking-[0.12em] text-[#663300] mb-2;
   }
   .pp-footer-link {
-    @apply inline-flex items-center min-h-[40px] text-default hover:text-[#0b7339] hover:underline underline-offset-4;
+    @apply inline-flex items-center min-h-[40px] text-default hover:text-[#00441b] hover:underline underline-offset-4;
   }
   .pp-field {
-    @apply w-full rounded-xl border-[1.5px] border-[#c9d0c6] bg-white px-3.5 py-3 text-base min-h-[48px] focus:outline-none focus:border-primary focus:ring-4 focus:ring-[#18b957]/25 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed;
+    @apply w-full rounded-xl border-[1.5px] border-[#c9d0c6] bg-white px-3.5 py-3 text-base min-h-[48px] focus:outline-none focus:border-primary focus:ring-4 focus:ring-[#1db259]/25 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed;
   }
   .pp-label {
     @apply block font-heading font-semibold text-[0.95rem] mb-1.5 text-default;

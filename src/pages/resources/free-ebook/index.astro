@@ -31,7 +31,7 @@ const forWho = ['Cafés', 'Salons', 'Small shops', 'Minimarts', 'Water refilling
 
 <Layout metadata={metadata}>
   <div data-track-view="ebook_view" hidden></div>
-  <section class="bg-[radial-gradient(900px_480px_at_92%_8%,rgba(24,185,87,.12),transparent_60%)]">
+  <section class="bg-[radial-gradient(900px_480px_at_92%_8%,rgba(29,178,89,.12),transparent_60%)]">
     <div
       class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16 grid lg:grid-cols-[1.15fr_.85fr] gap-10 lg:gap-14 items-start"
     >
@@ -51,7 +51,7 @@ const forWho = ['Cafés', 'Salons', 'Small shops', 'Minimarts', 'Water refilling
             {
               benefits.map((b) => (
                 <li class="flex gap-3">
-                  <span class="grid place-items-center w-6 h-6 mt-0.5 shrink-0 rounded-full bg-[#18b957] text-white">
+                  <span class="grid place-items-center w-6 h-6 mt-0.5 shrink-0 rounded-full bg-[#1db259] text-[#00330f]">
                     <Icon name="tabler:check" class="w-4 h-4" />
                   </span>
                   <span>{b}</span>
@@ -78,7 +78,7 @@ const forWho = ['Cafés', 'Salons', 'Small shops', 'Minimarts', 'Water refilling
       {
         EBOOK.stages.map((s, i) => (
           <li class="pp-card p-5">
-            <span class="font-heading font-extrabold text-2xl text-[#0b7339]" aria-hidden="true">
+            <span class="font-heading font-extrabold text-2xl text-[#00441b]" aria-hidden="true">
               {String(i + 1).padStart(2, '0')}
             </span>
             <p class="mt-2 font-heading font-bold text-primary">{s}</p>
@@ -91,7 +91,7 @@ const forWho = ['Cafés', 'Salons', 'Small shops', 'Minimarts', 'Water refilling
       {
         extras.map((x) => (
           <li class="flex gap-3">
-            <Icon name="tabler:file-check" class="w-5 h-5 mt-0.5 shrink-0 text-[#0b7339]" />
+            <Icon name="tabler:file-check" class="w-5 h-5 mt-0.5 shrink-0 text-[#00441b]" />
             {x}
           </li>
         ))

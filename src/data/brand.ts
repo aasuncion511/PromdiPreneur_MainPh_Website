@@ -19,8 +19,8 @@ export const BRAND = {
 
 export const CTA = {
   // v3 §3/§4: global primary CTA = Discovery Session; secondary = explore what we build.
-  primary: 'Book a Discovery Session',
-  primaryShort: 'Book Discovery',
+  primary: 'Book a Free Discovery Call',
+  primaryShort: 'Free Discovery Call',
   explore: 'Explore What We Can Build',
   inquiry: 'Ask Us About Your Business',
   store: 'Browse the Digital Store',
@@ -134,13 +134,13 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
     note: 'facebook.com is blocked from the build environment. Allan to confirm.',
   },
   messenger: {
-    // m.me/Promdipreneur is preferred once Allan confirms it opens the page chat (docs/PENDING.md).
-    url: 'https://www.facebook.com/Promdipreneur',
-    label: 'Chat with us on Facebook',
+    // Homepage v2 handoff §5 (Allan, 2026-11-01): Messenger links go to m.me/Promdipreneur.
+    url: 'https://m.me/Promdipreneur',
+    label: 'Message us on Messenger',
     event: 'contact_messenger_click',
     kind: 'social',
     forwardUtm: false,
-    status: 'unverified',
+    status: 'verified',
   },
   email: {
     url: 'mailto:admin@promdipreneur.com?subject=Business%20question',

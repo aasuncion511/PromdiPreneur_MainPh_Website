@@ -8,12 +8,14 @@ import WorkCard from '~/components/promdi/WorkCard.astro';
 import EbookCover from '~/components/promdi/EbookCover.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import portrait from '~/assets/images/profile/allan-2017-800.webp';
+import headshot from '~/assets/images/profile/allan-minbizcon-800.webp';
 import { BRAND, CTA, EBOOK } from '~/data/brand';
 import { PRODUCTS, WORK } from '~/data/catalog';
 import { CAPABILITIES, PROBLEMS, SEQUENCE } from '~/data/services';
 import { getPermalink } from '~/utils/permalinks';
 
-// Master Handoff v3 §4 (sections A–I). No prices, no logo bar, no testimonials, no invented metrics.
+// Homepage v2 front revision (docs/HOMEPAGE_V2.md), built section by section with Allan's approval.
+// Sections below the hero are still v3 until their step is approved.
 const metadata = {
   title: 'PromdiPreneur | Business Systems & Automation for Filipino Businesses',
   ignoreTitleTemplate: true,
@@ -25,61 +27,136 @@ const featuredWork = WORK.filter((w) => w.featured);
 ---
 
 <Layout metadata={metadata}>
-  <!-- A. Hero -->
-  <section
-    class="relative overflow-hidden bg-[radial-gradient(900px_480px_at_92%_8%,rgba(24,185,87,.12),transparent_60%),radial-gradient(700px_420px_at_-10%_110%,rgba(117,64,0,.07),transparent_60%)]"
-  >
+  <!-- 1. Hero (Homepage v2 §3.2) -->
+  <section class="bg-[#00330f] text-white">
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16 md:pt-16 md:pb-24 grid lg:grid-cols-[1.25fr_.75fr] gap-10 lg:gap-16 items-center"
+      class="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-14 md:pt-20 md:pb-16 grid lg:grid-cols-[1.1fr_.9fr] gap-12 lg:gap-14 items-center"
     >
-      <div>
-        <p class="pp-eyebrow">Business systems &amp; automation</p>
-        <h1 class="text-[2.1rem] sm:text-5xl lg:text-[3.2rem] font-extrabold leading-[1.1] tracking-tight">
-          Your Business Can Run Better. <span class="block text-[#0b7339]">We’ll Build the Systems.</span>
-        </h1>
-        <p class="mt-5 text-lg md:text-xl text-muted max-w-2xl">
-          From websites and customer inquiries to sales, follow-ups, and daily operations, we implement practical
-          systems that help you stay organized and grow.
-        </p>
-        <div class="mt-8 flex flex-col sm:flex-row gap-3">
-          <a href={getPermalink('/services')} class="btn-primary text-lg" data-placement="hero">
-            {CTA.explore}
-            <Icon name="tabler:arrow-right" class="w-5 h-5 ml-2" />
-          </a>
-          <a href={getPermalink('/discovery')} class="btn text-lg" data-placement="hero">{CTA.primary}</a>
-        </div>
-        <p class="pp-tagline mt-7">{BRAND.tagline}</p>
-      </div>
-      <div class="relative justify-self-center w-[min(78%,340px)] lg:w-full max-w-[400px] mb-8 lg:mb-0">
-        <div
-          class="rounded-[28px] overflow-hidden shadow-xl bg-gradient-to-br from-[#004c25] to-[#002e19] aspect-square"
+      <div class="flex flex-col gap-6">
+        <p
+          class="self-start rounded-full bg-[#1db259]/15 px-3.5 py-2 font-heading text-sm font-semibold text-[#5fd68f]"
         >
-          <Image
-            src={portrait}
-            alt="Allan Asuncion, founder of PromdiPreneur"
-            widths={[320, 480, 800]}
-            sizes="(min-width: 1024px) 400px, 340px"
-            class="w-full h-full object-cover"
-            loading="eager"
-            fetchpriority="high"
-          />
+          Business Systems &amp; Automation · Para sa Filipino MSMEs
+        </p>
+        <h1 class="!text-white text-[2.4rem] sm:text-5xl lg:text-[3.5rem] font-extrabold leading-[1.05] tracking-tight">
+          Hindi ka kulang sa sipag. <span class="block text-[#1db259]">Kulang ka sa sistema.</span>
+        </h1>
+        <p class="text-lg md:text-xl leading-relaxed text-[#c9dccf] max-w-xl">
+          We set up your inquiries, follow-ups and daily operations — so sales stop slipping and the business runs even
+          when you step away.
+        </p>
+        <div class="flex flex-col sm:flex-row flex-wrap gap-3">
+          <a href={getPermalink('/discovery')} class="btn-bright text-lg !px-7" data-placement="hero">{CTA.primary}</a>
+          <TrackedLink dest="messenger" placement="hero" class="btn-ghost-dark text-lg gap-2.5">
+            <Icon name="tabler:brand-messenger" class="w-5 h-5" aria-hidden="true" />
+            Message us on Messenger
+          </TrackedLink>
         </div>
-        <ol class="absolute -left-[12%] -bottom-6 grid gap-2" aria-label="How an organized inquiry moves">
-          {
-            ['Inquiry received', 'Follow-up scheduled', 'Customer served'].map((s, i) => (
-              <li
-                class="flex items-center gap-2 w-max bg-white border border-black/5 shadow-lg rounded-full py-2 pl-2 pr-4 font-heading font-semibold text-sm text-primary motion-safe:animate-fade"
-                style={`margin-left:${i * 22}px;animation-delay:${300 + i * 180}ms`}
-              >
-                <span class="grid place-items-center w-6 h-6 rounded-full bg-[#18b957] text-white">
-                  <Icon name="tabler:check" class="w-3.5 h-3.5" />
-                </span>
-                {s}
-              </li>
-            ))
-          }
-        </ol>
+        <div class="flex items-center gap-3">
+          <Image
+            src={headshot}
+            alt="Allan Asuncion"
+            widths={[96, 144]}
+            sizes="48px"
+            class="w-12 h-12 rounded-full object-cover border-2 border-[#1db259]"
+            loading="eager"
+          />
+          <p class="text-sm leading-snug text-[#9fbfab]">
+            <span class="font-semibold text-white">Diretso kay Allan ang usapan.</span><br />Free · Walang obligasyon ·
+            We reply within the day
+          </p>
+        </div>
       </div>
+
+      <!-- Coded phone mockup: an example Messenger flow (HTML/CSS, not an image) -->
+      <figure
+        class="relative flex justify-center pt-6 pb-6 sm:pt-20"
+        aria-label="Example: an organized Messenger inquiry"
+      >
+        <div
+          class="w-[min(300px,82vw)] rounded-[36px] border-[10px] border-[#0d1a12] bg-white text-[#14231a] shadow-[0_30px_60px_rgba(0,0,0,.45)] overflow-hidden"
+        >
+          <div class="flex items-center gap-2.5 border-b border-[#e8ece9] px-4 py-3.5">
+            <span
+              class="grid place-items-center w-[34px] h-[34px] rounded-full bg-[#00441b] text-white text-[13px] font-bold"
+              aria-hidden="true">FS</span
+            >
+            <span class="flex flex-col leading-tight">
+              <span class="text-sm font-semibold">Fresh Start Cleaning</span>
+              <span class="text-xs text-[#4f6b5a]">Typically replies instantly</span>
+            </span>
+          </div>
+          <ol class="flex flex-col gap-2.5 px-3.5 py-4 min-h-[330px] text-sm leading-snug" aria-label="Sample chat">
+            <li class="self-end max-w-[80%] rounded-[18px_18px_4px_18px] bg-[#006ae0] px-3.5 py-2.5 text-white">
+              Hi po, magkano sofa cleaning? 3-seater po.
+            </li>
+            <li class="self-start max-w-[85%] rounded-[18px_18px_18px_4px] bg-[#eef1ef] px-3.5 py-2.5">
+              Hi po! Salamat sa message. Para ma-quote kayo agad, ano po ang lilinisin?
+            </li>
+            <li class="flex flex-wrap gap-1.5" aria-label="Quick replies">
+              {
+                ['Sofa', 'Mattress', 'Post-construction'].map((c) => (
+                  <span class="rounded-full border-[1.5px] border-[#006ae0] px-3 py-1.5 text-[13px] font-semibold text-[#0060c0]">
+                    {c}
+                  </span>
+                ))
+              }
+            </li>
+            <li class="self-end rounded-[18px_18px_4px_18px] bg-[#006ae0] px-3.5 py-2.5 text-white">Sofa</li>
+            <li class="self-start max-w-[85%] rounded-[18px_18px_18px_4px] bg-[#eef1ef] px-3.5 py-2.5">
+              Noted po! Pick a schedule para ma-book na kayo:
+            </li>
+            <li class="self-start rounded-xl bg-[#00441b] px-3.5 py-2.5 text-[13px] font-semibold text-white">
+              Book a slot →
+            </li>
+          </ol>
+        </div>
+        <div
+          class="absolute left-0 top-0 hidden sm:flex w-[210px] items-center gap-2.5 rounded-[14px] bg-white px-3.5 py-3 text-[#14231a] shadow-[0_12px_30px_rgba(0,0,0,.3)] motion-safe:animate-fade"
+          style="animation-delay:400ms"
+        >
+          <span
+            class="grid place-items-center w-8 h-8 shrink-0 rounded-lg bg-[#f3e6d8] text-[#663300]"
+            aria-hidden="true"
+          >
+            <Icon name="tabler:user-plus" class="w-[18px] h-[18px]" />
+          </span>
+          <span class="flex flex-col leading-tight">
+            <span class="text-[13px] font-bold">New lead added</span>
+            <span class="text-xs text-[#4f6b5a]">Follow-up set: bukas 9AM</span>
+          </span>
+        </div>
+        <div
+          class="absolute right-0 bottom-14 hidden sm:flex w-[224px] items-center gap-2.5 rounded-[14px] bg-white px-3.5 py-3 text-[#14231a] shadow-[0_12px_30px_rgba(0,0,0,.3)] motion-safe:animate-fade"
+          style="animation-delay:700ms"
+        >
+          <span
+            class="grid place-items-center w-8 h-8 shrink-0 rounded-lg bg-[#dff3e6] text-[#00441b]"
+            aria-hidden="true"
+          >
+            <Icon name="tabler:check" class="w-[18px] h-[18px]" />
+          </span>
+          <span class="flex flex-col leading-tight">
+            <span class="text-[13px] font-bold">Booked · Sat 10:00 AM</span>
+            <span class="text-xs text-[#4f6b5a]">Crew notified</span>
+          </span>
+        </div>
+      </figure>
+    </div>
+
+    <!-- Trust strip -->
+    <div class="border-t border-white/10">
+      <ul
+        class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[#9fbfab]"
+      >
+        <li class="font-semibold text-white">
+          20+ years running real businesses. Every system tested on our own first:
+        </li>
+        <li>Fresh Start Cleaning Services</li>
+        <li>AJDA Enterprises</li>
+        <li>PromdiPreneur Payroll</li>
+        <li>Official Digital Check-In Partner, 35th MinBizCon</li>
+      </ul>
     </div>
   </section>
 
@@ -104,7 +181,7 @@ const featuredWork = WORK.filter((w) => w.featured);
       }
     </ul>
     <div
-      class="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#eef4ee] border-l-4 border-[#18b957] p-6"
+      class="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#eef4ee] border-l-4 border-[#1db259] p-6"
     >
       <p class="font-heading font-semibold text-lg text-primary">
         Don’t automate chaos. Organize the process first, then automate it.
@@ -126,7 +203,7 @@ const featuredWork = WORK.filter((w) => w.featured);
       {
         CAPABILITIES.map((c, i) => (
           <li class="pp-card p-5 relative">
-            <span class="inline-grid place-items-center w-11 h-11 rounded-xl bg-[#004c25] text-white">
+            <span class="inline-grid place-items-center w-11 h-11 rounded-xl bg-[#00441b] text-white">
               <Icon name={c.icon} class="w-6 h-6" />
             </span>
             <h3 class="mt-4 font-bold">{c.name}</h3>
@@ -134,7 +211,7 @@ const featuredWork = WORK.filter((w) => w.featured);
             {i < CAPABILITIES.length - 1 && (
               <Icon
                 name="tabler:arrow-right"
-                class="hidden lg:block absolute -right-3.5 top-9 w-5 h-5 text-[#18b957]"
+                class="hidden lg:block absolute -right-3.5 top-9 w-5 h-5 text-[#1db259]"
                 aria-hidden="true"
               />
             )}
@@ -262,7 +339,7 @@ const featuredWork = WORK.filter((w) => w.featured);
   </Section>
 
   <!-- I. Final CTA -->
-  <section class="bg-gradient-to-r from-[#002e19] via-[#004c25] to-[#0a5c32] text-[#e1ece5] py-16 md:py-20 text-center">
+  <section class="bg-gradient-to-r from-[#00330f] via-[#00441b] to-[#0a5c32] text-[#e1ece5] py-16 md:py-20 text-center">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
       <h2 class="!text-white text-3xl md:text-4xl font-extrabold">
         What’s causing missed leads or wasted admin time in your business?

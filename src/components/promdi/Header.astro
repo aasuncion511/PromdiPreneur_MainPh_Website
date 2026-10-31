@@ -9,14 +9,14 @@ const isActive = (href?: string) =>
   !!href && (trimSlash(href) === '' ? current === '/' : current.startsWith(`/${trimSlash(href)}`));
 ---
 
-<header id="site-header" class="sticky top-0 z-40 bg-[#f7f7f3]/95 border-b border-black/5 backdrop-saturate-150">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 lg:h-[72px] flex items-center gap-3">
+<header id="site-header" class="sticky top-0 z-40 bg-white border-b border-[#e3e8e4]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 lg:h-[72px] flex items-center gap-2 sm:gap-3">
     <a href={getPermalink('/')} class="flex items-center min-h-[48px] shrink-0">
       <Logo height={40} />
     </a>
 
     <nav aria-label="Main" class="hidden lg:block ml-auto">
-      <ul class="flex items-center gap-1 font-heading font-semibold text-[0.93rem]">
+      <ul class="flex items-center gap-2 font-heading font-semibold text-[0.95rem] text-primary">
         {
           headerData.links.map((l) =>
             'links' in l && l.links ? (
@@ -68,10 +68,10 @@ const isActive = (href?: string) =>
 
     <a
       href={headerData.cta.href}
-      class="btn-primary ml-auto lg:ml-3 !py-2.5 !px-5 text-sm whitespace-nowrap"
+      class="btn-primary ml-auto lg:ml-3 !py-2.5 !px-3.5 sm:!px-5 text-[0.8rem] sm:text-sm whitespace-nowrap"
       data-placement="header"
     >
-      <span class="hidden sm:inline">{headerData.cta.text}</span><span class="sm:hidden">{headerData.cta.short}</span>
+      {headerData.cta.short}
     </a>
 
     <button
@@ -87,7 +87,7 @@ const isActive = (href?: string) =>
     </button>
   </div>
 
-  <div id="pp-mobile-nav" class="lg:hidden border-t border-black/5 bg-page" hidden>
+  <div id="pp-mobile-nav" class="lg:hidden border-t border-black/5 bg-white" hidden>
     <nav aria-label="Mobile" class="max-w-7xl mx-auto px-4 sm:px-6 pb-6 max-h-[calc(100dvh-64px)] overflow-y-auto">
       <ul class="font-heading font-semibold text-lg text-primary">
         {

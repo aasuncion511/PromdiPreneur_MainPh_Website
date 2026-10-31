@@ -1,21 +1,21 @@
 import { getPermalink } from './utils/permalinks';
 import { CTA } from './data/brand';
 
-// v3 §3 primary navigation. Contact, Privacy and Terms live in the footer.
+interface NavLink {
+  text: string;
+  href?: string;
+  links?: { text: string; href: string }[];
+}
+
+// Primary navigation. Contact, Privacy and Terms live in the footer.
 export const headerData = {
-  links: [
-    { text: 'Home', href: getPermalink('/') },
-    { text: 'What We Do', href: getPermalink('/services') },
-    { text: 'Our Work', href: getPermalink('/work') },
-    { text: 'Digital Store', href: getPermalink('/products') },
-    {
-      text: 'Resources',
-      links: [
-        { text: 'Free Ebook: Business Opening Checklist PH', href: getPermalink('/resources/free-ebook') },
-        { text: 'All Resources', href: getPermalink('/resources') },
-      ],
-    },
-    { text: 'About', href: getPermalink('/about') },
+  // Homepage v2 §3.1: 4 links + 1 CTA, site-wide (Allan, 2026-11-01, option 2A). About and the ebook stay
+  // reachable from the footer and the homepage DIY strip.
+  links: <NavLink[]>[
+    { text: 'Solutions', href: `${getPermalink('/')}#solutions` },
+    { text: 'Results', href: `${getPermalink('/')}#results` },
+    { text: 'Pricing', href: `${getPermalink('/')}#pricing` },
+    { text: 'Store', href: `${getPermalink('/')}#store` },
   ],
   cta: { text: CTA.primary, short: CTA.primaryShort, href: getPermalink('/discovery') },
 };

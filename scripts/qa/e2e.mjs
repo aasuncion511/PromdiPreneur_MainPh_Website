@@ -118,25 +118,18 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
 
   // Navigation
   await page.goto(BASE + '/');
-  const navText = await page.locator('nav[aria-label=Main]').innerText();
+  const navLinks = await page
+    .locator('nav[aria-label=Main] a')
+    .evaluateAll((as) => as.map((a) => `${a.textContent.trim()}=${a.getAttribute('href')}`));
   check(
-    'nav (v3): Home, What We Do, Our Work, Digital Store, Resources, About',
-    ['Home', 'What We Do', 'Our Work', 'Digital Store', 'Resources', 'About'].every((t) => navText.includes(t))
+    'nav (v2): Solutions, Results, Pricing, Store → homepage anchors',
+    JSON.stringify(navLinks) ===
+      JSON.stringify(['Solutions=/#solutions', 'Results=/#results', 'Pricing=/#pricing', 'Store=/#store'])
   );
-  const dd = page.locator('.pp-dd__btn');
-  await dd.focus();
-  await page.keyboard.press('Enter');
   check(
-    'nav: Resources dropdown opens by keyboard and lists the Free Ebook → /resources/free-ebook',
-    (await dd.getAttribute('aria-expanded')) === 'true' &&
-      (await page.locator('.pp-dd__menu a', { hasText: 'Free Ebook' }).getAttribute('href')) === '/resources/free-ebook'
-  );
-  await page.keyboard.press('Escape');
-  check('nav: Escape closes the dropdown', (await dd.getAttribute('aria-expanded')) === 'false');
-  check(
-    'nav: header CTA "Book a Discovery Session" → /discovery',
+    'nav: header CTA "Free Discovery Call" → /discovery',
     (await page.locator('header a[data-placement=header]').getAttribute('href')) === '/discovery' &&
-      (await page.locator('header a[data-placement=header]').innerText()).includes('Book a Discovery Session')
+      (await page.locator('header a[data-placement=header]').innerText()).includes('Free Discovery Call')
   );
 
   // Brand + content rules on the rendered homepage
@@ -147,8 +140,13 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
       !/\bBASA\b|Solutions Architect/i.test(body)
   );
   check(
-    'home: v3 hero copy + ebook card with real cover, exact title and "Get Free Guide" → ebook page',
-    (await page.locator('h1').innerText()).includes('Your Business Can Run Better') &&
+    'home: v2 hero (H1, Discovery CTA → /discovery, Messenger → m.me) + ebook card with real cover → ebook page',
+    (await page.locator('h1').innerText()).includes('Kulang ka sa sistema.') &&
+      (await page
+        .locator('section a[data-placement=hero]', { hasText: 'Book a Free Discovery Call' })
+        .getAttribute('href')) === '/discovery' &&
+      (await page.locator('a[data-dest=messenger][data-placement=hero]').getAttribute('href')) ===
+        'https://m.me/Promdipreneur' &&
       (await page.locator('#free-ebook h2').innerText()) === 'The Business Opening Checklist PH' &&
       (await page
         .locator('#free-ebook img[alt*="Cover of the free ebook"]')
@@ -500,9 +498,10 @@ for (const [label, q, txt] of [
   );
   await page.locator('#pp-menu-toggle').click();
   check(
-    'mobile menu: opens with aria-expanded, includes the Free Ebook',
+    'mobile menu: opens with aria-expanded, lists Solutions/Results/Pricing/Store + Discovery CTA',
     (await page.locator('#pp-menu-toggle').getAttribute('aria-expanded')) === 'true' &&
-      (await page.locator('#pp-mobile-nav a', { hasText: 'Free Ebook' }).isVisible())
+      (await page.locator('#pp-mobile-nav a', { hasText: 'Pricing' }).isVisible()) &&
+      (await page.locator('#pp-mobile-nav a[data-placement=mobile_nav]').getAttribute('href')) === '/discovery'
   );
   await page.screenshot({ path: join(out, 'mobile-menu-open.png') });
   await page.keyboard.press('Escape');
