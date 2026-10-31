@@ -13,31 +13,30 @@ GHL stays the customer operating system (CRM, calendars, store, workflows). The 
 
 Why a server endpoint instead of an embedded GHL form: the website keeps its own fast, accessible, on-brand form with an honest success/failure contract. The GHL token stays on the server. Attribution is attached cleanly. If GHL is down, the inquiry is still stored and emailed. The GHL sync result is recorded per inquiry (`crmStatus`).
 
-## Setup (Allan, in GHL)
+## Setup (Allan, in GHL sub-account `9AKY7kTTUdEnC8FLOMwh`)
 
-1. **Settings → Private Integrations → Create.** Scope: `contacts.write` (and `contacts.readonly`). Copy the token into Netlify as `GHL_PRIVATE_TOKEN`.
-2. **Location ID:** Settings → Business Profile (or the sub-account URL) → `GHL_LOCATION_ID`.
-3. **Custom fields:** inventory the existing ones first and reuse them where they match. Create only the missing ones, then map them:
+The sub-account (location) ID is already in `netlify.toml`, so you don't need to enter it anywhere.
 
-```json
-GHL_CUSTOM_FIELDS = {
-  "business_type": "<field id>",
-  "lead_magnet_name": "<field id>",
-  "marketing_consent": "<field id>",
-  "consent_record": "<field id>",
-  "utm_content": "<field id>",
-  "referrer": "<field id>",
-  "utm_source": "<field id>",
-  "utm_medium": "<field id>",
-  "utm_campaign": "<field id>",
-  "landing_page": "<field id>"
-}
-```
+1. **Private Integration token:** Settings → Private Integrations → Create new integration.
+   - Name: `promdipreneur.com website`.
+   - Scopes: **View/Edit Contacts** (`contacts.write`, `contacts.readonly`) and **View Custom Fields** (`locations/customFields.readonly`).
+   - Copy the token and paste it **only** into Netlify → Site configuration → Environment variables as `GHL_PRIVATE_TOKEN`, marked as a secret. Never paste it in chat or email.
+2. **Custom fields:** Settings → Custom Fields (Contact). Reuse a field if one already exists, otherwise create it as a single-line text field with exactly these names. You don't need to send me IDs: the site finds them by their key.
 
-Unmapped fields are skipped. The code never guesses field IDs.
+   | Field name                                           | Key GHL generates (check in field settings)  |
+   | ---------------------------------------------------- | -------------------------------------------- |
+   | Business Type                                        | `contact.business_type`                      |
+   | Lead Magnet Name                                     | `contact.lead_magnet_name`                   |
+   | Marketing Consent                                    | `contact.marketing_consent`                  |
+   | Consent Record                                       | `contact.consent_record`                     |
+   | UTM Source / UTM Medium / UTM Campaign / UTM Content | `contact.utm_source` … `contact.utm_content` |
+   | Landing Page                                         | `contact.landing_page`                       |
+   | Referrer                                             | `contact.referrer`                           |
 
-4. **Tags used:** `website-inquiry` and `LM | Ebook` (reuse an equivalent tag if one already exists). Create new workflows triggered by these tags. Don't attach them to existing product workflows.
-5. **Test:** submit a test inquiry on the deploy preview, then check that the contact appears with the tag and source "promdipreneur.com contact form".
+   If a key differs (e.g. an existing field), set `GHL_CUSTOM_FIELDS` in Netlify to override. Missing fields are skipped; the contact and tag are still saved.
+
+3. **Tags:** `website-inquiry` and `LM | Ebook`. Create new workflows triggered by these tags. Don't attach them to existing product workflows.
+4. **Test:** on the deploy preview, submit one test inquiry and one ebook request. Check the contact appears with the tag, source and fields, then delete the test contact.
 
 ## Discovery booking (to activate)
 

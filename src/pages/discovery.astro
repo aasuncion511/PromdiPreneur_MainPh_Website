@@ -54,9 +54,21 @@ const expect = [
             <>
               <h2 class="text-2xl font-bold">Pick a time</h2>
               <p class="mt-1 mb-5 text-muted">Choose a slot that suits you. You’ll get a confirmation by email.</p>
-              <TrackedLink dest="discoveryBooking" placement="discovery" class="btn-primary w-full">
-                {booking.label}
-              </TrackedLink>
+              {/* The existing GHL calendar, embedded as-is (no copy of its logic on this site). */}
+              <iframe
+                src={booking.url}
+                title="Book a Discovery Session with PromdiPreneur"
+                class="w-full min-h-[760px] rounded-xl border border-black/10 bg-white"
+                loading="lazy"
+                data-track-view="discovery_calendar_view"
+              />
+              <p class="mt-3 text-sm text-muted text-center">
+                Calendar not loading?{' '}
+                <TrackedLink dest="discoveryBooking" placement="discovery_fallback" class="underline text-[#0b7339]">
+                  Open it in a new tab
+                </TrackedLink>
+                .
+              </p>
             </>
           ) : (
             <>

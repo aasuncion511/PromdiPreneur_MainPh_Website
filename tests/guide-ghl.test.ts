@@ -2,7 +2,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { handleGuideRequest, EBOOK_TAG, LEAD_MAGNET_NAME, type GuideDeps } from '../server/guide.ts';
-import { buildUpsertBody, ghlConfigFromEnv, upsertGhlContact, type GhlContact } from '../server/ghl.ts';
+import {
+  buildUpsertBody,
+  ghlConfigFromEnv,
+  resetFieldMapCache,
+  resolveFieldMap,
+  upsertGhlContact,
+  type GhlContact,
+} from '../server/ghl.ts';
 
 const good = {
   firstName: 'Ana',
@@ -112,11 +119,14 @@ test('ghl: only mapped custom fields are sent, never guessed', () => {
 
 test('ghl: upsert sends token server-side to the v2 endpoint and throws on error', async () => {
   const calls: { url: string; init: RequestInit }[] = [];
-  const ok = (async (url: string, init: RequestInit) => (
-    calls.push({ url, init }), new Response('{"contact":{"id":"C1"}}', { status: 200 })
-  )) as unknown as typeof fetch;
-  const cfg = { token: 'secret', locationId: 'L', fieldMap: {} };
+  const ok = (async (url: string, init: RequestInit) => {
+    calls.push({ url, init });
+    return new Response('{"contact":{"id":"C1"}}', { status: 200 });
+  }) as unknown as typeof fetch;
+  // explicit field map -> no lookup call
+  const cfg = { token: 'secret', locationId: 'L', fieldMap: { business_type: 'CF1' } };
   assert.equal(await upsertGhlContact({ firstName: 'A', email: 'a@b.co', tags: [], source: 's' }, cfg, ok), 'C1');
+  assert.equal(calls.length, 1);
   assert.equal(calls[0].url, 'https://services.leadconnectorhq.com/contacts/upsert');
   assert.equal((calls[0].init.headers as Record<string, string>).Authorization, 'Bearer secret');
   const bad = (async () => new Response('nope', { status: 401 })) as unknown as typeof fetch;
@@ -124,4 +134,68 @@ test('ghl: upsert sends token server-side to the v2 endpoint and throws on error
     upsertGhlContact({ firstName: 'A', email: 'a@b.co', tags: [], source: 's' }, cfg, bad),
     /GHL 401/
   );
+});
+
+test('ghl: custom field ids are looked up once by key (contact.<name>), unknown fields ignored', async () => {
+  resetFieldMapCache();
+  let lookups = 0;
+  const bodies: Record<string, unknown>[] = [];
+  const f = (async (url: string, init: RequestInit) => {
+    if (url.includes('/customFields')) {
+      lookups++;
+      assert.ok(url.includes('/locations/9AKY7kTTUdEnC8FLOMwh/'));
+      return new Response(
+        JSON.stringify({
+          customFields: [
+            { id: 'ID_BT', fieldKey: 'contact.business_type' },
+            { id: 'ID_MC', fieldKey: 'contact.marketing_consent' },
+            { id: 'ID_X', fieldKey: 'contact.something_else' },
+          ],
+        }),
+        { status: 200 }
+      );
+    }
+    bodies.push(JSON.parse(String(init.body)));
+    return new Response('{"contact":{"id":"C9"}}', { status: 200 });
+  }) as unknown as typeof fetch;
+  const cfg = { token: 't', locationId: '9AKY7kTTUdEnC8FLOMwh', fieldMap: {} };
+  const c = {
+    firstName: 'A',
+    email: 'a@b.co',
+    tags: ['LM | Ebook'],
+    source: 's',
+    fields: { business_type: 'Laundry shop', marketing_consent: 'no', utm_source: 'fb' },
+  };
+  await upsertGhlContact(c, cfg, f);
+  await upsertGhlContact(c, cfg, f);
+  assert.equal(lookups, 1, 'looked up once, then cached');
+  assert.deepEqual(bodies[0].customFields, [
+    { id: 'ID_BT', field_value: 'Laundry shop' },
+    { id: 'ID_MC', field_value: 'no' },
+  ]);
+});
+
+test('ghl: if the field lookup fails, the contact + tag still go through without custom fields', async () => {
+  resetFieldMapCache();
+  const bodies: Record<string, unknown>[] = [];
+  const f = (async (url: string, init: RequestInit) => {
+    if (url.includes('/customFields')) return new Response('forbidden', { status: 403 });
+    bodies.push(JSON.parse(String(init.body)));
+    return new Response('{"contact":{"id":"C2"}}', { status: 200 });
+  }) as unknown as typeof fetch;
+  const warn = console.warn;
+  console.warn = () => {};
+  try {
+    const map = await resolveFieldMap({ token: 't', locationId: 'L2', fieldMap: {} }, f);
+    assert.deepEqual(map, {});
+    await upsertGhlContact(
+      { firstName: 'A', email: 'a@b.co', tags: ['LM | Ebook'], source: 's', fields: { business_type: 'x' } },
+      { token: 't', locationId: 'L2', fieldMap: {} },
+      f
+    );
+  } finally {
+    console.warn = warn;
+  }
+  assert.deepEqual(bodies.at(-1)!.tags, ['LM | Ebook']);
+  assert.equal(bodies.at(-1)!.customFields, undefined);
 });

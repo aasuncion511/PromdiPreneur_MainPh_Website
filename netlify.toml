@@ -7,6 +7,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # GHL sub-account (location) id — an identifier, not a secret. The GHL token stays a Netlify secret (UI only).
+  GHL_LOCATION_ID = "9AKY7kTTUdEnC8FLOMwh"
 
 [build.processing.html]
   pretty_urls = false
