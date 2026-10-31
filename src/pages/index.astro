@@ -2,9 +2,7 @@
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
-import Section from '~/components/promdi/Section.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
-import portrait from '~/assets/images/profile/allan-2017-800.webp';
 import headshot from '~/assets/images/profile/allan-minbizcon-800.webp';
 import crewPhoto from '~/assets/images/hub/fresh-start-crew-1512.webp';
 import steamClean from '~/assets/images/hub/fresh-start-steam-clean.webp';
@@ -13,6 +11,7 @@ import payrollMenu from '~/assets/images/hub/payroll-menu.webp';
 import minbizDesk from '~/assets/images/hub/minbizcon-desk-1100.webp';
 import minbizPass from '~/assets/images/hub/minbizcon-pass-blurred.webp';
 import minbizBanner from '~/assets/images/hub/minbizcon-partner-banner.webp';
+import minbizTeam from '~/assets/images/hub/minbizcon-team-blurred.webp';
 import { CTA, EBOOK } from '~/data/brand';
 import { COST_BARS, COST_FOOTNOTE, PACKAGES } from '~/data/pricing';
 import { getPermalink } from '~/utils/permalinks';
@@ -36,6 +35,49 @@ const LEAKS = [
     fix: 'Automatic follow-ups until they say yes or no.',
   },
   { problem: 'Lahat dumadaan sa’yo. Hindi ka maka-day off.', fix: 'Simple SOPs and checklists your team follows.' },
+];
+// Homepage v2 §3.11. Reworded by Allan's request (2026-11-01): more formal, still casual.
+const FOUNDER_QUOTE =
+  'Hindi software ang ibinebenta ko. Tinutulungan kong maayos ang inyong negosyo — gamit ang mga sistemang subok na sa sarili kong mga negosyo.';
+// Homepage v2 §3.12, rewritten for owners new to systems and automation (Allan, 2026-11-01).
+// Answers stay within Allan's package terms and portfolio; no prices here (prices live only in #pricing).
+const FAQS = [
+  {
+    q: 'Ano ba talaga ang “business system” at “automation”?',
+    a: 'A business system is the agreed way work gets done — how an inquiry is answered, quoted, booked, paid and followed up — written down so anyone on your team can follow it. Automation lets software do the repetitive parts, like instant replies, reminders, follow-ups and admin alerts, the same way every time. Isipin mo itong checklist na tumatakbo nang mag-isa.',
+  },
+  {
+    q: 'Maliit pa lang ang negosyo ko. Kailangan ko na ba ito?',
+    a: 'Kung may inquiries na hindi nasasagot, quotes na hindi na-follow up, o lahat dumadaan pa sa’yo — oo. Small businesses usually lose sales in exactly these places. You don’t need everything at once: we fix one problem first, then grow the system with your business.',
+  },
+  {
+    q: 'Hindi ako techy. Kaya ko ba ito?',
+    a: 'Oo. We set it up, train your team, and leave simple step-by-step guides. Your staff just follows the process.',
+  },
+  {
+    q: 'Papalitan ba nito ang staff ko? Robot ba ang kakausap sa customers ko?',
+    a: 'Hindi. The system handles the first reply, follow-ups and reminders so nothing is missed — your people still do the closing and serving. Customers get a fast answer, and anything that needs a real person goes to you or your team.',
+  },
+  {
+    q: 'Kailangan ko bang bumili ng bagong software?',
+    a: 'Not always. We map your process first, then pick tools — and we prefer the ones you already pay for.',
+  },
+  {
+    q: 'Bakit may monthly care plan?',
+    a: 'Systems need upkeep: apps update, your prices and process change, staff come and go. The care plan means we maintain and fine-tune the system after go-live — hindi ka iiwan pagkatapos ma-setup.',
+  },
+  {
+    q: 'Ano ang hindi kasama sa package?',
+    a: 'SMS, calls, WhatsApp, AI usage, payment gateway fees, ad spend and third-party subscriptions are billed at actual cost. Large multi-page websites and onsite manpower are separate.',
+  },
+  {
+    q: 'Taga-CDO lang ba ang clients ninyo?',
+    a: 'We’re based in Cagayan de Oro, but we work online with businesses anywhere in the Philippines and abroad.',
+  },
+  {
+    q: 'Ano ang mangyayari sa Discovery Call?',
+    a: 'We talk through how inquiries, sales and daily work move in your business, and where they leak. You get a straight answer on what to fix first — even if you don’t hire us.',
+  },
 ];
 // Homepage v2 §3.6
 const INDUSTRIES = [
@@ -630,50 +672,109 @@ const STEPS = [
     </div>
   </section>
 
-  <!-- H. Founder -->
-  <Section id="about">
-    <div class="grid md:grid-cols-[.6fr_1.4fr] gap-10 items-center">
-      <Image
-        src={portrait}
-        alt="Allan Asuncion"
-        widths={[260, 520]}
-        sizes="260px"
-        class="rounded-3xl aspect-square object-cover max-w-[260px]"
-        loading="lazy"
-      />
-      <div>
-        <p class="pp-eyebrow">The person behind PromdiPreneur</p>
-        <h2 class="text-3xl md:text-4xl font-extrabold">Business experience first. Technology second.</h2>
-        <p class="mt-5 text-lg leading-relaxed text-muted">
-          PromdiPreneur is led by Allan Asuncion, a Cagayan de Oro-based entrepreneur with more than 20 years in
-          business operations, sales and implementation. He runs his own businesses on the same kind of systems he
-          builds for clients, and he is personally accountable for every project.
+  <!-- 11. Founder (Homepage v2 §3.11) -->
+  <section id="about" class="bg-white">
+    <div
+      class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-[88px] grid md:grid-cols-[.85fr_1.15fr] gap-10 md:gap-14 items-center"
+    >
+      <div class="relative max-w-[420px] w-full justify-self-center">
+        <Image
+          src={headshot}
+          alt="Allan Asuncion, founder of PromdiPreneur"
+          widths={[420, 800]}
+          sizes="(min-width: 768px) 420px, 90vw"
+          class="w-full aspect-square object-cover rounded-3xl"
+          loading="lazy"
+        />
+        <figure
+          class="absolute -bottom-6 -right-3 sm:-right-6 w-[180px] rounded-2xl bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,.18)]"
+        >
+          <Image
+            src={minbizTeam}
+            alt="Allan with the 35th MinBizCon team; name badges blurred"
+            widths={[360]}
+            sizes="164px"
+            class="w-full aspect-[4/3] object-cover rounded-xl"
+            loading="lazy"
+          />
+          <figcaption class="px-1 pt-1.5 text-[11px] leading-snug text-muted">
+            With the 35th MinBizCon team, Cagayan de Oro
+          </figcaption>
+        </figure>
+      </div>
+      <div class="flex flex-col gap-5 pt-6 md:pt-0">
+        <p class="font-heading text-sm font-bold tracking-[0.08em] text-[#663300]">THE PERSON BEHIND PROMDIPRENEUR</p>
+        <blockquote class="font-heading text-2xl md:text-[28px] font-bold leading-snug text-[#00330f]">
+          “{FOUNDER_QUOTE}”
+        </blockquote>
+        <p class="flex flex-col">
+          <span class="font-heading text-lg font-bold text-default">Allan Asuncion</span>
+          <span class="text-sm text-muted">Business Systems &amp; Automation Implementer</span>
         </p>
-        <div class="mt-6 flex flex-wrap gap-4 items-center">
-          <a href={getPermalink('/about')} class="btn">More about PromdiPreneur</a>
-          <TrackedLink dest="portfolio" placement="home_about" class="pp-text-link"
-            >View International Portfolio</TrackedLink
+        <p class="leading-relaxed text-muted">
+          20+ years running sales teams, warehouses, deliveries, crews, suppliers and payroll — including years
+          reporting to US-based leadership. I see your process from every side: owner, staff, customer and supplier.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <TrackedLink dest="portfolio" placement="home_founder" class="btn-primary !py-3 !px-5 text-[15px]"
+            >View Portfolio</TrackedLink
+          >
+          <TrackedLink dest="linkedin" placement="home_founder" class="btn !py-3 !px-5 text-[15px] gap-2"
+            ><Icon name="tabler:brand-linkedin" class="w-5 h-5" aria-hidden="true" />LinkedIn</TrackedLink
+          >
+          <TrackedLink dest="facebook" placement="home_founder" class="btn !py-3 !px-5 text-[15px] gap-2"
+            ><Icon name="tabler:brand-facebook" class="w-5 h-5" aria-hidden="true" />Facebook</TrackedLink
           >
         </div>
       </div>
     </div>
-  </Section>
+  </section>
 
-  <!-- I. Final CTA -->
-  <section class="bg-gradient-to-r from-[#00330f] via-[#00441b] to-[#0a5c32] text-[#e1ece5] py-16 md:py-20 text-center">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <h2 class="!text-white text-3xl md:text-4xl font-extrabold">
-        What’s causing missed leads or wasted admin time in your business?
-      </h2>
-      <p class="mt-4 text-lg">Let’s find out together in a short, free Discovery Session.</p>
-      <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-        <a href={getPermalink('/discovery')} class="btn-light" data-placement="home_final">{CTA.primary}</a>
-        <a
-          href={getPermalink('/contact')}
-          class="btn !text-white !border-white/40 hover:!bg-white/10"
-          data-placement="home_final">Not ready to book? Send a question</a
-        >
+  <!-- 12. FAQ (Homepage v2 §3.12): native details/summary -->
+  <section id="faq" class="scroll-mt-20 bg-page">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-[88px]">
+      <h2 class="!text-[#00330f] text-center text-3xl md:text-[2.5rem] font-extrabold">Mga madalas itanong</h2>
+      <div class="mt-10 flex flex-col gap-3">
+        {
+          FAQS.map((f) => (
+            <details class="group rounded-2xl border border-[#e3e8e4] bg-white">
+              <summary class="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-heading text-[17px] font-bold text-[#00330f] [&::-webkit-details-marker]:hidden">
+                {f.q}
+                <Icon
+                  name="tabler:chevron-down"
+                  class="w-5 h-5 shrink-0 transition-transform group-open:rotate-180"
+                  aria-hidden="true"
+                />
+              </summary>
+              <p class="px-5 pb-5 leading-relaxed text-muted">{f.a}</p>
+            </details>
+          ))
+        }
       </div>
+    </div>
+  </section>
+
+  <!-- 13. Final CTA (Homepage v2 §3.13) -->
+  <section id="book" class="scroll-mt-20 bg-[#00330f] text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-[88px] text-center flex flex-col items-center gap-5">
+      <h2 class="!text-white text-3xl md:text-[2.75rem] font-extrabold leading-tight">
+        Ilang inquiry pa ang mawawala <span class="sm:block">bago natin ayusin?</span>
+      </h2>
+      <p class="text-lg text-[#c9dccf]">Book a free Discovery Call. We’ll show you exactly where to start.</p>
+      <div class="mt-2 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href={getPermalink('/discovery')} class="btn-bright text-lg !px-7" data-placement="home_final"
+          >{CTA.primary}</a
+        >
+        <TrackedLink dest="messenger" placement="home_final" class="btn-ghost-dark text-lg gap-2.5">
+          <Icon name="tabler:brand-messenger" class="w-5 h-5" aria-hidden="true" />
+          Message us on Messenger
+        </TrackedLink>
+      </div>
+      <a
+        href={getPermalink('/contact')}
+        class="inline-flex items-center min-h-[44px] text-[15px] text-[#c9dccf] underline underline-offset-4 hover:text-white"
+        data-placement="home_final">Not ready to book? Send a question →</a
+      >
     </div>
   </section>
 </Layout>

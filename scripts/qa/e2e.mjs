@@ -163,6 +163,31 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
       (await page.locator('#store a[data-track=ebook_cta_click]').getAttribute('href')) === '/resources/free-ebook'
   );
   check(
+    'home: founder (LinkedIn/Facebook/portfolio tracked), 9 native FAQ items, final CTA → /discovery + m.me + contact',
+    (await page.locator('#about a[data-dest=linkedin]').getAttribute('href')) ===
+      'https://www.linkedin.com/in/allan-asuncion-39878434/' &&
+      (await page.locator('#faq details > summary').count()) === 9 &&
+      (await page
+        .locator('#book a[data-placement=home_final]', { hasText: 'Book a Free Discovery Call' })
+        .getAttribute('href')) === '/discovery' &&
+      (await page.locator('#book a[data-dest=messenger]').getAttribute('href')) === 'https://m.me/Promdipreneur' &&
+      (await page.locator('#book a', { hasText: 'Send a question' }).getAttribute('href')) === '/contact'
+  );
+  check(
+    'footer: no "Cagayan de Oro" (Allan), tagline line, Privacy + Terms kept, About + Free Ebook still reachable',
+    await page
+      .locator('footer')
+      .evaluate(
+        (f) =>
+          !f.innerText.includes('Cagayan de Oro') &&
+          f.innerText.includes('From Diskarte to Systems.') &&
+          !!f.querySelector('a[href="/privacy"]') &&
+          !!f.querySelector('a[href="/terms"]') &&
+          !!f.querySelector('a[href="/about"]') &&
+          !!f.querySelector('a[href="/resources/free-ebook"]')
+      )
+  );
+  check(
     'logo: keeps its 480:214 aspect ratio',
     await page
       .locator('header img')

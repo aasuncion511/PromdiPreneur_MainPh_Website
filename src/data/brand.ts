@@ -61,6 +61,7 @@ export type DestinationId =
   | 'kits'
   | 'portfolio'
   | 'facebook'
+  | 'linkedin'
   | 'messenger'
   | 'email'
   | 'discoveryBooking';
@@ -132,6 +133,15 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
     forwardUtm: false,
     status: 'unverified',
     note: 'facebook.com is blocked from the build environment. Allan to confirm.',
+  },
+  linkedin: {
+    // Homepage v2 handoff §3.11 (Allan, 2026-11-01).
+    url: 'https://www.linkedin.com/in/allan-asuncion-39878434/',
+    label: 'Allan Asuncion on LinkedIn',
+    event: 'contact_linkedin_click',
+    kind: 'social',
+    forwardUtm: false,
+    status: 'verified',
   },
   messenger: {
     // Homepage v2 handoff §5 (Allan, 2026-11-01): Messenger links go to m.me/Promdipreneur.

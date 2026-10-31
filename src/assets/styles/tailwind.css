@@ -144,10 +144,10 @@ h3 {
     @apply inline-flex items-center gap-1.5 min-h-[44px] font-heading font-semibold text-[#00441b] hover:underline underline-offset-4;
   }
   .pp-footer-h {
-    @apply font-heading text-xs font-bold uppercase tracking-[0.12em] text-[#663300] mb-2;
+    @apply font-heading text-xs font-bold uppercase tracking-[0.12em] text-[#5fd68f] mb-2;
   }
   .pp-footer-link {
-    @apply inline-flex items-center min-h-[40px] text-default hover:text-[#00441b] hover:underline underline-offset-4;
+    @apply inline-flex items-center min-h-[40px] text-[#c9dccf] hover:text-white hover:underline underline-offset-4;
   }
   .pp-field {
     @apply w-full rounded-xl border-[1.5px] border-[#c9d0c6] bg-white px-3.5 py-3 text-base min-h-[48px] focus:outline-none focus:border-primary focus:ring-4 focus:ring-[#1db259]/25 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed;

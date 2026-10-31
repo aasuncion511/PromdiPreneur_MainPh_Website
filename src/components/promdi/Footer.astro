@@ -1,8 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
-import Logo from '~/components/Logo.astro';
 import TrackedLink from './TrackedLink.astro';
-import { BRAND } from '~/data/brand';
+import { BRAND, CTA } from '~/data/brand';
 import { getPermalink } from '~/utils/permalinks';
 
 const year = new Date().getFullYear();
@@ -12,7 +11,7 @@ const explore = col('Explore', [
   { text: 'Our Work', href: getPermalink('/work') },
   { text: 'Digital Store', href: getPermalink('/products') },
   { text: 'About', href: getPermalink('/about') },
-  { text: 'Book a Discovery Session', href: getPermalink('/discovery') },
+  { text: CTA.primary, href: getPermalink('/discovery') },
   { text: 'Contact', href: getPermalink('/contact') },
 ]);
 const resources = col('Resources', [
@@ -21,12 +20,15 @@ const resources = col('Resources', [
 ]);
 ---
 
-<footer class="bg-white border-t border-black/5 text-[0.95rem]">
+<!-- Homepage v2 §3.14: deep footer green, no "Cagayan de Oro" here (Allan). The logo only works on light
+     backgrounds, so the footer uses the wordmark in text. Link columns stay so About and the ebook remain reachable
+     after the nav was cut to 4 links (decision 2A). -->
+<footer class="bg-[#00260a] text-[#c9dccf] text-[0.95rem]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-12">
     <div class="sm:col-span-2 lg:col-span-3">
-      <Logo height={52} showRole={false} />
-      <p class="mt-4 text-muted max-w-sm"><strong class="text-default">{BRAND.role}.</strong> {BRAND.promise}</p>
-      <p class="pp-tagline mt-5">{BRAND.tagline}</p>
+      <p class="font-heading text-2xl font-extrabold text-white">PromdiPreneur</p>
+      <p class="mt-3 max-w-sm"><strong class="text-white">{BRAND.role}.</strong> {BRAND.promise}</p>
+      <p class="mt-5 font-heading text-xs font-extrabold tracking-[0.16em] text-[#5fd68f]">{BRAND.tagline}</p>
     </div>
     {
       [explore, resources].map((c) => (
@@ -63,28 +65,40 @@ const resources = col('Resources', [
           >
         </li>
         <li>
+          <TrackedLink dest="messenger" placement="footer" class="pp-footer-link"
+            ><Icon name="tabler:brand-messenger" class="w-4 h-4 mr-1.5" />Messenger</TrackedLink
+          >
+        </li>
+        <li>
           <TrackedLink dest="facebook" placement="footer" class="pp-footer-link"
             ><Icon name="tabler:brand-facebook" class="w-4 h-4 mr-1.5" />Facebook</TrackedLink
           >
         </li>
         <li>
-          <TrackedLink dest="portfolio" placement="footer" class="pp-footer-link">International portfolio</TrackedLink>
+          <TrackedLink dest="linkedin" placement="footer" class="pp-footer-link"
+            ><Icon name="tabler:brand-linkedin" class="w-4 h-4 mr-1.5" />LinkedIn</TrackedLink
+          >
+        </li>
+        <li>
+          <TrackedLink dest="portfolio" placement="footer" class="pp-footer-link">Portfolio</TrackedLink>
         </li>
       </ul>
     </div>
   </div>
   <div
-    class="max-w-7xl mx-auto px-4 sm:px-6 py-4 border-t border-black/5 flex flex-wrap gap-x-6 gap-y-1 justify-between text-sm text-muted"
+    class="max-w-7xl mx-auto px-4 sm:px-6 py-4 border-t border-white/10 flex flex-wrap gap-x-6 gap-y-1 justify-between items-center text-sm"
   >
-    <p>© {year} {BRAND.name} · {BRAND.location}</p>
+    <p>© {year} {BRAND.name} · From Diskarte to Systems.</p>
     <p class="flex flex-wrap items-center gap-x-4">
-      <a href={getPermalink('/privacy')} class="underline underline-offset-2 inline-flex min-h-[44px] items-center"
-        >Privacy Policy</a
+      <a
+        href={getPermalink('/privacy')}
+        class="underline underline-offset-2 inline-flex min-h-[44px] items-center hover:text-white">Privacy Policy</a
       >
-      <a href={getPermalink('/terms')} class="underline underline-offset-2 inline-flex min-h-[44px] items-center"
-        >Terms</a
+      <a
+        href={getPermalink('/terms')}
+        class="underline underline-offset-2 inline-flex min-h-[44px] items-center hover:text-white">Terms</a
       >
-      <button type="button" class="underline underline-offset-2 min-h-[44px] hidden" data-open-consent
+      <button type="button" class="underline underline-offset-2 min-h-[44px] hidden hover:text-white" data-open-consent
         >Analytics settings</button
       >
     </p>
