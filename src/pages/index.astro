@@ -6,24 +6,26 @@ import Section from '~/components/promdi/Section.astro';
 import ProductCard from '~/components/promdi/ProductCard.astro';
 import WorkCard from '~/components/promdi/WorkCard.astro';
 import EbookCover from '~/components/promdi/EbookCover.astro';
-import CtaBand from '~/components/promdi/CtaBand.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import portrait from '~/assets/images/profile/allan-2017-800.webp';
-import { BRAND, CTA, FEATURES } from '~/data/brand';
+import { BRAND, CTA, EBOOK } from '~/data/brand';
 import { PRODUCTS, WORK } from '~/data/catalog';
-import { PROBLEMS, SOLUTIONS, STEPS } from '~/data/services';
+import { CAPABILITIES, PROBLEMS, SEQUENCE } from '~/data/services';
 import { getPermalink } from '~/utils/permalinks';
 
+// Master Handoff v3 §4 (sections A–I). No prices, no logo bar, no testimonials, no invented metrics.
 const metadata = {
-  title: 'PromdiPreneur | Practical Business Systems for Filipino Entrepreneurs',
+  title: 'PromdiPreneur | Business Systems & Automation for Filipino Businesses',
   ignoreTitleTemplate: true,
+  description:
+    'Websites, customer inquiries, sales follow-ups and daily operations: PromdiPreneur implements practical systems that help Filipino businesses stay organized and grow.',
 };
 const featuredProducts = PRODUCTS.filter((p) => p.featured).sort((a, b) => a.order - b.order);
 const featuredWork = WORK.filter((w) => w.featured);
 ---
 
 <Layout metadata={metadata}>
-  <!-- Hero: problem + outcome first (V2.0 §0A). Role lives next to the logo, not here. -->
+  <!-- A. Hero -->
   <section
     class="relative overflow-hidden bg-[radial-gradient(900px_480px_at_92%_8%,rgba(24,185,87,.12),transparent_60%),radial-gradient(700px_420px_at_-10%_110%,rgba(117,64,0,.07),transparent_60%)]"
   >
@@ -31,26 +33,22 @@ const featuredWork = WORK.filter((w) => w.featured);
       class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16 md:pt-16 md:pb-24 grid lg:grid-cols-[1.25fr_.75fr] gap-10 lg:gap-16 items-center"
     >
       <div>
-        <p class="pp-eyebrow">Practical business systems for Filipino entrepreneurs</p>
+        <p class="pp-eyebrow">Business systems &amp; automation</p>
         <h1 class="text-[2.1rem] sm:text-5xl lg:text-[3.2rem] font-extrabold leading-[1.1] tracking-tight">
-          Your business works hard. <span class="block text-[#0b7339]">Your systems should work smarter.</span>
+          Your Business Can Run Better. <span class="block text-[#0b7339]">We’ll Build the Systems.</span>
         </h1>
         <p class="mt-5 text-lg md:text-xl text-muted max-w-2xl">
-          From missed inquiries and manual follow-ups to smoother daily operations, we help you organize the work and
-          put practical systems in place.
+          From websites and customer inquiries to sales, follow-ups, and daily operations, we implement practical
+          systems that help you stay organized and grow.
         </p>
         <div class="mt-8 flex flex-col sm:flex-row gap-3">
-          <a href={getPermalink('/contact')} class="btn-primary text-lg" data-placement="hero">
-            {CTA.primary}
+          <a href={getPermalink('/services')} class="btn-primary text-lg" data-placement="hero">
+            {CTA.explore}
             <Icon name="tabler:arrow-right" class="w-5 h-5 ml-2" />
           </a>
-          <a href={getPermalink('/products')} class="btn text-lg" data-placement="hero">{CTA.secondary}</a>
+          <a href={getPermalink('/discovery')} class="btn text-lg" data-placement="hero">{CTA.primary}</a>
         </div>
-        <p class="mt-5 text-muted max-w-xl text-[0.95rem]">
-          Have a question? Tell us what’s slowing your business down. We’re happy to share a few practical
-          suggestions—no obligation.
-        </p>
-        <p class="pp-tagline mt-6">{BRAND.tagline}</p>
+        <p class="pp-tagline mt-7">{BRAND.tagline}</p>
       </div>
       <div class="relative justify-self-center w-[min(78%,340px)] lg:w-full max-w-[400px] mb-8 lg:mb-0">
         <div
@@ -58,7 +56,7 @@ const featuredWork = WORK.filter((w) => w.featured);
         >
           <Image
             src={portrait}
-            alt="Allan, founder of PromdiPreneur"
+            alt="Allan Asuncion, founder of PromdiPreneur"
             widths={[320, 480, 800]}
             sizes="(min-width: 1024px) 400px, 340px"
             class="w-full h-full object-cover"
@@ -66,12 +64,12 @@ const featuredWork = WORK.filter((w) => w.featured);
             fetchpriority="high"
           />
         </div>
-        <ol class="absolute -left-[12%] -bottom-6 grid gap-2" aria-label="How a well-run inquiry moves">
+        <ol class="absolute -left-[12%] -bottom-6 grid gap-2" aria-label="How an organized inquiry moves">
           {
             ['Inquiry received', 'Follow-up scheduled', 'Customer served'].map((s, i) => (
               <li
-                class="flex items-center gap-2 w-max bg-white border border-black/5 shadow-lg rounded-full py-2 pl-2 pr-4 font-heading font-semibold text-sm text-primary"
-                style={`margin-left:${i * 22}px`}
+                class="flex items-center gap-2 w-max bg-white border border-black/5 shadow-lg rounded-full py-2 pl-2 pr-4 font-heading font-semibold text-sm text-primary motion-safe:animate-fade"
+                style={`margin-left:${i * 22}px;animation-delay:${300 + i * 180}ms`}
               >
                 <span class="grid place-items-center w-6 h-6 rounded-full bg-[#18b957] text-white">
                   <Icon name="tabler:check" class="w-3.5 h-3.5" />
@@ -85,13 +83,14 @@ const featuredWork = WORK.filter((w) => w.featured);
     </div>
   </section>
 
+  <!-- B. Problems -->
   <Section
     id="problems"
     tone="white"
     title="Sound familiar?"
-    intro="These are the problems we help business owners untangle."
+    intro="These are the everyday problems we help business owners fix."
   >
-    <ul class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {
         PROBLEMS.map((p) => (
           <li class="pp-card p-6">
@@ -108,94 +107,71 @@ const featuredWork = WORK.filter((w) => w.featured);
       class="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-[#eef4ee] border-l-4 border-[#18b957] p-6"
     >
       <p class="font-heading font-semibold text-lg text-primary">
-        You don’t always need more software. Sometimes you need a clearer process first.
+        Don’t automate chaos. Organize the process first, then automate it.
       </p>
       <a href={getPermalink('/services')} class="pp-text-link"
-        >{CTA.systems} <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
+        >See how we fix it <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
       >
     </div>
   </Section>
 
-  <Section id="how" eyebrow="How we help" title="We fix the process before adding the tools.">
-    <p class="-mt-8 mb-10 font-heading font-bold text-sm uppercase tracking-[0.08em] text-[#754000]">
-      {BRAND.principle.join(' → ')}
-    </p>
-    <ol class="grid md:grid-cols-3 gap-5">
+  <!-- C. What we can implement -->
+  <Section
+    id="what-we-build"
+    eyebrow={BRAND.serviceFamily}
+    title="What we can build for your business"
+    intro="One connected system—not five separate gigs. Each part feeds the next, so nothing falls through the cracks."
+  >
+    <ol class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
       {
-        STEPS.map((s, i) => (
-          <li class="pp-card p-6">
-            <span class="font-heading font-extrabold text-4xl text-[#0b7339]" aria-hidden="true">
-              {String(i + 1).padStart(2, '0')}
+        CAPABILITIES.map((c, i) => (
+          <li class="pp-card p-5 relative">
+            <span class="inline-grid place-items-center w-11 h-11 rounded-xl bg-[#004c25] text-white">
+              <Icon name={c.icon} class="w-6 h-6" />
             </span>
-            <h3 class="mt-3 text-lg font-bold">{s.title}</h3>
-            <p class="mt-1 text-muted">{s.body}</p>
+            <h3 class="mt-4 font-bold">{c.name}</h3>
+            <p class="mt-1 text-sm text-muted">{c.short}</p>
+            {i < CAPABILITIES.length - 1 && (
+              <Icon
+                name="tabler:arrow-right"
+                class="hidden lg:block absolute -right-3.5 top-9 w-5 h-5 text-[#18b957]"
+                aria-hidden="true"
+              />
+            )}
           </li>
         ))
       }
     </ol>
-    <div class="mt-10 rounded-3xl bg-gradient-to-br from-[#004c25] to-[#002e19] text-[#e1ece5] p-6 md:p-10">
-      <div class="grid lg:grid-cols-[.9fr_1.6fr] gap-8">
-        <div>
-          <h3 class="!text-white text-2xl font-bold">{BRAND.serviceFamily}</h3>
-          <p class="mt-2">
-            What we can help you with, in plain terms. What we recommend depends on your business, not on a fixed
-            package.
-          </p>
-        </div>
-        <ul class="grid sm:grid-cols-2 gap-3">
-          {
-            SOLUTIONS.map((s) => (
-              <li class="rounded-xl border border-white/15 bg-white/[0.06] p-4">
-                <p class="font-heading font-bold text-white">{s.name}</p>
-                <p class="text-sm mt-1 text-[#cfe0d6]">{s.short}</p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-      <div class="mt-8 pt-6 border-t border-white/15 flex flex-wrap gap-4 items-center justify-between">
-        <p class="text-sm">
-          Scope and pricing are agreed after we understand your situation. Start with a free question.
-        </p>
-        <div class="flex flex-wrap gap-3">
-          <a href={getPermalink('/services')} class="btn !text-white !border-white/40 hover:!bg-white/10"
-            >See all services</a
-          >
-          <a href={getPermalink('/contact')} class="btn-light" data-placement="services_preview">{CTA.primary}</a>
-        </div>
-      </div>
-    </div>
+    <a href={getPermalink('/services')} class="btn-primary mt-8" data-placement="home_capabilities">{CTA.explore}</a>
   </Section>
 
-  <Section
-    id="tools"
-    tone="tint"
-    eyebrow="Business Tools"
-    title="Prefer a ready-to-use tool? Start here."
-    intro="Practical templates, manuals and systems you can put to work in your business."
-  >
-    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- D. Operating sequence -->
+  <Section id="how" tone="forest" eyebrow="How we work" title="Technology comes after we understand your business.">
+    <p class="-mt-8 mb-10 font-heading font-bold text-sm uppercase tracking-[0.08em] text-[#f1c98d]">
+      {BRAND.principle.join(' → ')}
+    </p>
+    <ol class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
       {
-        featuredProducts.map((p) => (
-          <li>
-            <ProductCard product={p} placement="home_tools" />
+        SEQUENCE.map((s, i) => (
+          <li class="rounded-2xl border border-white/15 bg-white/[0.06] p-6">
+            <span class="font-heading font-extrabold text-3xl text-[#7fe0a4]" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="mt-3 !text-white text-lg font-bold">{s.title}</h3>
+            <p class="mt-1 text-[#d3e3d9]">{s.body}</p>
           </li>
         ))
       }
-    </ul>
-    <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
-      <p class="text-sm text-muted">Prices, checkout and delivery are handled on each product page.</p>
-      <a href={getPermalink('/products')} class="pp-text-link"
-        >View all products <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
-      >
-    </div>
+    </ol>
   </Section>
 
+  <!-- E. Real work -->
   <Section
     id="work"
+    tone="white"
     eyebrow="Our Work"
-    title="Built around real business work—not just software."
-    intro="PromdiPreneur combines operational experience with practical system-building."
+    title="Real systems, honestly labelled."
+    intro="Built around real business work—not just software. Each project shows its actual status."
   >
     <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {
@@ -206,63 +182,78 @@ const featuredWork = WORK.filter((w) => w.featured);
         ))
       }
     </ul>
-    <a href={getPermalink('/our-work')} class="pp-text-link mt-6"
-      >See all our work <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
+    <a href={getPermalink('/work')} class="pp-text-link mt-6"
+      >See all our work, including Socri and Car Rental OS <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
     >
   </Section>
 
-  <!-- Free guide: secondary path for visitors not ready to talk yet. Never competes with the hero CTA. -->
-  <Section id="free-guide" tone="white">
+  <!-- F. Products -->
+  <Section
+    id="tools"
+    tone="tint"
+    eyebrow="Digital Store"
+    title="Prefer a ready-to-use tool? Start here."
+    intro="Practical templates, manuals and systems you can put to work in your business today."
+  >
+    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        featuredProducts.map((p) => (
+          <li>
+            <ProductCard product={p} placement="home_store" />
+          </li>
+        ))
+      }
+    </ul>
+    <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
+      <p class="text-sm text-muted">Prices, checkout and delivery are handled on each product page.</p>
+      <a href={getPermalink('/products')} class="pp-text-link"
+        >View the Digital Store <Icon name="tabler:arrow-right" class="w-4 h-4" /></a
+      >
+    </div>
+  </Section>
+
+  <!-- G. Free ebook -->
+  <Section id="free-ebook" tone="white">
     <div class="grid md:grid-cols-[auto_1fr] gap-10 items-center rounded-3xl bg-[#eef4ee] p-6 md:p-12">
-      <EbookCover />
+      <EbookCover size="md" />
       <div class="max-w-xl">
-        <p class="pp-eyebrow">Free Business Guide</p>
-        <h2 class="text-3xl md:text-4xl font-extrabold">Not ready to talk yet? Start with our free guide.</h2>
+        <p class="pp-eyebrow">Free guide · PDF</p>
+        <h2 class="text-3xl md:text-4xl font-extrabold">{EBOOK.title}</h2>
         <p class="mt-4 text-lg text-muted">
-          A practical guide for Filipino business owners who want less chaos and more system—written from real operating
-          experience.
+          109 practical checks for planning and running a better-prepared small business.
         </p>
-        <div class="mt-6 flex flex-wrap items-center gap-3">
-          <a
-            href={getPermalink('/free-guide')}
-            class="btn-primary"
-            data-track="ebook_cta_click"
-            data-placement="home_guide"
-          >
-            {FEATURES.ebookLive ? CTA.guide : 'See the Free Guide'}
-          </a>
-          {!FEATURES.ebookLive && <span class="pp-badge bg-[#f6ecdf] text-[#754000]">Coming soon</span>}
-        </div>
+        <a
+          href={getPermalink(EBOOK.route)}
+          class="btn-primary mt-6"
+          data-track="ebook_cta_click"
+          data-placement="home_ebook">{CTA.ebook}</a
+        >
       </div>
     </div>
   </Section>
 
-  <Section id="about" tone="forest">
-    <div class="grid md:grid-cols-[.7fr_1.3fr] gap-10 items-center">
-      <figure class="max-w-[300px]">
-        <Image
-          src={portrait}
-          alt="Allan, founder of PromdiPreneur"
-          widths={[300, 600]}
-          sizes="300px"
-          class="rounded-3xl aspect-square object-cover"
-          loading="lazy"
-        />
-        <figcaption class="mt-3 text-sm text-[#c9dbd0]">
-          <strong class="block text-white font-heading text-base">Allan</strong>Founder · {BRAND.role}
-        </figcaption>
-      </figure>
+  <!-- H. Founder -->
+  <Section id="about">
+    <div class="grid md:grid-cols-[.6fr_1.4fr] gap-10 items-center">
+      <Image
+        src={portrait}
+        alt="Allan Asuncion"
+        widths={[260, 520]}
+        sizes="260px"
+        class="rounded-3xl aspect-square object-cover max-w-[260px]"
+        loading="lazy"
+      />
       <div>
-        <p class="pp-eyebrow-dark">About</p>
-        <h2 class="!text-white text-3xl md:text-4xl font-extrabold">Business experience first. Technology second.</h2>
-        <p class="mt-5 text-lg leading-relaxed">
-          PromdiPreneur is led by Allan, a Cagayan de Oro-based entrepreneur and business systems practitioner with more
-          than 20 years of experience across business operations, sales and implementation. We understand that running
-          an SME means wearing many hats.
+        <p class="pp-eyebrow">The person behind PromdiPreneur</p>
+        <h2 class="text-3xl md:text-4xl font-extrabold">Business experience first. Technology second.</h2>
+        <p class="mt-5 text-lg leading-relaxed text-muted">
+          PromdiPreneur is led by Allan Asuncion, a Cagayan de Oro-based entrepreneur with more than 20 years in
+          business operations, sales and implementation. He runs his own businesses on the same kind of systems he
+          builds for clients, and he is personally accountable for every project.
         </p>
         <div class="mt-6 flex flex-wrap gap-4 items-center">
-          <a href={getPermalink('/about')} class="btn-light">More about PromdiPreneur</a>
-          <TrackedLink dest="portfolio" placement="home_about" class="pp-text-link !text-[#bdf0cf]"
+          <a href={getPermalink('/about')} class="btn">More about PromdiPreneur</a>
+          <TrackedLink dest="portfolio" placement="home_about" class="pp-text-link"
             >View International Portfolio</TrackedLink
           >
         </div>
@@ -270,5 +261,21 @@ const featuredWork = WORK.filter((w) => w.featured);
     </div>
   </Section>
 
-  <CtaBand placement="home_final" />
+  <!-- I. Final CTA -->
+  <section class="bg-gradient-to-r from-[#002e19] via-[#004c25] to-[#0a5c32] text-[#e1ece5] py-16 md:py-20 text-center">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="!text-white text-3xl md:text-4xl font-extrabold">
+        What’s causing missed leads or wasted admin time in your business?
+      </h2>
+      <p class="mt-4 text-lg">Let’s find out together in a short, free Discovery Session.</p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href={getPermalink('/discovery')} class="btn-light" data-placement="home_final">{CTA.primary}</a>
+        <a
+          href={getPermalink('/contact')}
+          class="btn !text-white !border-white/40 hover:!bg-white/10"
+          data-placement="home_final">Not ready to book? Send a question</a
+        >
+      </div>
+    </div>
+  </section>
 </Layout>

@@ -11,8 +11,9 @@ const metadata = {
   description:
     'Business systems PromdiPreneur has built and supported: Fresh Start Cleaning Services, PromdiPreneur Payroll, MinBizCon 2026 QR check-in and more.',
 };
-const built = WORK.filter((w) => w.status !== 'In development' && w.status !== 'Working concept');
-const progress = WORK.filter((w) => w.status === 'In development' || w.status === 'Working concept');
+const isDone = (w: (typeof WORK)[number]) => w.status === 'Built' || w.status === 'Designed and supported';
+const built = WORK.filter(isDone);
+const progress = WORK.filter((w) => !isDone(w));
 ---
 
 <Layout metadata={metadata}>
@@ -27,7 +28,7 @@ const progress = WORK.filter((w) => w.status === 'In development' || w.status ==
       {
         built.map((w) => (
           <li>
-            <WorkCard item={w} placement="our_work" headingLevel="h2" />
+            <WorkCard item={w} placement="work" headingLevel="h2" />
           </li>
         ))
       }
@@ -39,12 +40,12 @@ const progress = WORK.filter((w) => w.status === 'In development' || w.status ==
         id="in-progress"
         tone="white"
         title="In progress"
-        intro="Work that is being built now. No client results are claimed for these."
+        intro="Designed or being built now, labelled with their exact status. No client results are claimed for these."
       >
         <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {progress.map((w) => (
             <li>
-              <WorkCard item={w} placement="our_work_progress" />
+              <WorkCard item={w} placement="work_progress" />
             </li>
           ))}
         </ul>
@@ -54,7 +55,7 @@ const progress = WORK.filter((w) => w.status === 'In development' || w.status ==
   <Section id="more" narrow>
     <p class="text-lg text-muted">
       Detailed case studies live on our international portfolio.
-      <TrackedLink dest="portfolio" placement="our_work_footer" class="pp-text-link"
+      <TrackedLink dest="portfolio" placement="work_footer" class="pp-text-link"
         >View International Portfolio</TrackedLink
       >
     </p>
@@ -62,5 +63,5 @@ const progress = WORK.filter((w) => w.status === 'In development' || w.status ==
       Client logos, screenshots and results are only shown with the client’s permission.
     </p>
   </Section>
-  <CtaBand title="Want something like this for your business?" placement="our_work_final" />
+  <CtaBand title="Want something like this for your business?" placement="work_final" />
 </Layout>

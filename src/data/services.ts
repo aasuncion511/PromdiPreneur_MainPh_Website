@@ -1,123 +1,125 @@
 /**
- * Service content. Solution names are the five canonical solutions (handoff v1.1 §6); the family name and
- * Review → Build → Improve phases follow V2.0 §0A. No prices or package durations (V2.0: price-free hub).
+ * Service content — Master Handoff v3 §4–§5. Capability groupings, NOT priced packages or contractual
+ * entitlements. Plain language: a visitor never needs to know what GHL, n8n or an API is.
  */
 
+/** v3 §4B: pain → consequence (the organized process + result live in SERVICE_GROUPS). */
 export const PROBLEMS = [
   {
     icon: 'tabler:messages',
-    title: 'Customer messages get buried.',
-    body: 'Inquiries come from different places, and some never get a reply.',
+    title: 'Inquiries scattered everywhere',
+    body: 'Facebook, Messenger, Viber, calls. Some customers never get a reply—and buy elsewhere.',
   },
   {
-    icon: 'tabler:user-exclamation',
-    title: 'Everything depends on you.',
-    body: 'Your team keeps asking because the process lives in your head.',
+    icon: 'tabler:clock-exclamation',
+    title: 'Follow-ups that slip',
+    body: 'Quotes go out, then nothing. Warm leads go cold because nobody remembered to check in.',
   },
   {
     icon: 'tabler:repeat',
-    title: 'Too much time goes to repeat work.',
-    body: 'Reports, documents and follow-ups take longer than they should.',
+    title: 'Too much manual admin',
+    body: 'Re-typing the same details, chasing records, building reports by hand every week.',
   },
   {
     icon: 'tabler:puzzle',
-    title: 'Your tools don’t work together.',
-    body: 'You have spreadsheets and apps, but no clear flow from inquiry to sale.',
+    title: 'Tools that don’t connect',
+    body: 'Spreadsheets and apps everywhere, but no clear flow from inquiry to sale to service.',
+  },
+  {
+    icon: 'tabler:user-exclamation',
+    title: 'Everything depends on the owner',
+    body: 'The process lives in your head, so the team keeps asking and you can’t step away.',
+  },
+  {
+    icon: 'tabler:chart-dots',
+    title: 'No clear view of sales',
+    body: 'You can’t easily see what’s coming in, what’s stuck and what’s been lost.',
   },
 ];
 
-export const STEPS = [
+/** v3 §4C: what we can implement — shown as one connected system, not separate gigs. */
+export const CAPABILITIES = [
+  { icon: 'tabler:world-www', name: 'Websites & Funnels', short: 'Be found and turn visitors into inquiries.' },
   {
-    title: 'Understand the problem',
-    body: 'A practical conversation or diagnostic to see where time, leads or sales are being lost.',
+    icon: 'tabler:address-book',
+    name: 'CRM & Customer Follow-up',
+    short: 'Every inquiry in one place, followed up on time.',
   },
   {
-    title: 'Design a clearer way to work',
-    body: 'Map the customer journey, responsibilities and simple steps your team can follow.',
+    icon: 'tabler:arrows-shuffle',
+    name: 'Workflows & Automation',
+    short: 'Repeat steps handled the same way, every time.',
   },
   {
-    title: 'Build the right system',
-    body: 'Templates, CRM, forms, websites, automations, training or an ongoing improvement plan—depending on what fits.',
-  },
-];
-
-export const SOLUTIONS = [
-  {
-    id: 'lead-organization',
-    name: 'Lead Organization',
-    short: 'Every inquiry in one place, with a clear owner and next step.',
-    signs: [
-      'Inquiries scattered across Messenger, Viber, calls and notebooks',
-      'No one knows which customers are still waiting',
-    ],
-    helps: [
-      'One inbox and customer record',
-      'Simple stages so nothing is forgotten',
-      'Owner visibility without asking around',
-    ],
+    icon: 'tabler:report-analytics',
+    name: 'Business Operations & Reporting',
+    short: 'SOPs, records and reports the owner can trust.',
   },
   {
-    id: 'lead-to-sale',
-    name: 'Lead-to-Sale',
-    short: 'Quotes that get followed up until there is a decision.',
-    signs: ['Quotations sent with no reminder system', 'Payments checked by hand before work can start'],
-    helps: [
-      'Quote and follow-up steps your team can repeat',
-      'A clear won / lost record',
-      'Payment confirmation before the next step',
-    ],
-  },
-  {
-    id: 'lead-to-booking',
-    name: 'Lead-to-Booking',
-    short: 'From inquiry to confirmed booking, with fewer no-shows.',
-    signs: ['Back-and-forth to agree a schedule', 'Clients forget, staff forget to remind'],
-    helps: [
-      'Booking and confirmation flow',
-      'Reminders that go out on time',
-      'Deposits or payment before the slot is held',
-    ],
-  },
-  {
-    id: 'integrated-customer-journey',
-    name: 'Integrated Customer Journey',
-    short: 'Sales, service and repeat business connected end to end.',
-    signs: ['Handoffs between sales and operations break', 'No follow-up after the job, so no repeat business'],
-    helps: ['Inquiry-to-service handoffs', 'After-service follow-up and reviews', 'Repeat-customer reminders'],
-  },
-  {
-    id: 'ai-growth',
-    name: 'AI & Advanced Automation',
-    short: 'Carefully scoped AI where the process is already solid.',
-    signs: ['After-hours inquiries with no one to answer', 'Repetitive admin that follows clear rules'],
-    helps: [
-      'AI-assisted replies and admin with human handoff',
-      'Integrations between your tools',
-      'Available depending on scope, usage and business readiness',
-    ],
+    icon: 'tabler:apps',
+    name: 'Custom Business Systems',
+    short: 'Built around your workflow: booking, payroll, rentals, events.',
   },
 ];
 
-export const JOURNEY = ['Attract', 'Capture', 'Convert', 'Serve', 'Retain', 'Intelligence'];
+/** v3 §4D: signature operating sequence. Technology enters after the workflow is understood. */
+export const SEQUENCE = [
+  {
+    title: 'Understand Your Business',
+    body: 'We look at how inquiries, sales and daily work actually move today—and where they leak.',
+  },
+  {
+    title: 'Organize the Process',
+    body: 'Clear steps, owners and records your team can follow, before any tool is chosen.',
+  },
+  {
+    title: 'Build the Right System',
+    body: 'Websites, CRM, forms, automations or a custom tool—only what fits the process.',
+  },
+  {
+    title: 'Launch, Train & Improve',
+    body: 'We hand it over with simple instructions, train your team and keep improving it.',
+  },
+];
 
-export const PHASES = [
+/** v3 §5: PromdiPreneur Systems capability groupings. problem → what we do → what changes → CTA. */
+export const SERVICE_GROUPS = [
   {
-    phase: 'Review',
-    icon: 'tabler:search',
-    items: ['Business Systems Review', 'Process & Automation Blueprint'],
-    body: 'We look at how work actually moves today, where it leaks, and what to fix first.',
+    id: 'get-found',
+    icon: 'tabler:world-www',
+    name: 'Get Found & Capture Leads',
+    problem: 'People find you on Facebook, ask a question, and the conversation gets lost.',
+    whatWeDo:
+      'A professional website or focused funnel page, simple inquiry forms, and every inquiry routed to one place.',
+    changes: 'Customers can find you, understand what you offer and reach you easily—and you see every inquiry.',
+    example: 'A cleaning company website where quote requests land in one inbox instead of five chat apps.',
   },
   {
-    phase: 'Build',
-    icon: 'tabler:hammer',
-    items: ['Website, CRM & Workflow Implementation'],
-    body: 'We build the agreed system in tools that fit your business, then hand it over with simple instructions.',
+    id: 'follow-up',
+    icon: 'tabler:address-book',
+    name: 'Follow Up & Close More',
+    problem: 'Quotations go out, then nothing happens. Nobody knows which leads are still waiting.',
+    whatWeDo: 'A simple CRM and sales pipeline, quotation follow-up steps and timely reminders.',
+    changes: 'Fewer forgotten leads, a clear won/lost record, and a pipeline you can check in one look.',
+    example: 'A service business that follows up every quote on day 1 and day 3 without the owner chasing it.',
   },
   {
-    phase: 'Improve',
-    icon: 'tabler:trending-up',
-    items: ['Ongoing Systems Support'],
-    body: 'We keep the system working and improve the next workflow on the list.',
+    id: 'operations',
+    icon: 'tabler:list-check',
+    name: 'Run Operations Better',
+    problem: 'The same admin is done by hand every week and the process lives in one person’s head.',
+    whatWeDo: 'Process mapping, SOPs, recurring task checklists, records, reports and practical automation.',
+    changes: 'Your team can follow the process without asking you, and you can see what’s happening.',
+    example: 'Crew deployment, quality checks and job sign-off recorded the same way on every job.',
+  },
+  {
+    id: 'custom-systems',
+    icon: 'tabler:apps',
+    name: 'Business Systems Built for Your Workflow',
+    problem: 'Off-the-shelf tools don’t fit how your business actually runs.',
+    whatWeDo: 'Systems built around your workflow: booking, payroll, rental operations, event check-in and more.',
+    changes: 'A tool that matches your process, with documentation and training for your team.',
+    example: 'PromdiPreneur Payroll and the MinBizCon QR check-in started this way.',
   },
 ];
 
@@ -125,21 +127,21 @@ export const SERVICE_FAQS = [
   {
     title: 'How much does it cost?',
     description:
-      'It depends on what your business needs, so we don’t publish fixed packages here. After we understand your situation, you get a written scope and price before anything starts. Your first question is free.',
+      'It depends on what your business needs, so we don’t publish fixed packages here. A Discovery Session helps us understand your situation first; you get a written scope and price before anything starts.',
   },
   {
     title: 'Do I need to buy new software?',
     description:
-      'Not necessarily. We start with your process, then use what you already have where it fits. Sometimes a clear checklist or a Google Sheet is the right answer.',
+      'Not necessarily. We organize the process first, then use what you already have where it fits. Sometimes a clear checklist or a Google Sheet is the right answer.',
+  },
+  {
+    title: 'Do you use AI?',
+    description:
+      'When it’s practical—for example to draft replies or handle routine admin with a person checking. We don’t add AI to a process that isn’t organized yet.',
   },
   {
     title: 'Do you only work with businesses in Cagayan de Oro?',
     description:
       'We are based in Cagayan de Oro and work with businesses across the Philippines. Most work can be done online.',
-  },
-  {
-    title: 'What happens after I send a question?',
-    description:
-      'A real person reads it and replies personally when available, with a few practical suggestions or the next step. There is no obligation to buy anything.',
   },
 ];

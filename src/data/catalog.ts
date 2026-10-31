@@ -73,7 +73,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'digital-shop',
-    name: 'PromdiPreneur Digital Shop',
+    name: 'PromdiPreneur Digital Store',
     category: 'Online Store',
     status: 'live',
     forWho: 'Anyone who wants a ready-to-use tool today',
@@ -81,7 +81,7 @@ export const PRODUCTS: Product[] = [
     includes: ['One checkout for everything', 'Files emailed after payment', 'Secure checkout'],
     image: shopImg,
     imageAlt: 'Covers of PromdiPreneur digital products in the online shop',
-    cta: { label: 'Visit Digital Shop', destination: 'shop' },
+    cta: { label: 'Browse the Digital Store', destination: 'shop' },
     featured: true,
     order: 3,
   },
@@ -107,7 +107,13 @@ export const STATUS_LABEL: Record<ProductStatus, string> = {
   'in-development': 'In development',
 };
 
-export type WorkStatus = 'Built' | 'Designed and supported' | 'In development' | 'Working concept';
+export type WorkStatus =
+  | 'Built'
+  | 'Designed and supported'
+  | 'Design built · preview live'
+  | 'Architecture designed · to be built'
+  | 'In development'
+  | 'Working concept';
 
 export interface WorkItem {
   id: string;
@@ -157,11 +163,39 @@ export const WORK: WorkItem[] = [
     context: '35th Mindanao Business Conference, Cagayan de Oro',
     problem: 'A three-day business conference needed fast registration and check-in at the door.',
     approach: 'One attendee record, one unique QR code, one scan at the desk.',
-    built: 'A QR registration and check-in workflow built on Google tools.',
+    // v3 says '800+ participants'; the verified source says 'about 800 expected'. Use the verified wording (docs/PENDING.md).
+    built:
+      'A QR registration and three-day check-in workflow on Google tools, planned for about 800 expected participants.',
     image: null,
     imageAlt: '',
     caseStudyUrl: 'https://portfolio.promdipreneur.com/work/qr-checkin',
     featured: true,
+  },
+  {
+    id: 'socri-website',
+    title: 'Socri Private Resort: Website',
+    status: 'Design built · preview live',
+    context: 'Exclusive-use private resort, Iponan, Cagayan de Oro',
+    problem: 'Guests needed one clear place to see packages, the venue and available dates.',
+    approach: 'A one-page site that answers the questions guests ask in chat before they book.',
+    built: 'Packages, a real photo tour and a date-check request form. Preview live; not yet launched.',
+    image: null,
+    imageAlt: '',
+    caseStudyUrl: 'https://portfolio.promdipreneur.com/work/socri',
+    featured: false,
+  },
+  {
+    id: 'socri-booking',
+    title: 'Socri Private Resort: Booking System',
+    status: 'Architecture designed · to be built',
+    context: 'Booking automation behind the resort website',
+    problem: 'Reservations, payments and calendar holds were confirmed by hand in chat.',
+    approach: 'Design the inquiry-to-confirmed-booking flow before building anything.',
+    built: 'Architecture designed: CRM, verified payments, automatic calendar booking, SMS and email. Not built yet.',
+    image: null,
+    imageAlt: '',
+    caseStudyUrl: 'https://portfolio.promdipreneur.com/work/socri-booking',
+    featured: false,
   },
   {
     id: 'digital-store',

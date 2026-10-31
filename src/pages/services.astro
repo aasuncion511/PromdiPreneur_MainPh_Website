@@ -2,16 +2,16 @@
 import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 import Section from '~/components/promdi/Section.astro';
-import CtaBand from '~/components/promdi/CtaBand.astro';
 import FAQs from '~/components/widgets/FAQs.astro';
 import { BRAND, CTA } from '~/data/brand';
-import { SOLUTIONS, PHASES, JOURNEY, SERVICE_FAQS, STEPS } from '~/data/services';
+import { SERVICE_GROUPS, SEQUENCE, SERVICE_FAQS } from '~/data/services';
 import { getPermalink } from '~/utils/permalinks';
 
+// v3 §5: PromdiPreneur Systems capability groupings (not priced packages). problem → what we do → what changes → CTA.
 const metadata = {
-  title: 'Services: PromdiPreneur Systems',
+  title: 'What We Do: PromdiPreneur Systems',
   description:
-    'Business systems for Filipino SMEs: lead organization, lead-to-sale, lead-to-booking, integrated customer journeys and carefully scoped AI. Review, build, improve.',
+    'Websites and funnels, CRM and follow-up, operations and automation, and custom business systems for Filipino businesses. We organize the process first, then build.',
 };
 ---
 
@@ -19,126 +19,102 @@ const metadata = {
   <Section
     id="services"
     headingLevel="h1"
-    eyebrow="Services · PromdiPreneur Systems"
-    title="We fix the process before adding the tools."
-    intro="Consulting, implementation and ongoing support for Filipino business owners. We start with how your business actually works, then build the simplest system that solves the problem."
+    eyebrow="What we do · PromdiPreneur Systems"
+    title="We organize the process, then build the system that runs it."
+    intro="We implement better ways for your business to manage inquiries, customers, sales, follow-ups and daily operations—using the right technology, explained in plain language."
   >
     <p class="font-heading font-bold text-sm uppercase tracking-[0.08em] text-[#754000] -mt-6">
       {BRAND.principle.join(' → ')}
     </p>
-    <div class="mt-8 flex flex-col sm:flex-row gap-3">
-      <a href={getPermalink('/contact')} class="btn-primary" data-placement="services_hero">{CTA.primary}</a>
-      <a href="#solutions" class="btn">See what we help with</a>
-    </div>
-  </Section>
-
-  <Section
-    id="solutions"
-    tone="white"
-    eyebrow="What we help with"
-    title="Five common problems, five practical solutions."
-    intro="Most businesses need one of these first. You don’t need to know the names—just tell us what’s happening."
-  >
-    <ul class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <nav aria-label="On this page" class="mt-8 flex flex-wrap gap-2">
       {
-        SOLUTIONS.map((s) => (
-          <li id={s.id} class="pp-card p-6 flex flex-col">
-            <h3 class="text-xl font-bold">{s.name}</h3>
-            <p class="mt-1 text-muted">{s.short}</p>
-            <p class="mt-4 pp-badge !p-0 text-[#754000]">Signs you need it</p>
-            <ul class="mt-1 space-y-1 text-sm text-muted">
-              {s.signs.map((x) => (
-                <li class="flex gap-2">
-                  <Icon name="tabler:point-filled" class="w-3 h-3 mt-1.5 shrink-0 text-[#754000]" />
-                  {x}
-                </li>
-              ))}
-            </ul>
-            <p class="mt-4 pp-badge !p-0 text-[#0b7339]">How we help</p>
-            <ul class="mt-1 space-y-1 text-sm">
-              {s.helps.map((x) => (
-                <li class="flex gap-2">
-                  <Icon name="tabler:check" class="w-4 h-4 mt-0.5 shrink-0 text-[#0b7339]" />
-                  {x}
-                </li>
-              ))}
-            </ul>
-          </li>
+        SERVICE_GROUPS.map((g) => (
+          <a
+            href={`#${g.id}`}
+            class="rounded-full bg-white border border-black/10 px-4 py-2.5 font-heading font-semibold text-sm text-primary hover:border-[#004c25]"
+          >
+            {g.name}
+          </a>
         ))
       }
-      <li class="rounded-2xl bg-[#eef4ee] p-6 flex flex-col justify-center">
-        <h3 class="text-xl font-bold">Not sure which one?</h3>
-        <p class="mt-2 text-muted">
-          That’s normal. Describe what’s slowing you down and we’ll point you in the right direction.
-        </p>
-        <a href={getPermalink('/contact')} class="btn-primary mt-5" data-placement="services_unsure"
-          >{CTA.primaryShort}</a
-        >
-      </li>
-    </ul>
+    </nav>
   </Section>
 
-  <Section
-    id="journey"
-    eyebrow="The customer journey"
-    title="Every stage of your customer journey, organized."
-    intro="A good system follows the customer from first message to repeat business—and shows the owner what’s happening."
-  >
-    <ol class="flex flex-wrap gap-2 items-center font-heading font-bold text-primary">
-      {
-        JOURNEY.map((j, i) => (
-          <li class="flex items-center gap-2">
-            <span class="rounded-full bg-white border border-black/10 px-4 py-2 shadow-sm">{j}</span>
-            {i < JOURNEY.length - 1 && (
-              <Icon name="tabler:arrow-right" class="w-4 h-4 text-[#0b7339]" aria-hidden="true" />
-            )}
-          </li>
-        ))
-      }
-    </ol>
-  </Section>
-
-  <Section id="how-we-work" tone="forest" eyebrow="How we work" title="Review → Build → Improve">
-    <ol class="grid md:grid-cols-3 gap-5">
-      {
-        PHASES.map((p) => (
-          <li class="rounded-2xl border border-white/15 bg-white/[0.06] p-6">
-            <p class="flex items-center gap-2 font-heading font-extrabold uppercase tracking-[0.12em] text-sm text-[#7fe0a4]">
-              <Icon name={p.icon} class="w-5 h-5" /> {p.phase}
+  {
+    SERVICE_GROUPS.map((g, i) => (
+      <section
+        id={g.id}
+        class:list={['py-14 md:py-20 scroll-mt-20', i % 2 ? 'bg-page' : 'bg-white']}
+        aria-labelledby={`${g.id}-title`}
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-[.8fr_1.2fr] gap-8 lg:gap-14">
+          <div>
+            <span class="inline-grid place-items-center w-12 h-12 rounded-xl bg-[#004c25] text-white">
+              <Icon name={g.icon} class="w-6 h-6" />
+            </span>
+            <h2 id={`${g.id}-title`} class="mt-4 text-3xl font-extrabold">
+              {g.name}
+            </h2>
+            <p class="mt-3 text-muted">
+              <em>Example:</em> {g.example}
             </p>
-            <p class="mt-3">{p.body}</p>
-            <ul class="mt-4 space-y-1.5">
-              {p.items.map((i) => (
-                <li class="font-heading font-semibold text-white">{i}</li>
-              ))}
-            </ul>
+          </div>
+          <dl class="grid sm:grid-cols-3 gap-4">
+            <div class="pp-card p-5">
+              <dt class="pp-badge !p-0 text-[#754000]">The problem</dt>
+              <dd class="mt-2">{g.problem}</dd>
+            </div>
+            <div class="pp-card p-5">
+              <dt class="pp-badge !p-0 text-[#0b7339]">What we do</dt>
+              <dd class="mt-2">{g.whatWeDo}</dd>
+            </div>
+            <div class="pp-card p-5 bg-[#eef4ee]">
+              <dt class="pp-badge !p-0 text-[#004c25]">What changes for you</dt>
+              <dd class="mt-2">{g.changes}</dd>
+            </div>
+          </dl>
+          <div class="lg:col-start-2 -mt-4">
+            <a href={getPermalink('/discovery')} class="pp-text-link" data-placement={`services_${g.id}`}>
+              Discuss your business <Icon name="tabler:arrow-right" class="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <Section
+    id="how-we-work"
+    tone="forest"
+    eyebrow="How we work"
+    title="Understand → Organize → Build → Launch & improve"
+  >
+    <ol class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {
+        SEQUENCE.map((s, i) => (
+          <li class="rounded-2xl border border-white/15 bg-white/[0.06] p-6">
+            <span class="font-heading font-extrabold text-3xl text-[#7fe0a4]" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="mt-3 !text-white text-lg font-bold">{s.title}</h3>
+            <p class="mt-1 text-[#d3e3d9]">{s.body}</p>
           </li>
         ))
       }
     </ol>
     <p class="mt-8 text-sm text-[#cfe0d6]">
-      These are phases of the journey, not fixed packages. Scope, timeline and price are agreed in writing after we
-      understand your business.
+      These are capability areas, not fixed packages. Scope, timeline and price are agreed in writing after a Discovery
+      Session.
     </p>
-  </Section>
-
-  <Section id="steps" tone="white" title="What working with us looks like">
-    <ol class="grid md:grid-cols-3 gap-5">
-      {
-        STEPS.map((s, i) => (
-          <li class="pp-card p-6">
-            <span class="font-heading font-extrabold text-4xl text-[#0b7339]" aria-hidden="true">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <h3 class="mt-3 text-lg font-bold">{s.title}</h3>
-            <p class="mt-1 text-muted">{s.body}</p>
-          </li>
-        ))
-      }
-    </ol>
   </Section>
 
   <FAQs title="Questions business owners ask" items={SERVICE_FAQS} />
 
-  <CtaBand placement="services_final" />
+  <section class="bg-gradient-to-r from-[#002e19] via-[#004c25] to-[#0a5c32] text-[#e1ece5] py-16 text-center">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <h2 class="!text-white text-3xl md:text-4xl font-extrabold">Not sure where to start?</h2>
+      <p class="mt-4 text-lg">That’s what the Discovery Session is for. Short, free, no obligation.</p>
+      <a href={getPermalink('/discovery')} class="btn-light mt-8" data-placement="services_final">{CTA.primary}</a>
+    </div>
+  </section>
 </Layout>

@@ -1,0 +1,187 @@
+---
+/**
+ * Free ebook signup (v3 §8.2 + Final Ebook Addendum §3–§4).
+ * Fields: First Name, Email, Business Type. Required processing notice (resource fulfilment) and a SEPARATE,
+ * optional, unticked marketing checkbox. POST /api/guide-request → GHL contact upsert (tag "LM | Ebook");
+ * the GHL workflow emails the download link once. Success is shown only after the server confirms the upsert.
+ * While FEATURES.ebookLive is false the form is visible but disabled and says nothing is collected.
+ */
+import TrackedLink from './TrackedLink.astro';
+import { EBOOK, FEATURES } from '~/data/brand';
+import { BUSINESS_TYPES } from '../../../server/guide.ts';
+import { getPermalink } from '~/utils/permalinks';
+
+const live = FEATURES.ebookLive;
+const { placement = 'ebook_page' } = Astro.props;
+---
+
+<form
+  id="pp-ebook"
+  class="grid gap-4"
+  novalidate
+  data-live={live ? '1' : '0'}
+  data-thanks={getPermalink(`${EBOOK.route}/thank-you`)}
+  data-placement={placement}
+>
+  {
+    !live && (
+      <div class="rounded-xl border border-[#ecd3a3] bg-[#fff6e5] text-[#4d3300] p-4 text-sm" role="note">
+        <p class="font-heading font-bold text-base">Opening soon.</p>
+        <p class="mt-1">
+          The guide is ready; we’re finishing the delivery setup. Nothing is collected or sent from this form yet.
+          Questions now?{' '}
+          <TrackedLink dest="messenger" placement={`${placement}_inactive`} class="underline font-semibold">
+            Message us on Facebook
+          </TrackedLink>
+          .
+        </p>
+      </div>
+    )
+  }
+  <fieldset disabled={!live} class="grid gap-4">
+    <legend class="sr-only">Get {EBOOK.title}</legend>
+    <div>
+      <label for="e-firstName" class="pp-label">First name *</label>
+      <input
+        id="e-firstName"
+        name="firstName"
+        class="pp-field"
+        autocomplete="given-name"
+        maxlength="80"
+        required
+        aria-describedby="e-firstName-err"
+      />
+      <p id="e-firstName-err" class="pp-err hidden text-sm text-[#a3261b] mt-1 font-medium"></p>
+    </div>
+    <div>
+      <label for="e-email" class="pp-label">Email address *</label>
+      <input
+        id="e-email"
+        name="email"
+        type="email"
+        inputmode="email"
+        class="pp-field"
+        autocomplete="email"
+        maxlength="254"
+        required
+        aria-describedby="e-email-err"
+      />
+      <p id="e-email-err" class="pp-err hidden text-sm text-[#a3261b] mt-1 font-medium"></p>
+    </div>
+    <div>
+      <label for="e-businessType" class="pp-label">Business type *</label>
+      <select id="e-businessType" name="businessType" class="pp-field" required aria-describedby="e-businessType-err">
+        <option value="">Choose one…</option>
+        {BUSINESS_TYPES.map((t) => <option value={t}>{t}</option>)}
+      </select>
+      <p id="e-businessType-err" class="pp-err hidden text-sm text-[#a3261b] mt-1 font-medium"></p>
+    </div>
+    <label class="flex items-start gap-3 text-sm text-muted min-h-[44px]">
+      <input name="marketingConsent" type="checkbox" class="w-5 h-5 mt-0.5 accent-[#004c25] shrink-0" />
+      <span>Optional: also send me occasional practical tips and PromdiPreneur updates. I can unsubscribe anytime.</span
+      >
+    </label>
+    <p class="text-xs text-muted">
+      We use your details to email you the guide and keep a record of your request. See our <a
+        href={getPermalink('/privacy')}
+        class="underline text-[#0b7339]">Privacy Policy</a
+      >.
+    </p>
+    <div class="absolute -left-[10000px] w-px h-px overflow-hidden" aria-hidden="true">
+      <label>Leave this empty <input type="text" name="pp_extra_info" tabindex="-1" autocomplete="off" /></label>
+    </div>
+    <button type="submit" class="btn-primary w-full text-lg">{live ? 'Send Me My Free Guide' : 'Opening soon'}</button>
+    <p class="text-sm text-muted text-center">
+      Free PDF guide. We’ll email your download link after you submit your details. No payment required.
+    </p>
+  </fieldset>
+  <div id="pp-ebook-status" role="status" aria-live="polite" tabindex="-1" class="outline-none"></div>
+</form>
+
+<script>
+  const form = document.getElementById('pp-ebook') as HTMLFormElement | null;
+  if (form && form.dataset.live === '1') {
+    const status = document.getElementById('pp-ebook-status')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    let sending = false;
+    const track = (n: string, p: Record<string, string> = {}) =>
+      window.ppTrack?.(n, { form: 'ebook', placement: form.dataset.placement || '', ...p });
+    const setErr = (f: string, m: string) => {
+      const el = form.querySelector(`[name=${f}]`);
+      const p = document.getElementById(`e-${f}-err`);
+      el?.setAttribute('aria-invalid', m ? 'true' : 'false');
+      if (p) {
+        p.textContent = m;
+        p.classList.toggle('hidden', !m);
+      }
+    };
+    const showError = (msg: string) => {
+      status.innerHTML = '';
+      const p = document.createElement('p');
+      p.className = 'rounded-xl border border-[#efc2bd] bg-[#fdf0ee] text-[#5a1710] p-3 text-sm';
+      p.textContent = msg;
+      status.appendChild(p);
+      status.focus();
+    };
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (sending) return; // double-click / double-submit guard
+      const fd = new FormData(form);
+      const data = {
+        firstName: String(fd.get('firstName') || '').trim(),
+        email: String(fd.get('email') || '').trim(),
+        businessType: String(fd.get('businessType') || ''),
+        marketingConsent: fd.get('marketingConsent') === 'on',
+        pp_extra_info: String(fd.get('pp_extra_info') || ''),
+        source: window.ppAttribution?.() ?? {},
+      };
+      const errs: Record<string, string> = {};
+      if (!data.firstName) errs.firstName = 'Please tell us your first name.';
+      if (!EMAIL_RE.test(data.email)) errs.email = 'Please enter a valid email so we can send your guide.';
+      if (!data.businessType) errs.businessType = 'Please choose your business type.';
+      ['firstName', 'email', 'businessType'].forEach((f) => setErr(f, errs[f] || ''));
+      if (Object.keys(errs).length) {
+        form.querySelector<HTMLElement>('[aria-invalid=true]')?.focus();
+        return;
+      }
+      sending = true;
+      button.disabled = true;
+      button.textContent = 'Sending…';
+      status.innerHTML = '';
+      try {
+        const res = await fetch('/api/guide-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body.ok === true) {
+          track('ebook_form_success');
+          try {
+            sessionStorage.setItem('pp-ebook-ok', '1');
+          } catch {
+            /* thank-you page still confirms the email */
+          }
+          location.assign(form.dataset.thanks!);
+          return;
+        }
+        if (body.error === 'validation' && body.fields)
+          Object.entries(body.fields).forEach(([f, m]) => setErr(f, String(m)));
+        showError(
+          body.error === 'rate_limited'
+            ? 'We’ve received several requests from your connection. Please try again later, or email admin@promdipreneur.com.'
+            : 'Your request was not sent. Please try again, or email admin@promdipreneur.com and we’ll send the guide.'
+        );
+        track('ebook_form_error', { error_type: String(body.error || res.status).slice(0, 40) });
+      } catch {
+        showError('We couldn’t reach our server. Please check your connection and try again.');
+        track('ebook_form_error', { error_type: 'network' });
+      } finally {
+        sending = false;
+        button.disabled = false;
+        button.textContent = 'Send Me My Free Guide';
+      }
+    });
+  }
+</script>

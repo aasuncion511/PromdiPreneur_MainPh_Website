@@ -1,6 +1,6 @@
 // Release guard: fails if retired branding, ₱ prices, AstroWind demo content or a fake ebook download appear in
 // customer-facing output; checks preview builds are not indexable. Run after a build: npm run check:brand
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
@@ -14,7 +14,6 @@ const RULES = [
     'AstroWind demo content',
     [/AstroWind/, /onwidget/i, /8D46E7/i, /Lorem ipsum/i, /pixabay/i, /Tailwind CSS template/i],
   ],
-  ['fake ebook download', [/href="[^"]*\.pdf"/i, /download="/i]],
 ];
 const TEXT = new Set(['.html', '.js', '.css', '.txt', '.xml', '.astro', '.ts', '.md', '.mjs']);
 const walk = (d) =>
@@ -42,6 +41,17 @@ for (const dir of ['dist', 'src']) {
 }
 
 const pages = walk(join(root, 'dist')).filter((f) => f.endsWith('.html'));
+
+// Fake-download guard: every PDF link in the built site must point at a file that actually ships.
+const deadPdf = [];
+for (const f of pages)
+  for (const m of readFileSync(f, 'utf8').matchAll(/href="(\/[^"]+\.pdf)"/gi))
+    if (!existsSync(join(root, 'dist', m[1]))) deadPdf.push(`${relative(root, f)} -> ${m[1]}`);
+console.log(
+  `${deadPdf.length ? 'FAIL' : 'PASS'}  dist/: every PDF link points at a shipped file (${deadPdf.length} dead)`
+);
+deadPdf.forEach((d) => console.log('      ' + d));
+failed ||= deadPdf.length > 0;
 const robots = readFileSync(join(root, 'dist/robots.txt'), 'utf8');
 const headers = readFileSync(join(root, 'dist/_headers'), 'utf8');
 const preview = readFileSync(join(root, 'dist/index.html'), 'utf8').includes('Preview for approval');

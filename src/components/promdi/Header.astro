@@ -2,11 +2,11 @@
 import { Icon } from 'astro-icon/components';
 import Logo from '~/components/Logo.astro';
 import { headerData } from '~/navigation';
-import { CTA } from '~/data/brand';
 import { getPermalink, trimSlash } from '~/utils/permalinks';
 
 const current = `/${trimSlash(new URL(Astro.url).pathname)}`;
-const isActive = (href?: string) => !!href && trimSlash(href) !== '' && current.startsWith(`/${trimSlash(href)}`);
+const isActive = (href?: string) =>
+  !!href && (trimSlash(href) === '' ? current === '/' : current.startsWith(`/${trimSlash(href)}`));
 ---
 
 <header id="site-header" class="sticky top-0 z-40 bg-[#f7f7f3]/95 border-b border-black/5 backdrop-saturate-150">
@@ -67,11 +67,11 @@ const isActive = (href?: string) => !!href && trimSlash(href) !== '' && current.
     </nav>
 
     <a
-      href={getPermalink('/contact')}
+      href={headerData.cta.href}
       class="btn-primary ml-auto lg:ml-3 !py-2.5 !px-5 text-sm whitespace-nowrap"
       data-placement="header"
     >
-      <span class="hidden sm:inline">{CTA.primary}</span><span class="sm:hidden">{CTA.primaryShort}</span>
+      <span class="hidden sm:inline">{headerData.cta.text}</span><span class="sm:hidden">{headerData.cta.short}</span>
     </a>
 
     <button
@@ -110,7 +110,8 @@ const isActive = (href?: string) => !!href && trimSlash(href) !== '' && current.
           )
         }
       </ul>
-      <a href={getPermalink('/contact')} class="btn-primary w-full mt-5" data-placement="mobile_nav">{CTA.primary}</a>
+      <a href={headerData.cta.href} class="btn-primary w-full mt-5" data-placement="mobile_nav">{headerData.cta.text}</a
+      >
     </nav>
   </div>
 </header>

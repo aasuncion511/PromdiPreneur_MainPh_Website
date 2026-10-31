@@ -1,7 +1,7 @@
 ---
 const { status } = Astro.props as { status: string };
-const live = /available|built|live/i.test(status);
-const progress = /development|concept|coming|pending/i.test(status);
+const progress = /development|concept|coming|pending|to be built|preview/i.test(status);
+const live = !progress && /available|built|supported|live/i.test(status);
 ---
 
 <span

@@ -8,14 +8,15 @@ import { getPermalink } from '~/utils/permalinks';
 const year = new Date().getFullYear();
 const col = (title: string, links: { text: string; href: string }[]) => ({ title, links });
 const explore = col('Explore', [
-  { text: 'Services', href: getPermalink('/services') },
-  { text: 'Our Work', href: getPermalink('/our-work') },
-  { text: 'Products', href: getPermalink('/products') },
+  { text: 'What We Do', href: getPermalink('/services') },
+  { text: 'Our Work', href: getPermalink('/work') },
+  { text: 'Digital Store', href: getPermalink('/products') },
   { text: 'About', href: getPermalink('/about') },
+  { text: 'Book a Discovery Session', href: getPermalink('/discovery') },
   { text: 'Contact', href: getPermalink('/contact') },
 ]);
 const resources = col('Resources', [
-  { text: 'Free Business Guide', href: getPermalink('/free-guide') },
+  { text: 'Free Ebook', href: getPermalink('/resources/free-ebook') },
   { text: 'All Resources', href: getPermalink('/resources') },
 ]);
 ---

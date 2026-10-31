@@ -154,3 +154,9 @@ h3 {
     scroll-behavior: auto;
   }
 }
+.btn:disabled,
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}

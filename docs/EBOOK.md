@@ -1,63 +1,80 @@
-# Free Business Guide: landing page, capture and delivery spec
+# Free ebook: The Business Opening Checklist PH
 
-**Status: built and INACTIVE.** The page, cover component, form, GHL capture endpoint and thank-you page all exist. Submissions and delivery stay off until the three items in _Activation_ are approved. The site never hosts a download link and never claims the guide was sent.
+Sources: Master Handoff v3 §8 and the Final Ebook Addendum (31 Oct 2026).
 
-## What is live on the site now
+**Status: integrated with the real cover and title. Submission and delivery stay INACTIVE** until the activation gates below are met. The site never shows a fake download and never claims a delivery that didn't happen.
 
-| Piece            | Where                                                                                 | Current behavior                                                                      |
-| ---------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Landing page     | `/free-guide` (`src/pages/free-guide.astro`)                                          | Working title, who it's for, what it covers (high level), "coming soon"               |
-| Homepage section | `#free-guide` on `/`                                                                  | "Not ready to talk yet? Start with our free guide." → `/free-guide`                   |
-| Navigation       | Resources → **Free Business Guide** (desktop dropdown + mobile menu + footer)         | Links to `/free-guide`                                                                |
-| Resources page   | `/resources`                                                                          | Features the guide, marked coming soon                                                |
-| Cover            | `src/components/promdi/EbookCover.astro`                                              | Labelled **"Cover placeholder"**; pass `src` to show the approved artwork             |
-| Form             | `src/components/promdi/GuideForm.astro`                                               | Fields shown but **disabled**; says "Nothing is collected or sent from this form yet" |
-| Endpoint         | `POST /api/guide-request` (`netlify/functions/guide-request.mts` → `server/guide.ts`) | Returns `503 inactive`                                                                |
-| Thank-you        | `/free-guide/thank-you` (noindex)                                                     | While inactive: "The free guide isn't available yet. Nothing has been sent."          |
+## Asset status
 
-## Capture fields (handoff v1.1 §15, short form, no questionnaire)
+| Asset                               | Status                                                                                                                                                                                                                                                                                                                                                                                           |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Title, subtitle, author, brand line | **Done.** Exact text in `src/data/brand.ts` → `EBOOK`                                                                                                                                                                                                                                                                                                                                            |
+| Cover                               | **Done.** The supplied cover, unaltered: `src/assets/images/ebook/business-opening-checklist-ph-cover.webp` (888×1286). Social card: `og-business-opening-checklist.png`                                                                                                                                                                                                                         |
+| Final PDF                           | **Not in the repo yet.** Found in Allan's Drive as `The_Business_Opening_Checklist_PH_Designed.pdf` (801,835 bytes, modified 30 Oct 2026). It could not be transferred into the build environment through the Drive connector (size). **Allan: add it to the repo at `public/resources/promdipreneur-business-opening-checklist-ph.pdf`** (GitHub → Add file → Upload), or attach it in the chat |
+| PDF link/QR check                   | Blocked until the PDF is in the repo. Then run `npm run check:pdf-links`. Expected destinations to confirm: `https://promdipreneur.com/`, `https://shop.promdipreneur.com/` and the Facebook page. QR targets: pass them as extra arguments                                                                                                                                                      |
+| Regulatory source review            | **Approval gate.** PDF page 4 says the legal/regulatory references were not independently re-validated in the design update; references were checked on 4 Oct 2026. Allan approves before the ebook is announced. Marketing must not call it "compliance-verified"                                                                                                                               |
 
-| Field                                                                                        | Required                                    | Sent to GHL as                                                                       |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------ |
-| First name                                                                                   | yes                                         | `firstName`                                                                          |
-| Email                                                                                        | yes                                         | `email` (GHL de-duplicates by email, so a repeat request updates one contact)        |
-| Type of business                                                                             | yes, one of 11 options in `server/guide.ts` | custom field `business_type`                                                         |
-| Business name                                                                                | no                                          | `companyName`                                                                        |
-| Consent: "Email me the guide and a few practical follow-up tips. I can unsubscribe anytime." | yes                                         | custom field `email_permission` = `free-guide-v1 <ISO timestamp>`                    |
-| Attribution                                                                                  | automatic                                   | `utm_source`, `utm_medium`, `utm_campaign`, `landing_page` custom fields (if mapped) |
-| Tag                                                                                          | automatic                                   | `lead-magnet:free-guide`                                                             |
+## What's on the site
 
-Email permission does **not** imply SMS, call or WhatsApp permission. The site records the consent wording version and timestamp.
+| Where                                                                    | What                                                                                                                                                                                             |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/resources/free-ebook`                                                  | Addendum §3 copy (eyebrow, H1, intro, 4 benefits, form, support text, trust note, secondary CTA), the real cover, the 7 stages, "Also inside", who it's for, author line                         |
+| `/resources/free-ebook/thank-you` (noindex)                              | Live: "Your free guide is on its way. Please check your email." + spam hint + **Download Your Ebook** shown only after a confirmed submission in this browser. Inactive: "Nothing has been sent" |
+| Homepage `#free-ebook`                                                   | Resource card: title, "109 practical checks…", **Get Free Guide**                                                                                                                                |
+| Resources page, nav (Resources → Free Ebook), footer, products page note | All link to `/resources/free-ebook`                                                                                                                                                              |
+| Old preview paths                                                        | `/free-guide` and `/free-guide/thank-you` 301 to the new routes (relative `_redirects`, never to the live domain)                                                                                |
 
-## Delivery workflow (built in GHL by Allan; the site only creates or updates the contact)
+There is deliberately no unconditional download button anywhere (Addendum §4).
+
+## Capture and GHL mechanics
 
 ```
-Website form ─▶ /api/guide-request ─▶ GHL contact upsert + tag lead-magnet:free-guide
-                                          │
-                       GHL workflow "Free Guide — Delivery" (trigger: tag added)
-                                          │
-   Email 1 (immediate): deliver the guide (GHL-hosted file link) + soft CTA "Ask Us About Your Business"
-   Wait 2–3 days ── Email 2: one practical systems idea           CTA: Check my business
-   Wait 3–4 days ── Email 3: where businesses leak (inquiry, quote, booking, retention)  CTA: Find my biggest bottleneck
-   Later        ── Email 4: a real, verified PromdiPreneur system example              CTA: Ask Us About Your Business
-   Exit: contact books a call / sends an inquiry / gets tag website-inquiry → leave this nurture (no duplicate sequences)
+Form (First name, Email, Business type, optional marketing tick)
+  → POST /api/guide-request  (inactive → 503 until EBOOK_ACTIVE=true)
+  → validate, honeypot, 5/hour/IP rate limit, double-submit guard in the browser
+  → GHL contacts/upsert (dedupe by email)     ── fails? visitor sees "not sent" + email fallback
+      tag: LM | Ebook (one tag only)
+      fields: business_type, lead_magnet_name, utm_source/medium/campaign/content, landing_page, referrer,
+              marketing_consent (yes|no), consent_record ("ebook-form-v1 | marketing=… | ISO time")
+  → { ok: true } → /resources/free-ebook/thank-you
+  → GHL workflow (built by Allan, NEW — no existing workflow edited):
+      Trigger: tag "LM | Ebook" added · Allow re-entry: OFF (one delivery per contact)
+      1. Email (transactional, immediate): download link = https://promdipreneur.com/resources/promdipreneur-business-opening-checklist-ph.pdf
+         From "Allan | PromdiPreneur" <admin@agency.promdipreneur.com>, Reply-To admin@promdipreneur.com
+      2. If/Else marketing_consent = yes → optional educational sequence (2–3 emails) ending in a Discovery invitation
+         else → end
+      No opportunity is created for a download. Opportunities follow the existing pipeline rules (qualified / booked Discovery).
 ```
 
-- Host the PDF in GHL Media (or Google Drive "anyone with the link"). The link only goes out by email, after the form is submitted.
-- Sender: the verified promdipreneur.com sender in GHL. Every email has an unsubscribe link.
-- **Do not edit existing GHL workflows** for the shop, payroll or kits. Create this one as new.
+- **Consent:** asking for the guide is the request for fulfilment, covered by the processing notice and the privacy link. Ongoing marketing needs the separate, unticked, optional box.
+- **Unsubscribe:** GHL adds the unsubscribe link and suppresses unsubscribed contacts.
+- **Hosting:** the PDF ships with the site (`public/resources/`). That gives a stable, owner-controlled URL at no extra cost. It is a public URL: the form is lead capture before convenient delivery, not access control.
+- **Updating the PDF:** replace the file with the same name and redeploy. For a breaking content change, use a versioned file name and update the GHL email.
 
-## Activation (all three required)
+## Tracking (consent-first, once each)
 
-1. **Final PDF** approved and uploaded to GHL Media.
-2. **Cover artwork** approved. Save it as `src/assets/images/brand/free-guide-cover.webp` and pass it to `<EbookCover src={...} />` on `/`, `/free-guide` and `/resources`. Replace the working title and the "What it covers" bullets with the final contents.
-3. **GHL delivery workflow** built and tested with a test contact (Email 1 arrives, and the link opens the right PDF).
+| Event                  | When                                          |
+| ---------------------- | --------------------------------------------- |
+| `ebook_view`           | Ebook page viewed (once per session)          |
+| `ebook_cta_click`      | Any "Get Free Guide" link                     |
+| `ebook_form_success`   | Only after the server confirms the GHL upsert |
+| `ebook_form_error`     | Server or network failure (error code only)   |
+| `ebook_download_click` | "Download Your Ebook" on the thank-you page   |
 
-Then:
+The site does not fire Meta Pixel events. If GHL forms or pages carry the pixel, conversions stay counted there (no double-firing).
 
-- Set `EBOOK_ACTIVE=true`, `GHL_PRIVATE_TOKEN`, `GHL_LOCATION_ID` and `GHL_CUSTOM_FIELDS` in Netlify.
-- Set `FEATURES.ebookLive = true` in `src/data/brand.ts`. This enables the form and switches the thank-you copy to "Check your email".
-- Deploy a preview. Submit one real request and confirm: GHL contact + tag, Email 1 received, thank-you page shown, `ebook_request` analytics event.
-- Only then publish to production.
+## Activation (all required, in order)
 
-**Rollback:** set `EBOOK_ACTIVE=false`. The endpoint refuses immediately, without a redeploy. Set `FEATURES.ebookLive=false` to restore the inactive page.
+1. PDF added at `public/resources/promdipreneur-business-opening-checklist-ph.pdf`. Then run `npm run check:pdf-links` and fix or flag any broken destinations.
+2. Allan approves the regulatory-reference publishing review (Addendum §6).
+3. GHL: Private Integration token, location ID and custom field IDs set (`docs/GHL_INTEGRATION.md`). The workflow above is built, with the sending domain verified for `agency.promdipreneur.com`.
+4. Netlify env: `EBOOK_ACTIVE=true`. Code: `FEATURES.ebookLive = true` in `src/data/brand.ts`. **The build fails if the PDF is missing.**
+5. On the deploy preview, with a test contact:
+   - one GHL contact with the tag
+   - exactly one delivery email
+   - the link opens the PDF on a phone
+   - a second submit sends no second email
+   - unsubscribe works
+6. Delete the test contact. Allan approves the production switch.
+
+**Rollback:** `EBOOK_ACTIVE=false` stops requests immediately without a redeploy.

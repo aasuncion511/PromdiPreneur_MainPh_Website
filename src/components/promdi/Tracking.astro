@@ -111,6 +111,13 @@ const anyAnalytics = Boolean(config.ga4 || config.umamiSrc);
         m.setAttribute('data-website-id', config.umamiId);
         document.head.appendChild(m);
       }
+      // Page-view style events declared by the page (e.g. ebook_view), once per session.
+      document.querySelectorAll('[data-track-view]').forEach((el) => {
+        const name = el.getAttribute('data-track-view');
+        if (safely(() => sessionStorage.getItem('pp-viewed-' + name))) return;
+        safely(() => sessionStorage.setItem('pp-viewed-' + name, '1'));
+        window.ppTrack(name, { placement: location.pathname.slice(0, 100) });
+      });
     };
 
     window.ppTrack = (name, params) => {
@@ -125,6 +132,7 @@ const anyAnalytics = Boolean(config.ga4 || config.umamiSrc);
     };
 
     const banner = document.getElementById('pp-consent');
+    // (load() is only called below, after ppTrack is defined.)
     const settings = document.querySelector('[data-open-consent]');
     if (banner) {
       settings?.classList.remove('hidden');

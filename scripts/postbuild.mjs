@@ -1,6 +1,17 @@
 // Writes dist/robots.txt and dist/_headers (Netlify). Preview builds (PUBLIC_PREVIEW=1) are blocked from indexing
 // three ways: noindex meta (PageLayout), robots.txt Disallow, and an X-Robots-Tag header.
-import { writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+
+// Ebook guard (Final Ebook Addendum): the ebook may only be switched on when the PDF really ships with the site.
+const brand = readFileSync(new URL('../src/data/brand.ts', import.meta.url), 'utf8');
+const ebookLive = /ebookLive:\s*true/.test(brand);
+const pdfPath = brand.match(/pdfPath:\s*'([^']+)'/)?.[1];
+if (ebookLive && !(pdfPath && existsSync(new URL(`../dist${pdfPath}`, import.meta.url)))) {
+  console.error(
+    `postbuild: FEATURES.ebookLive is true but ${pdfPath} is not in the build. Add the PDF to public${pdfPath}.`
+  );
+  process.exit(1);
+}
 
 const site = 'https://promdipreneur.com';
 const preview = process.env.PUBLIC_PREVIEW === '1';
@@ -45,5 +56,16 @@ ${preview ? '  X-Robots-Tag: noindex, nofollow\n' : ''}
 /free-guide/thank-you
   X-Robots-Tag: noindex
 `
+);
+// Relative redirects (Netlify). Astro's own static redirects resolve to the absolute production domain, which would
+// send preview visitors to the live site, so redirects live here instead. Paths from earlier review previews only.
+writeFileSync(
+  new URL('_redirects', dist),
+  [
+    '/our-work  /work  301',
+    '/free-guide  /resources/free-ebook  301',
+    '/free-guide/thank-you  /resources/free-ebook/thank-you  301',
+    '',
+  ].join('\n')
 );
 console.log(`postbuild: robots.txt + _headers written (${preview ? 'PREVIEW: noindex' : 'production'})`);

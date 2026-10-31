@@ -2,16 +2,16 @@
 
 Run on 30 Oct 2026 against the production build, served by `scripts/local-server.mjs`. That server runs the real inquiry and guide pipelines, with file storage, a captured outbox and a captured GHL in place of the external services. Raw results are in `scripts/out/qa-results.json`.
 
-| Check                                                                               | Result                                                                                           |
-| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `astro check` (TypeScript)                                                          | 0 errors, 0 warnings                                                                             |
-| ESLint / Prettier                                                                   | clean                                                                                            |
-| Unit tests (`npm run test:api`): inquiry pipeline, guide endpoint, GHL adapter, CSV | **21/21**                                                                                        |
-| Browser E2E (`npm run qa`, Chromium)                                                | **62/62**                                                                                        |
-| Brand/release guard (`npm run check:brand`), production and preview builds          | pass                                                                                             |
-| axe-core WCAG 2.2 AA + best practice, all 12 pages, desktop and mobile              | 0 violations                                                                                     |
-| Lighthouse mobile: `/`, `/free-guide`, `/contact`, `/products`                      | Performance 98–99 · Accessibility 100 · Best Practices 100 · SEO 100. LCP 1.7–2.1 s, CLS ≤ 0.009 |
-| Lighthouse desktop, same pages                                                      | 100 / 100 / 100 / 100                                                                            |
+| Check                                                                               | Result                                                                                        |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `astro check` (TypeScript)                                                          | 0 errors, 0 warnings                                                                          |
+| ESLint / Prettier                                                                   | clean                                                                                         |
+| Unit tests (`npm run test:api`): inquiry pipeline, ebook endpoint, GHL adapter, CSV | **22/22**                                                                                     |
+| Browser E2E (`npm run qa`, Chromium)                                                | **68/68**                                                                                     |
+| Brand/release guard (`npm run check:brand`), production and preview builds          | pass                                                                                          |
+| axe-core WCAG 2.2 AA + best practice, all 13 pages, desktop and mobile              | 0 violations                                                                                  |
+| Lighthouse mobile: `/`, `/resources/free-ebook`, `/discovery`, `/services`          | Performance 99 · Accessibility 100 · Best Practices 100 · SEO 100. LCP 1.6–1.7 s, CLS ≤ 0.052 |
+| Lighthouse desktop, same pages                                                      | 100 / 100 / 100 / 100                                                                         |
 
 Lighthouse ran on localhost with gzip enabled (lab data, not field data).
 
@@ -49,12 +49,29 @@ Lighthouse ran on localhost with gzip enabled (lab data, not field data).
   - When the API is switched to active (test mode), it upserts the GHL contact with the `lead-magnet:free-guide` tag and the business type.
 - **Responsive:** no horizontal scroll on any page at 320, 360, 390, 768, 1024, 1280, 1440 or 1920px.
 
+## v3 / ebook update: what was added to the suite
+
+- **Navigation:** the v3 labels (Home, What We Do, Our Work, Digital Store, Resources, About). The header CTA "Book a Discovery Session" goes to `/discovery`. Resources lists the Free Ebook.
+- **Homepage:** the v3 hero copy, and the ebook card with the real cover (image loads), exact title and "Get Free Guide".
+- **Ebook page:**
+  - addendum H1, exact title, real cover, all 7 stages by name, and the trust note
+  - the form fields; the marketing box is optional and unticked
+  - while inactive: every control disabled, and no PDF or download link anywhere
+  - the API returns 503 and nothing reaches GHL
+  - the thank-you page says nothing was sent
+- **Ebook API when activated (test mode):** exactly one GHL upsert, a single tag `LM | Ebook`, the business type, and `marketing_consent=no` by default.
+- **Redirects:** `/free-guide` and `/our-work` return relative 301s, never to the live domain.
+- **404 page:** returns 404 and every link is labelled.
+
 ## Bugs found and fixed during QA
 
 1. **Footer overflowed at exactly 768px** (email link in a 12-column grid). The footer now uses 2 columns until 1024px.
 2. **Logo link accessible name** didn't match its visible text. Fixed.
 3. **Heading order** on Our Work went from H1 to H3. Card headings are now H2 on that page.
-4. **Demo content leak:** an unused AstroWind "star us on GitHub" widget was still being compiled into the CSS. Deleted.
+4. **Redirects pointed at the live site.** Astro's static redirects resolved to `https://promdipreneur.com/…`, which would have sent preview visitors to the current live site. They are now relative Netlify `_redirects` rules.
+5. **Invalid markup on Services:** a link sat inside a `<dl>` (axe "definition-list"). Moved outside the list.
+6. **Empty button on the 404 page** after the CTA labels changed (caught by `astro check`). Fixed, and a 404 check was added to E2E.
+7. **Demo content leak:** an unused AstroWind "star us on GitHub" widget was still being compiled into the CSS. Deleted.
 
 ## Not proven here (needs Allan's accounts)
 

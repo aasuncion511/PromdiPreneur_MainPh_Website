@@ -6,6 +6,7 @@ import ProductCard from '~/components/promdi/ProductCard.astro';
 import CtaBand from '~/components/promdi/CtaBand.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import { PRODUCTS, type ProductCategory } from '~/data/catalog';
+import { CTA } from '~/data/brand';
 
 const metadata = {
   title: 'Digital Products & Business Tools',
@@ -23,12 +24,13 @@ const groups = order
   <Section
     id="products"
     headingLevel="h1"
-    eyebrow="Digital Products Store"
+    eyebrow="Digital Store"
     title="Prefer a ready-to-use tool? Start here."
     intro="Practical templates, manuals and systems you can put to work in your business today. Prices, checkout and delivery are handled securely on each product page."
   >
     <TrackedLink dest="shop" placement="products_hero" class="btn-primary">
-      Visit the Digital Shop <Icon name="tabler:external-link" class="w-4 h-4 ml-2" />
+      {CTA.store}
+      <Icon name="tabler:external-link" class="w-4 h-4 ml-2" />
     </TrackedLink>
   </Section>
   {
@@ -48,6 +50,17 @@ const groups = order
       </Section>
     ))
   }
+  <Section id="free" narrow>
+    <p class="text-muted">
+      Looking for our <strong class="text-default">free</strong> ebook? It isn’t sold in the store:
+      <a
+        href="/resources/free-ebook"
+        class="underline text-[#0b7339]"
+        data-track="ebook_cta_click"
+        data-placement="products">get The Business Opening Checklist PH here</a
+      >.
+    </p>
+  </Section>
   <Section id="custom" narrow>
     <div class="rounded-2xl bg-[#eef4ee] p-6 md:p-8">
       <h2 class="text-2xl font-bold">Need something built for your business instead?</h2>

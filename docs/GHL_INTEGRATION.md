@@ -8,8 +8,8 @@ GHL stays the customer operating system (CRM, calendars, store, workflows). The 
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | Product purchase  | Links to shop / kits / payroll (UTMs forwarded, destination params preserved)                                      | Existing funnels, checkout (SaligPay), pixels, delivery: **unchanged**                 | Live links                                              |
 | Ask a question    | `/api/inquiry` stores the inquiry, emails admin@, then best-effort **upserts the contact** (tag `website-inquiry`) | Optional workflow on tag `website-inquiry` (e.g. internal notification, pipeline card) | Ready. Needs `RESEND_*` (required) + `GHL_*` (optional) |
-| Free guide        | `/api/guide-request` upserts the contact with tag `lead-magnet:free-guide`                                         | New workflow delivers the guide + nurture (`docs/EBOOK.md`)                            | **Inactive** until approved                             |
-| Discovery booking | `/contact#discovery` shows "coming soon"                                                                           | GHL calendar for PH discovery calls                                                    | **Pending**: calendar URL not supplied                  |
+| Free ebook        | `/api/guide-request` upserts the contact with tag `LM \| Ebook`                                                    | New workflow delivers the ebook + optional nurture (`docs/EBOOK.md`)                   | **Inactive** until approved                             |
+| Discovery booking | `/discovery` shows a request form                                                                                  | GHL calendar for PH discovery calls                                                    | **Pending**: calendar URL not supplied                  |
 
 Why a server endpoint instead of an embedded GHL form: the website keeps its own fast, accessible, on-brand form with an honest success/failure contract. The GHL token stays on the server. Attribution is attached cleanly. If GHL is down, the inquiry is still stored and emailed. The GHL sync result is recorded per inquiry (`crmStatus`).
 
@@ -22,8 +22,11 @@ Why a server endpoint instead of an embedded GHL form: the website keeps its own
 ```json
 GHL_CUSTOM_FIELDS = {
   "business_type": "<field id>",
-  "lead_magnet": "<field id>",
-  "email_permission": "<field id>",
+  "lead_magnet_name": "<field id>",
+  "marketing_consent": "<field id>",
+  "consent_record": "<field id>",
+  "utm_content": "<field id>",
+  "referrer": "<field id>",
   "utm_source": "<field id>",
   "utm_medium": "<field id>",
   "utm_campaign": "<field id>",
@@ -33,7 +36,7 @@ GHL_CUSTOM_FIELDS = {
 
 Unmapped fields are skipped. The code never guesses field IDs.
 
-4. **Tags used:** `website-inquiry` and `lead-magnet:free-guide`. Create new workflows triggered by these tags. Don't attach them to existing product workflows.
+4. **Tags used:** `website-inquiry` and `LM | Ebook` (reuse an equivalent tag if one already exists). Create new workflows triggered by these tags. Don't attach them to existing product workflows.
 5. **Test:** submit a test inquiry on the deploy preview, then check that the contact appears with the tag and source "promdipreneur.com contact form".
 
 ## Discovery booking (to activate)
@@ -47,3 +50,13 @@ Unmapped fields are skipped. The code never guesses field IDs.
 - Tokens live only in Netlify environment variables. `PUBLIC_*` variables never hold secrets.
 - No personal data in URLs or analytics. Raw IPs are never stored (salted hash only).
 - The CSV export (`/api/inquiries.csv`) requires `Authorization: Bearer $EXPORT_TOKEN`. It is disabled when the token is unset.
+
+## Transactional email standard (v3 §8.3)
+
+For the ebook delivery email:
+
+- From name: `Allan | PromdiPreneur`
+- From email: `admin@agency.promdipreneur.com`
+- Reply-To: `admin@promdipreneur.com`
+
+This depends on the sending domain being verified in GHL. Downloading the ebook does **not** create an opportunity. Opportunities follow the existing pipeline rules.

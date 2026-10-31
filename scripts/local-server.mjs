@@ -89,6 +89,18 @@ createServer(async (req, res) => {
     });
     return send(res, r.status, r.body);
   }
+  // Honor dist/_redirects like Netlify does.
+  const rules = existsSync(join(dist, '_redirects'))
+    ? readFileSync(join(dist, '_redirects'), 'utf8')
+        .split('\n')
+        .map((l) => l.trim().split(/\s+/))
+        .filter((r) => r.length >= 2)
+    : [];
+  const rule = rules.find(([from]) => from === url.pathname);
+  if (rule) {
+    res.writeHead(Number(rule[2] || 301), { Location: rule[1] + url.search });
+    return res.end();
+  }
   let path = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');
   let file = join(dist, path);
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html');

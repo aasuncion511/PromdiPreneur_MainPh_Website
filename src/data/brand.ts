@@ -18,11 +18,35 @@ export const BRAND = {
 } as const;
 
 export const CTA = {
-  primary: 'Ask Us About Your Business',
-  primaryShort: 'Ask a Question',
-  secondary: 'Explore Business Tools',
-  systems: 'Explore PromdiPreneur Systems',
-  guide: 'Get the Free Business Guide',
+  // v3 §3/§4: global primary CTA = Discovery Session; secondary = explore what we build.
+  primary: 'Book a Discovery Session',
+  primaryShort: 'Book Discovery',
+  explore: 'Explore What We Can Build',
+  inquiry: 'Ask Us About Your Business',
+  store: 'Browse the Digital Store',
+  ebook: 'Get Free Guide',
+} as const;
+
+/** Free lead-magnet ebook (Final Ebook Addendum §1). Title/subtitle/author exactly as on the cover. */
+export const EBOOK = {
+  title: 'The Business Opening Checklist PH',
+  subtitle: '109 Practical Checks to Help You Plan, Open & Run Your Business with Confidence',
+  author: 'Allan Asuncion',
+  authorRole: 'Business Systems & Automation Implementer',
+  route: '/resources/free-ebook',
+  /** Owner-controlled stable URL (Astro public/). The file must exist before FEATURES.ebookLive can be true. */
+  pdfPath: '/resources/promdipreneur-business-opening-checklist-ph.pdf',
+  leadMagnetName: 'The Business Opening Checklist PH',
+  ghlTag: 'LM | Ebook',
+  stages: [
+    'Before You Register',
+    'Navigate Business Registration',
+    'Before You Rent',
+    'Capital & Logistics',
+    'Before You Hire',
+    'Before You Sell',
+    'Before You Spend Your First Peso',
+  ],
 } as const;
 
 /**
@@ -54,7 +78,8 @@ export interface Destination {
 
 export const DESTINATIONS: Record<DestinationId, Destination> = {
   shop: {
-    url: 'https://shop.promdipreneur.com/',
+    // v3 §3: the live commerce destination. Linked from the shop's own navigation (checked 2026-10-30).
+    url: 'https://shop.promdipreneur.com/products-list',
     label: 'PromdiPreneur Digital Shop',
     event: 'outbound_shop_click',
     kind: 'ghl-store',
@@ -126,7 +151,7 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
     status: 'verified',
   },
   discoveryBooking: {
-    // PENDING: the PH discovery-call calendar is not supplied. The portfolio's booking widget is for international
+    // TODO: VERIFY — the PH Discovery Session calendar URL is not supplied (v3 §3: never invent a booking URL). The portfolio's booking widget is for international
     // project introductions and is deliberately NOT reused here. Set the GHL calendar URL to activate.
     url: null,
     label: 'Book a Business Systems Discovery call',
@@ -139,8 +164,12 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
 
 /** Launch switches. Everything that depends on an unapproved asset or credential stays off until flipped. */
 export const FEATURES = {
-  /** Free guide: final PDF, cover artwork and GHL delivery workflow approved. Keep false until all three exist. */
+  /**
+   * Free ebook capture + delivery. Keep false until ALL are done (docs/EBOOK.md → Activation):
+   * PDF placed at public + EBOOK.pdfPath (the build fails if this is true and the file is missing),
+   * GHL delivery workflow tested, source-verification publishing review approved by Allan (Addendum §6).
+   */
   ebookLive: false,
-  /** Discovery booking calendar approved and its URL set in DESTINATIONS.discoveryBooking. */
+  /** Discovery calendar verified and its URL set in DESTINATIONS.discoveryBooking. */
   bookingLive: false,
 } as const;

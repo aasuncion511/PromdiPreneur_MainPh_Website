@@ -24,7 +24,8 @@
     "serve:local": "node scripts/local-server.mjs",
     "test:api": "node --test tests/*.test.ts",
     "check:brand": "node scripts/check-brand.mjs",
-    "qa": "node scripts/qa/e2e.mjs"
+    "qa": "node scripts/qa/e2e.mjs",
+    "check:pdf-links": "node scripts/check-pdf-links.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.10",

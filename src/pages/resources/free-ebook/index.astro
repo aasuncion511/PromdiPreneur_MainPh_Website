@@ -1,0 +1,133 @@
+---
+import { Icon } from 'astro-icon/components';
+import Layout from '~/layouts/PageLayout.astro';
+import Section from '~/components/promdi/Section.astro';
+import EbookCover from '~/components/promdi/EbookCover.astro';
+import EbookForm from '~/components/promdi/EbookForm.astro';
+import { BRAND, EBOOK } from '~/data/brand';
+import { getPermalink } from '~/utils/permalinks';
+
+// Copy: Final Ebook Addendum §3 (verbatim where specified). Content facts: Addendum §2.
+const metadata = {
+  title: `Free Guide: ${EBOOK.title}`,
+  description:
+    'Opening a business in the Philippines? Get The Business Opening Checklist PH: 109 practical checks to help you plan, open and run your business with confidence. Free PDF.',
+  openGraph: { images: [{ url: '~/assets/images/ebook/og-business-opening-checklist.png', width: 1200, height: 630 }] },
+};
+const benefits = [
+  'Test your business idea, capital plan, and break-even target.',
+  'Organize registration and location-related requirements to verify.',
+  'Prepare simple routines for money, suppliers, people, and daily operations.',
+  'Use the included dashboard and starting document frameworks.',
+];
+const extras = [
+  'An opening dashboard to track your progress',
+  'Templates and practical tools',
+  'Notes on which official sources to verify with',
+  'Starting document frameworks, e.g. a board resolution for a corporate bank account, a letter of intent to lease, and a probationary employment contract framework',
+];
+const forWho = ['Cafés', 'Salons', 'Small shops', 'Minimarts', 'Water refilling stations'];
+---
+
+<Layout metadata={metadata}>
+  <div data-track-view="ebook_view" hidden></div>
+  <section class="bg-[radial-gradient(900px_480px_at_92%_8%,rgba(24,185,87,.12),transparent_60%)]">
+    <div
+      class="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-16 grid lg:grid-cols-[1.15fr_.85fr] gap-10 lg:gap-14 items-start"
+    >
+      <div>
+        <p class="pp-eyebrow">Free guide for Filipino business owners</p>
+        <h1 class="text-[2rem] sm:text-5xl font-extrabold leading-[1.1] tracking-tight">
+          Opening a Business? Start with These 109 Practical Checks.
+        </h1>
+        <p class="mt-5 text-lg text-muted max-w-2xl">
+          Before you sign a lease, hire your first employee, or make your first sale, make sure the basics are in place.
+          Get <em>{EBOOK.title}</em>—a practical guide for Filipino entrepreneurs planning to open or strengthen a small
+          physical business.
+        </p>
+        <div class="mt-8 grid sm:grid-cols-[auto_1fr] gap-8 items-center">
+          <EbookCover size="md" eager />
+          <ul class="space-y-3">
+            {
+              benefits.map((b) => (
+                <li class="flex gap-3">
+                  <span class="grid place-items-center w-6 h-6 mt-0.5 shrink-0 rounded-full bg-[#18b957] text-white">
+                    <Icon name="tabler:check" class="w-4 h-4" />
+                  </span>
+                  <span>{b}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+      <div class="pp-card p-6 md:p-8 shadow-xl lg:sticky lg:top-24" id="get-the-guide">
+        <h2 class="text-2xl font-bold">Get your free copy</h2>
+        <p class="mt-1 mb-5 text-muted text-sm">{EBOOK.title} · PDF</p>
+        <EbookForm placement="ebook_page" />
+        <p class="mt-5 pt-4 border-t border-black/5 text-xs text-muted leading-relaxed">
+          The guide is for practical planning and education, not legal, accounting or compliance advice. Current rules
+          and your LGU’s requirements must be verified with official agencies and qualified professionals.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Section id="inside" tone="white" eyebrow="What’s inside" title="Seven stages, from idea to your first peso.">
+    <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {
+        EBOOK.stages.map((s, i) => (
+          <li class="pp-card p-5">
+            <span class="font-heading font-extrabold text-2xl text-[#0b7339]" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <p class="mt-2 font-heading font-bold text-primary">{s}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <h3 class="mt-12 text-xl font-bold">Also inside</h3>
+    <ul class="mt-3 grid md:grid-cols-2 gap-3 max-w-5xl">
+      {
+        extras.map((x) => (
+          <li class="flex gap-3">
+            <Icon name="tabler:file-check" class="w-5 h-5 mt-0.5 shrink-0 text-[#0b7339]" />
+            {x}
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section id="for-who" title="Who it’s for">
+    <p class="text-lg text-muted max-w-3xl">
+      Filipino owners planning to open—or trying to strengthen—a micro or small physical business. For example:
+    </p>
+    <ul class="mt-5 flex flex-wrap gap-2">
+      {
+        forWho.map((f) => (
+          <li class="rounded-full bg-white border border-black/10 px-4 py-2 font-heading font-semibold text-primary">
+            {f}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-8 text-muted">
+      Written by <strong class="text-default">{EBOOK.author}</strong>, {EBOOK.authorRole}, PromdiPreneur ({
+        BRAND.location
+      }).
+    </p>
+  </Section>
+
+  <Section id="next" tone="tint" narrow>
+    <h2 class="text-2xl md:text-3xl font-extrabold">When you’re ready to organize how your business runs</h2>
+    <p class="mt-3 text-lg text-muted">
+      The checklist helps you prepare. When you want help putting the systems in place—inquiries, follow-ups, records
+      and daily operations—that’s what we do.
+    </p>
+    <a href={getPermalink('/services')} class="btn mt-6 bg-white" data-placement="ebook_secondary">
+      Explore What PromdiPreneur Can Build for My Business
+    </a>
+    <p class="mt-6 pp-tagline">{BRAND.tagline}</p>
+  </Section>
+</Layout>

@@ -3,14 +3,13 @@ import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 import InquiryForm from '~/components/promdi/InquiryForm.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
-import { BRAND, DESTINATIONS, FEATURES } from '~/data/brand';
+import { BRAND } from '~/data/brand';
 
 const metadata = {
   title: 'Ask Us About Your Business',
   description:
     'Tell PromdiPreneur what’s slowing your business down. Free, no obligation. Send a question, message us on Facebook, or email admin@promdipreneur.com.',
 };
-const booking = DESTINATIONS.discoveryBooking;
 ---
 
 <Layout metadata={metadata}>
@@ -54,21 +53,8 @@ const booking = DESTINATIONS.discoveryBooking;
           <h2 class="text-xl font-bold flex items-center gap-2">
             <Icon name="tabler:calendar-event" class="w-5 h-5" /> Prefer to talk it through?
           </h2>
-          {
-            FEATURES.bookingLive && booking.url ? (
-              <>
-                <p class="mt-1 text-muted">Book a free Business Systems Discovery call at a time that suits you.</p>
-                <TrackedLink dest="discoveryBooking" placement="contact_booking" class="btn-primary mt-4">
-                  {booking.label}
-                </TrackedLink>
-              </>
-            ) : (
-              <p class="mt-1 text-muted">
-                Online booking for a Business Systems Discovery call is <strong>coming soon</strong>. For now, send your
-                question with the form and we’ll suggest a time to talk if it helps.
-              </p>
-            )
-          }
+          <p class="mt-1 text-muted">A Discovery Session is a short, free conversation about your business.</p>
+          <a href="/discovery" class="btn-primary mt-4" data-placement="contact_discovery">Book a Discovery Session</a>
         </div>
       </div>
       <div class="pp-card p-5 md:p-8 shadow-xl">

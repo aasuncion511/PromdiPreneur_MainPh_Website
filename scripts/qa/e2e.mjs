@@ -28,16 +28,17 @@ const read = (d) => readdirSync(join(data, d)).map((f) => JSON.parse(readFileSyn
 const PAGES = [
   '/',
   '/services',
-  '/our-work',
+  '/work',
   '/products',
   '/about',
   '/resources',
-  '/free-guide',
+  '/resources/free-ebook',
+  '/discovery',
   '/contact',
   '/privacy',
   '/terms',
   '/thank-you',
-  '/free-guide/thank-you',
+  '/resources/free-ebook/thank-you',
 ];
 const PII = {
   name: 'Maria QA Santos',
@@ -102,26 +103,35 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
   }
   check(`links: all ${internal.size} internal link targets return 200`, broken.length === 0, broken.join(' '));
 
+  // 404 page: real status, and every link has visible text (catches undefined labels)
+  const r404 = await page.goto(BASE + '/this-page-does-not-exist');
+  const empty404 = await page.$$eval('main a', (as) => as.filter((a) => !a.textContent.trim()).length);
+  check(
+    '404: returns 404 with working, labelled links',
+    r404.status() === 404 && empty404 === 0 && (await page.locator('main a').count()) === 3
+  );
+
   // Navigation
   await page.goto(BASE + '/');
   const navText = await page.locator('nav[aria-label=Main]').innerText();
   check(
-    'nav: Services, Our Work, Products, Resources, About',
-    ['Services', 'Our Work', 'Products', 'Resources', 'About'].every((t) => navText.includes(t))
+    'nav (v3): Home, What We Do, Our Work, Digital Store, Resources, About',
+    ['Home', 'What We Do', 'Our Work', 'Digital Store', 'Resources', 'About'].every((t) => navText.includes(t))
   );
   const dd = page.locator('.pp-dd__btn');
   await dd.focus();
   await page.keyboard.press('Enter');
   check(
-    'nav: Resources dropdown opens by keyboard and lists "Free Business Guide"',
+    'nav: Resources dropdown opens by keyboard and lists the Free Ebook → /resources/free-ebook',
     (await dd.getAttribute('aria-expanded')) === 'true' &&
-      (await page.locator('.pp-dd__menu a', { hasText: 'Free Business Guide' }).isVisible())
+      (await page.locator('.pp-dd__menu a', { hasText: 'Free Ebook' }).getAttribute('href')) === '/resources/free-ebook'
   );
   await page.keyboard.press('Escape');
   check('nav: Escape closes the dropdown', (await dd.getAttribute('aria-expanded')) === 'false');
   check(
-    'nav: header CTA → /contact',
-    (await page.locator('header a[data-placement=header]').getAttribute('href')) === '/contact'
+    'nav: header CTA "Book a Discovery Session" → /discovery',
+    (await page.locator('header a[data-placement=header]').getAttribute('href')) === '/discovery' &&
+      (await page.locator('header a[data-placement=header]').innerText()).includes('Book a Discovery Session')
   );
 
   // Brand + content rules on the rendered homepage
@@ -132,9 +142,20 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
       !/\bBASA\b|Solutions Architect/i.test(body)
   );
   check(
-    'brand: homepage has the free guide section with a cover placeholder clearly labelled',
-    (await page.locator('#free-guide').isVisible()) &&
-      /cover placeholder/i.test(await page.locator('#free-guide').innerText())
+    'home: v3 hero copy + ebook card with real cover, exact title and "Get Free Guide" → ebook page',
+    (await page.locator('h1').innerText()).includes('Your Business Can Run Better') &&
+      (await page.locator('#free-ebook h2').innerText()) === 'The Business Opening Checklist PH' &&
+      (await page
+        .locator('#free-ebook img[alt*="Cover of the free ebook"]')
+        .scrollIntoViewIfNeeded()
+        .then(() => page.waitForTimeout(400))
+        .then(() =>
+          page
+            .locator('#free-ebook img[alt*="Cover of the free ebook"]')
+            .evaluate((i) => i.complete && i.naturalWidth > 0)
+        )) &&
+      (await page.locator('#free-ebook a', { hasText: 'Get Free Guide' }).getAttribute('href')) ===
+        '/resources/free-ebook'
   );
   check(
     'logo: keeps its 480:214 aspect ratio',
@@ -159,7 +180,7 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
     (await page.locator('#pp-consent').isVisible()) && ga.length === 0
   );
   const want = {
-    shop: 'https://shop.promdipreneur.com/',
+    shop: 'https://shop.promdipreneur.com/products-list',
     kits: 'https://kits.promdipreneur.com/',
     payroll: 'https://payroll.promdipreneur.com/',
     payrollDemo: 'https://payroll.promdipreneur.com/payroll-demo',
@@ -202,7 +223,7 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
       JSON.stringify(e)
     );
   }
-  await page.goto(BASE + '/our-work');
+  await page.goto(BASE + '/work');
   const cs = await page.$$eval('a[data-event=case_study_click]', (as) => as.map((a) => a.href));
   check(
     `link: all ${cs.length} case-study links point at real portfolio work pages`,
@@ -249,9 +270,8 @@ async function submitInquiry(page) {
       read('inquiries').length === 0
   );
   check(
-    'contact: discovery booking shows "coming soon", not a dead link',
-    (await page.locator('#discovery').innerText()).includes('coming soon') &&
-      (await page.locator('#discovery a').count()) === 0
+    'contact: discovery block links to /discovery (no invented calendar URL)',
+    (await page.locator('#discovery a').getAttribute('href')) === '/discovery'
   );
   await page.check('input[value=messenger]');
   check(
@@ -336,72 +356,116 @@ for (const [label, q, txt] of [
   check('rate limit: 6th submission in an hour → 429', s.join() === '200,200,200,200,200,429', s.join());
 }
 
-// ---------------------------------------------------------------- free guide: inactive, honest, ready
+// ---------------------------------------------------------------- free ebook: real asset, inactive, honest
 {
   clear();
   await mode('guide=inactive&reset=1');
   const { ctx, page } = await open({ width: 390, height: 844 }, { isMobile: true, hasTouch: true });
-  await page.goto(BASE + '/free-guide');
+  await page.goto(BASE + '/resources/free-ebook');
   check(
-    'guide: /free-guide shows "being finalized" and that nothing is collected',
-    (await page.locator('#pp-guide').innerText()).includes('Nothing is collected or sent from this form yet')
+    'ebook page: addendum H1 + exact title + real cover image loads',
+    (await page.locator('h1').innerText()) === 'Opening a Business? Start with These 109 Practical Checks.' &&
+      (await page.locator('main').innerText()).includes('The Business Opening Checklist PH') &&
+      (await page
+        .locator('img[alt*="Cover of the free ebook"]')
+        .first()
+        .evaluate((i) => i.complete && i.naturalWidth > 0))
+  );
+  const inside = await page.locator('#inside').innerText();
+  check(
+    'ebook page: all 7 stages listed by name',
+    (await page.locator('#inside ol li').count()) === 7 &&
+      [
+        'Before You Register',
+        'Navigate Business Registration',
+        'Before You Rent',
+        'Capital & Logistics',
+        'Before You Hire',
+        'Before You Sell',
+        'Before You Spend Your First Peso',
+      ].every((t) => inside.includes(t))
   );
   check(
-    'guide: all fields + button disabled (submission inactive)',
-    (await page
-      .locator('#pp-guide input:not([type=hidden]):enabled, #pp-guide select:enabled, #pp-guide button:enabled')
-      .count()) === 0 && (await page.locator('#pp-guide button[type=submit]').innerText()).includes('Available soon')
+    'ebook page: legal/compliance trust note present',
+    (await page.locator('main').innerText()).includes('not legal, accounting or compliance advice')
   );
   check(
-    'guide: form asks first name, email, business type (+ optional business name)',
-    (await page.locator('#g-firstName, #g-email, #g-businessType, #g-businessName').count()) === 4
+    'ebook form: First name, Email, Business type; marketing checkbox optional and NOT pre-checked',
+    (await page.locator('#e-firstName, #e-email, #e-businessType').count()) === 3 &&
+      !(await page.locator('input[name=marketingConsent]').isChecked()) &&
+      !(await page.locator('input[name=marketingConsent]').getAttribute('required'))
   );
   check(
-    'guide: no download link or PDF anywhere on the page',
+    'ebook form INACTIVE: says nothing is collected; every control disabled',
+    (await page.locator('#pp-ebook').innerText()).includes('Nothing is collected or sent from this form yet') &&
+      (await page.locator('#pp-ebook input:enabled, #pp-ebook select:enabled, #pp-ebook button:enabled').count()) === 0
+  );
+  check(
+    'ebook: no PDF/download link anywhere while inactive (no fake download)',
     (await page.locator('a[href$=".pdf"], a[download]').count()) === 0
   );
   check(
-    'guide: cover is a clearly labelled placeholder',
-    (await page.locator('[aria-label*="Placeholder for the free business guide cover"]').count()) === 1
+    'ebook: secondary CTA → What We Do',
+    (await page
+      .locator('a', { hasText: 'Explore What PromdiPreneur Can Build for My Business' })
+      .getAttribute('href')) === '/services'
   );
-  await page.screenshot({ path: join(out, 'free-guide-mobile.png'), fullPage: false });
+  await page.screenshot({ path: join(out, 'ebook-mobile.png'), fullPage: false });
   const api = await fetch(`${BASE}/api/guide-request`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ firstName: 'A', email: 'a@b.co', businessType: 'Other', consent: true }),
+    body: JSON.stringify({ firstName: 'A', email: 'a@b.co', businessType: 'Other' }),
   });
   check(
-    'guide API: inactive → 503 and nothing sent to GHL',
+    'ebook API: inactive → 503, nothing sent to GHL',
     api.status === 503 && (await api.json()).error === 'inactive' && read('ghl').length === 0
   );
-  await page.goto(BASE + '/free-guide/thank-you');
+  await page.goto(BASE + '/resources/free-ebook/thank-you');
   const ty = await page.locator('main').innerText();
   check(
-    'guide thank-you: while inactive it says nothing was sent (no false delivery claim)',
-    ty.includes('isn’t available yet') && ty.includes('Nothing has been sent') && !/check your email/i.test(ty)
+    'ebook thank-you while inactive: says nothing was sent; no "check your email", no download',
+    ty.includes('Nothing has been sent') &&
+      !/check your email/i.test(ty) &&
+      (await page.locator('a[href$=".pdf"]').count()) === 0
   );
   await page.goto(BASE + '/resources');
   check(
-    'resources: features the Free Business Guide, marked coming soon',
-    (await page.locator('main').innerText()).includes('Free Business Guide') &&
-      /coming soon/i.test(await page.locator('main').innerText())
+    'resources: features the ebook with its real title → ebook page',
+    (await page.locator('main h2').first().innerText()) === 'The Business Opening Checklist PH' &&
+      (await page.locator('main a', { hasText: 'Get Free Guide' }).getAttribute('href')) === '/resources/free-ebook'
   );
+  for (const [from, to] of [
+    ['/free-guide', '/resources/free-ebook'],
+    ['/our-work', '/work'],
+  ]) {
+    const r = await fetch(BASE + from, { redirect: 'manual' });
+    check(
+      `redirect: ${from} → ${to} (relative 301, never to the live domain)`,
+      r.status === 301 && r.headers.get('location') === to
+    );
+  }
   await mode('guide=active&reset=1');
-  const ok = await fetch(`${BASE}/api/guide-request`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      firstName: 'Ana',
-      email: 'ana@example.com',
-      businessType: 'Food & beverage',
-      consent: true,
-      source: { utm_source: 'facebook' },
-    }),
+  const post = (b) =>
+    fetch(`${BASE}/api/guide-request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(b),
+    });
+  const ok = await post({
+    firstName: 'Ana',
+    email: 'ana@example.com',
+    businessType: 'Water refilling station',
+    source: { utm_source: 'facebook' },
   });
   const g = read('ghl')[0];
   check(
-    'guide API (when activated): upserts GHL contact with tag lead-magnet:free-guide + business type',
-    ok.status === 200 && g?.tags?.includes('lead-magnet:free-guide') && g?.fields?.business_type === 'Food & beverage'
+    'ebook API (when activated): one GHL upsert, tag "LM | Ebook", business type, marketing_consent=no by default',
+    ok.status === 200 &&
+      read('ghl').length === 1 &&
+      g?.tags?.length === 1 &&
+      g.tags[0] === 'LM | Ebook' &&
+      g.fields?.business_type === 'Water refilling station' &&
+      g.fields?.marketing_consent === 'no'
   );
   await mode('guide=inactive&reset=1');
   await ctx.close();
@@ -429,9 +493,9 @@ for (const [label, q, txt] of [
   );
   await page.locator('#pp-menu-toggle').click();
   check(
-    'mobile menu: opens with aria-expanded, includes Free Business Guide',
+    'mobile menu: opens with aria-expanded, includes the Free Ebook',
     (await page.locator('#pp-menu-toggle').getAttribute('aria-expanded')) === 'true' &&
-      (await page.locator('#pp-mobile-nav a', { hasText: 'Free Business Guide' }).isVisible())
+      (await page.locator('#pp-mobile-nav a', { hasText: 'Free Ebook' }).isVisible())
   );
   await page.screenshot({ path: join(out, 'mobile-menu-open.png') });
   await page.keyboard.press('Escape');
@@ -489,7 +553,16 @@ for (const [label, q, txt] of [
   const p = await c.newPage();
   await p.goto(BASE + '/');
   await consent(p, 'denied');
-  for (const path of ['/', '/services', '/our-work', '/products', '/about', '/free-guide', '/contact']) {
+  for (const path of [
+    '/',
+    '/services',
+    '/work',
+    '/products',
+    '/about',
+    '/resources/free-ebook',
+    '/discovery',
+    '/contact',
+  ]) {
     await p.goto(BASE + path, { waitUntil: 'networkidle' });
     await p.evaluate(() => document.querySelectorAll('img[loading=lazy]').forEach((i) => (i.loading = 'eager')));
     await p.waitForTimeout(500);

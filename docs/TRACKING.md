@@ -23,11 +23,13 @@ Allowed event properties: `placement`, `link_destination`, `form`, `error_type`.
 | `lead_form_start`              | First focus in the contact form                                                  | n/a                                  |
 | `lead_form_submit_success`     | **Only** after the server confirms the inquiry was stored and the email was sent | Inquiry store / GHL                  |
 | `lead_form_submit_error`       | Server or network failure (error code only)                                      | n/a                                  |
-| `ebook_cta_click`              | "See / Get the Free Guide" buttons                                               | n/a                                  |
-| `ebook_request`                | Guide request accepted (only once activated)                                     | GHL contact + tag                    |
-| `form_submit_failed`           | Guide request failed                                                             | n/a                                  |
+| `ebook_cta_click`              | "Get Free Guide" links                                                           | n/a                                  |
+| `ebook_view`                   | Ebook page viewed (once per session)                                             | n/a                                  |
+| `ebook_form_success`           | Ebook request accepted, only after GHL confirmed the upsert                      | GHL contact + tag `LM \| Ebook`      |
+| `ebook_form_error`             | Ebook request failed (error code only)                                           | n/a                                  |
+| `ebook_download_click`         | "Download Your Ebook" on the thank-you page                                      | n/a                                  |
 | `product_interest_click`       | "Ask about early access" (in-development product)                                | Inquiry                              |
-| `diagnostic_booking_click`     | Discovery booking button (once activated)                                        | GHL calendar bookings                |
+| `diagnostic_booking_click`     | Discovery calendar button (once verified)                                        | GHL calendar bookings                |
 
 Clicks are not conversions. Purchases, bookings and leads are counted in GHL.
 
