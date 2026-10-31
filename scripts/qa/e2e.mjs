@@ -98,10 +98,15 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
   }
   const broken = [];
   for (const href of internal) {
-    const r = await fetch(BASE + href);
+    // redirect: 'manual' so a link that only works via a redirect (stale path) is flagged too
+    const r = await fetch(BASE + href, { redirect: 'manual' });
     if (r.status !== 200) broken.push(`${href}=${r.status}`);
   }
-  check(`links: all ${internal.size} internal link targets return 200`, broken.length === 0, broken.join(' '));
+  check(
+    `links: all ${internal.size} internal link targets return 200 directly (no stale redirected paths)`,
+    broken.length === 0,
+    broken.join(' ')
+  );
 
   // 404 page: real status, and every link has visible text (catches undefined labels)
   const r404 = await page.goto(BASE + '/this-page-does-not-exist');
