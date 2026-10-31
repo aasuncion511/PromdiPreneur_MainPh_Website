@@ -10,6 +10,8 @@ import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'no
 import { extname, join, normalize } from 'node:path';
 import { handleInquiry } from '../server/inquiry-core.ts';
 import { handleGuideRequest } from '../server/guide.ts';
+import { handleAsk } from '../server/ask-core.ts';
+import { handleAskContact } from '../server/ask-contact.ts';
 
 const root = new URL('..', import.meta.url).pathname;
 const dist = join(root, 'dist');
@@ -17,6 +19,10 @@ const data = join(root, '.local-data');
 const port = Number(process.env.PORT || 4321);
 let mailMode = process.env.MAIL_MODE || 'capture';
 let guideMode = process.env.GUIDE_MODE || 'inactive';
+// ASK_MODE=mock (simulated AI) | inactive | fail (AI down) | budget (cap reached). Real OpenAI is never called here.
+let askMode = process.env.ASK_MODE || 'mock';
+const askSpend = new Map();
+const askCounts = [];
 for (const d of ['inquiries', 'outbox', 'ghl']) mkdirSync(join(data, d), { recursive: true });
 const hits = new Map();
 const hit = async (k) => {
@@ -48,8 +54,67 @@ createServer(async (req, res) => {
   if (url.pathname === '/__qa/mode') {
     mailMode = url.searchParams.get('mail') || mailMode;
     guideMode = url.searchParams.get('guide') || guideMode;
-    if (url.searchParams.has('reset')) hits.clear();
-    return send(res, 200, { mailMode, guideMode });
+    askMode = url.searchParams.get('ask') || askMode;
+    if (url.searchParams.has('reset')) {
+      hits.clear();
+      askSpend.clear();
+      askCounts.length = 0;
+    }
+    return send(res, 200, { mailMode, guideMode, askMode, askCounts });
+  }
+  if (url.pathname === '/api/ask' || url.pathname === '/api/ask-contact') {
+    if (req.method !== 'POST') return send(res, 405, { ok: false, error: 'method_not_allowed' });
+    let raw = '';
+    for await (const c of req) raw += c;
+    let body;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      return send(res, 400, { ok: false, error: 'bad_json' });
+    }
+    const ip = String(req.headers['x-test-ip'] || req.socket.remoteAddress || '');
+    if (url.pathname === '/api/ask-contact') {
+      const r = await handleAskContact(body, ip, {
+        configured: mailMode !== 'unconfigured',
+        notifyTo: 'admin@promdipreneur.com',
+        store: {
+          put: async (rec) => writeFileSync(join(data, 'inquiries', `${rec.id}.json`), JSON.stringify(rec, null, 2)),
+        },
+        rateLimit: { hit },
+        hashIp,
+        mailer: {
+          send: async (m) => {
+            if (mailMode === 'fail') throw new Error('Simulated mail provider outage');
+            writeFileSync(join(data, 'outbox', `${Date.now()}.json`), JSON.stringify(m, null, 2));
+          },
+        },
+        onSubmitted: async () => void askCounts.push('contacts'),
+      });
+      return send(res, r.status, r.body);
+    }
+    const r = await handleAsk(body, ip, {
+      active: askMode !== 'inactive',
+      callModel: async (m) => {
+        if (askMode === 'fail') throw new Error('Simulated OpenAI outage');
+        await new Promise((ok) => setTimeout(ok, 300));
+        const q = m.input.at(-1).content;
+        return {
+          text: `Good question. Here is a simple way to start:\n\n1. Write down your **current process**.\n2. Fix one leak first.\n- Check the [free guide](/resources/free-ebook)\n- Official info: [BIR](https://www.bir.gov.ph/)\n- Bad: [x](https://evil.example/) <b>html</b>\n\n(Simulated answer to: ${q.slice(0, 60)})`,
+          inputTokens: 1500,
+          outputTokens: 250,
+        };
+      },
+      spend: {
+        get: async (k) => (askMode === 'budget' ? 999 : askSpend.get(k) || 0),
+        add: async (k, v) => (askSpend.set(k, (askSpend.get(k) || 0) + v), askSpend.get(k)),
+      },
+      counters: { incr: async (_d, f) => void askCounts.push(f) },
+      rateLimit: { hit },
+      sessionHits: { hit },
+      hashIp,
+      caps: { dailyUsd: 1, monthlyUsd: 10, perHour: 30, perSessionPerDay: 20, priceInPer1M: 2, priceOutPer1M: 8 },
+    });
+    return send(res, r.status, r.body);
   }
   if (url.pathname === '/api/inquiry' || url.pathname === '/api/guide-request') {
     if (req.method !== 'POST') return send(res, 405, { ok: false, error: 'method_not_allowed' });

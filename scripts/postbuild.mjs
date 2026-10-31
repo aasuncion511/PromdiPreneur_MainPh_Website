@@ -27,7 +27,7 @@ writeFileSync(
   new URL('robots.txt', dist),
   preview
     ? 'User-agent: *\nDisallow: /\n'
-    : `User-agent: *\nAllow: /\nDisallow: /thank-you\nDisallow: /resources/free-ebook/thank-you\n\nSitemap: ${site}/sitemap-index.xml\n`
+    : `User-agent: *\nAllow: /\nDisallow: /thank-you\nDisallow: /resources/free-ebook/thank-you\nDisallow: /ask/qa\n\nSitemap: ${site}/sitemap-index.xml\n`
 );
 
 // AstroWind ships small inline scripts (scroll/menus), so script-src keeps 'unsafe-inline'; everything else is locked down.
@@ -60,6 +60,8 @@ ${preview ? '  X-Robots-Tag: noindex, nofollow\n' : ''}
 /thank-you
   X-Robots-Tag: noindex
 /resources/free-ebook/thank-you
+  X-Robots-Tag: noindex
+/ask/qa
   X-Robots-Tag: noindex
 
 /resources/*.pdf

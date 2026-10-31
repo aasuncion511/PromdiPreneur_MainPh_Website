@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build && node scripts/postbuild.mjs",
+    "build": "node scripts/build-knowledge.mjs && astro build && node scripts/postbuild.mjs",
+    "build:knowledge": "node scripts/build-knowledge.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "check": "npm run check:astro && npm run check:eslint && npm run check:prettier",

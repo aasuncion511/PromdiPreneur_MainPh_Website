@@ -73,7 +73,7 @@ if (preview) {
   );
   failed ||= !ok;
 } else {
-  const shouldNoindex = (f) => /thank-you|404/.test(f);
+  const shouldNoindex = (f) => /thank-you|404|ask[\\/]qa/.test(f);
   const bad = pages.filter((f) => noindex(f) !== shouldNoindex(f)).map((f) => relative(root, f));
   console.log(
     `${bad.length ? 'FAIL' : 'PASS'}  production: content pages indexable, thank-you/404 noindex ${bad.join(' ')}`

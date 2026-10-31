@@ -1,0 +1,533 @@
+---
+/**
+ * Ask PromdiPreneur chat (Feature Addendum 01). All replies are rendered as text nodes (no innerHTML), with
+ * only **bold**, bullets/numbered steps and allow-listed links rebuilt as elements. The chat lives in memory
+ * only: nothing is saved in the browser or on our server.
+ */
+import { Icon } from 'astro-icon/components';
+import { BUSINESS_TYPES } from '../../../server/guide.ts';
+import { getPermalink } from '~/utils/permalinks';
+
+const STARTERS = [
+  'Gusto kong magbukas ng café sa Cagayan de Oro. Saan ako magsisimula?',
+  'How much working capital should I prepare before opening?',
+  'Marami kaming missed inquiries sa Messenger. Paano ayusin?',
+  'How can my business run without me checking everything?',
+];
+---
+
+<div id="ask-app" class="mx-auto w-full max-w-3xl" data-track-view="ask_chat_open">
+  <p
+    class="flex gap-2.5 items-start rounded-2xl border border-[#c9dccf] bg-[#eef4ee] px-4 py-3 text-sm text-default"
+    role="note"
+  >
+    <Icon name="tabler:sparkles" class="w-5 h-5 shrink-0 text-[#00441b]" aria-hidden="true" />
+    <span>
+      <strong>You’re chatting with an AI assistant, not a person.</strong> Answers are general guidance, not legal, tax or
+      accounting advice. Please don’t share personal details. Your chat isn’t saved. <a
+        href={`${getPermalink('/privacy')}#ask-promdipreneur`}
+        class="underline underline-offset-2">How we handle your data</a
+      >
+    </span>
+  </p>
+
+  <div
+    id="ask-log"
+    class="mt-5 flex flex-col gap-4"
+    role="log"
+    aria-live="polite"
+    aria-relevant="additions"
+    aria-label="Conversation with Ask PromdiPreneur"
+  >
+    <div class="ask-msg ask-ai">
+      <p>Hi! I’m the PromdiPreneur AI Business Guide.</p>
+      <p>Planning to start a business or trying to improve one?</p>
+      <p>
+        Tell me what you’re working on or what problem you’re facing. I’ll share practical ideas to help you move
+        forward.
+      </p>
+    </div>
+  </div>
+
+  <div id="ask-starters" class="mt-4">
+    <p class="text-sm font-semibold text-muted">Try one of these:</p>
+    <ul class="mt-2 grid sm:grid-cols-2 gap-2">
+      {
+        STARTERS.map((s) => (
+          <li>
+            <button
+              type="button"
+              class="ask-starter w-full h-full min-h-[48px] text-left rounded-xl border border-[#c9dccf] bg-white px-4 py-3 text-[15px] text-[#00330f] hover:border-[#00441b] hover:bg-[#f4faf6]"
+            >
+              {s}
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <p id="ask-status" class="mt-4 min-h-[1.5rem] text-sm text-muted" aria-live="polite"></p>
+
+  <form id="ask-form" class="mt-1 rounded-2xl border border-[#c9dccf] bg-white p-3 focus-within:border-[#00441b]">
+    <label for="ask-input" class="sr-only">Your question</label>
+    <textarea
+      id="ask-input"
+      rows="2"
+      maxlength="1000"
+      required
+      class="w-full resize-none border-0 bg-transparent p-1 text-base focus:ring-0 focus:outline-none"
+      placeholder="Type your question… (Tagalog, Bisaya or English)"></textarea>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <span class="text-xs text-muted">Enter to send · Shift+Enter for a new line</span>
+      <button type="submit" id="ask-send" class="btn-primary !py-2.5 !px-5 text-[15px]">
+        Send <Icon name="tabler:send" class="w-4 h-4 ml-1.5" aria-hidden="true" />
+      </button>
+    </div>
+  </form>
+
+  <div class="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-page px-5 py-4">
+    <p class="text-[15px]"><strong>Prefer a real person?</strong> Allan’s team can look at your situation.</p>
+    <button
+      type="button"
+      id="ask-human"
+      class="btn !py-2.5 !px-5 text-[15px] gap-2"
+      aria-controls="ask-contact"
+      aria-expanded="false"
+    >
+      <Icon name="tabler:user" class="w-5 h-5" aria-hidden="true" /> Talk to a Person
+    </button>
+  </div>
+
+  <section
+    id="ask-contact"
+    class="mt-5 rounded-2xl border border-[#c9dccf] bg-white p-5 md:p-6"
+    hidden
+    aria-labelledby="ask-contact-h"
+  >
+    <h2 id="ask-contact-h" class="!text-[#00330f] text-xl font-bold">Talk to a person</h2>
+    <p class="mt-1 text-sm text-muted">
+      Optional and short. We’ll reply by email. Or <a
+        href={getPermalink('/discovery')}
+        class="underline"
+        data-placement="ask_contact">book a free Discovery Call</a
+      >.
+    </p>
+    <form id="ask-contact-form" class="mt-4 grid gap-4" novalidate>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label for="ac-name" class="block text-sm font-semibold">Name</label>
+          <input id="ac-name" name="name" class="pp-field mt-1" autocomplete="name" maxlength="100" required />
+        </div>
+        <div>
+          <label for="ac-email" class="block text-sm font-semibold">Email</label>
+          <input
+            id="ac-email"
+            name="email"
+            type="email"
+            class="pp-field mt-1"
+            autocomplete="email"
+            maxlength="254"
+            required
+          />
+        </div>
+      </div>
+      <div>
+        <label for="ac-type" class="block text-sm font-semibold">Type of business</label>
+        <select id="ac-type" name="businessType" class="pp-field mt-1" required>
+          <option value="">Choose one</option>
+          {BUSINESS_TYPES.map((t) => <option>{t}</option>)}
+        </select>
+      </div>
+      <div>
+        <label for="ac-summary" class="block text-sm font-semibold"
+          >What do you need help with? <span class="font-normal text-muted">(optional)</span></label
+        >
+        <textarea id="ac-summary" name="summary" rows="3" maxlength="1500" class="pp-field mt-1"></textarea>
+      </div>
+      <div class="hidden" aria-hidden="true">
+        <label>Leave empty <input name="pp_extra_info" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <div id="ac-questions-wrap" hidden>
+        <label class="flex gap-2.5 items-start text-sm">
+          <input type="checkbox" id="ac-include" class="mt-0.5 w-5 h-5 rounded" />
+          <span
+            >Include my questions from this chat (only what I typed, shown below). The AI’s answers are not sent.</span
+          >
+        </label>
+        <ul id="ac-questions" class="mt-2 ml-7 list-disc text-sm text-muted" hidden></ul>
+      </div>
+      <label class="flex gap-2.5 items-start text-sm">
+        <input type="checkbox" id="ac-reply" class="mt-0.5 w-5 h-5 rounded" required />
+        <span
+          >I agree that PromdiPreneur may email me about this request. <a
+            href={`${getPermalink('/privacy')}#ask-promdipreneur`}
+            class="underline">Privacy</a
+          ></span
+        >
+      </label>
+      <label class="flex gap-2.5 items-start text-sm">
+        <input type="checkbox" id="ac-marketing" class="mt-0.5 w-5 h-5 rounded" />
+        <span>Optional: also send me occasional business tips. You can unsubscribe anytime.</span>
+      </label>
+      <p id="ac-error" class="text-sm font-semibold text-[#9a2b14]" role="alert"></p>
+      <div><button type="submit" class="btn-primary !py-3 !px-6">Send to PromdiPreneur</button></div>
+    </form>
+    <p id="ac-done" class="mt-2 rounded-xl bg-[#eef4ee] p-4 font-semibold text-[#00330f]" role="status" hidden>
+      Thank you! Your request reached PromdiPreneur. We’ll reply by email, usually within the day.
+    </p>
+  </section>
+</div>
+
+<style is:global>
+  .ask-msg {
+    max-width: 92%;
+    border-radius: 18px;
+    padding: 0.85rem 1.1rem;
+    line-height: 1.55;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+  .ask-msg > * + * {
+    margin-top: 0.6rem;
+  }
+  .ask-ai {
+    align-self: flex-start;
+    background: #fff;
+    border: 1px solid #e3e8e4;
+    border-bottom-left-radius: 6px;
+  }
+  .ask-user {
+    align-self: flex-end;
+    background: #00441b;
+    color: #fff;
+    border-bottom-right-radius: 6px;
+    white-space: pre-wrap;
+  }
+  .ask-msg ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  .ask-msg ol {
+    list-style: decimal;
+    padding-left: 1.4rem;
+  }
+  .ask-msg a {
+    color: #00441b;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 600;
+  }
+  .ask-typing span {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 4px;
+    border-radius: 50%;
+    background: #4f6b5a;
+    animation: askdot 1s infinite ease-in-out;
+  }
+  .ask-typing span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .ask-typing span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes askdot {
+    0%,
+    80%,
+    100% {
+      opacity: 0.25;
+    }
+    40% {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ask-typing span {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  type Msg = { role: 'user' | 'assistant'; content: string };
+  const track = (name: string, placement = 'ask') =>
+    (window as unknown as { ppTrack?: (n: string, p: object) => void }).ppTrack?.(name, { placement });
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const log = $('ask-log');
+  const form = $<HTMLFormElement>('ask-form');
+  const input = $<HTMLTextAreaElement>('ask-input');
+  const send = $<HTMLButtonElement>('ask-send');
+  const status = $('ask-status');
+  const starters = $('ask-starters');
+  const human = $<HTMLButtonElement>('ask-human');
+  const contact = $('ask-contact');
+
+  const history: Msg[] = [];
+  const sessionId = (() => {
+    try {
+      const k = 'pp_ask_session';
+      let s = sessionStorage.getItem(k);
+      if (!s) {
+        s = `s_${crypto.getRandomValues(new Uint32Array(3)).join('_')}`;
+        sessionStorage.setItem(k, s);
+      }
+      return s;
+    } catch {
+      return `s_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    }
+  })();
+
+  const ALLOW = [
+    /^\/(?!\/)/,
+    /^https:\/\/([a-z0-9-]+\.)*promdipreneur\.com(\/|$)/i,
+    /^https:\/\/([a-z0-9-]+\.)*gov\.ph(\/|$)/i,
+  ];
+
+  /** Inline: **bold** and [text](url) only; everything else stays plain text. */
+  function inline(parent: HTMLElement, text: string) {
+    const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g;
+    let last = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(text))) {
+      if (m.index > last) parent.append(document.createTextNode(text.slice(last, m.index)));
+      if (m[1]) {
+        const b = document.createElement('strong');
+        b.textContent = m[1];
+        parent.append(b);
+      } else if (ALLOW.some((r) => r.test(m![3]))) {
+        const a = document.createElement('a');
+        a.textContent = m[2];
+        a.href = m[3];
+        a.setAttribute('data-event', 'ask_resource_clicked');
+        a.setAttribute('data-placement', 'ask_reply');
+        if (/^https?:/.test(m[3])) {
+          a.target = '_blank';
+          a.rel = 'noopener';
+        }
+        parent.append(a);
+      } else parent.append(document.createTextNode(m[2]));
+      last = re.lastIndex;
+    }
+    if (last < text.length) parent.append(document.createTextNode(text.slice(last)));
+  }
+
+  function renderReply(text: string) {
+    const box = document.createElement('div');
+    box.className = 'ask-msg ask-ai';
+    let list: HTMLElement | null = null;
+    for (const raw of text.split('\n')) {
+      const line = raw.trim();
+      if (!line) {
+        list = null;
+        continue;
+      }
+      const bullet = /^[-*•]\s+(.*)$/.exec(line);
+      const num = /^\d+[.)]\s+(.*)$/.exec(line);
+      if (bullet || num) {
+        const tag = bullet ? 'UL' : 'OL';
+        if (!list || list.tagName !== tag) {
+          list = document.createElement(tag.toLowerCase());
+          box.append(list);
+        }
+        const li = document.createElement('li');
+        inline(li, (bullet || num)![1]);
+        list.append(li);
+      } else {
+        list = null;
+        const p = document.createElement(/^#{1,4}\s/.test(line) ? 'h3' : 'p');
+        if (p.tagName === 'H3') p.className = 'font-heading font-bold text-[#00330f]';
+        inline(p, line.replace(/^#{1,4}\s/, ''));
+        box.append(p);
+      }
+    }
+    return box;
+  }
+
+  function addUser(text: string) {
+    const d = document.createElement('div');
+    d.className = 'ask-msg ask-user';
+    d.textContent = text;
+    log.append(d);
+  }
+
+  function addNotice(text: string, withHuman = false) {
+    const d = document.createElement('div');
+    d.className = 'ask-msg ask-ai';
+    const p = document.createElement('p');
+    p.textContent = text;
+    d.append(p);
+    if (withHuman) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn !py-2 !px-4 text-sm mt-2';
+      b.textContent = 'Talk to a Person';
+      b.addEventListener('click', openHuman);
+      d.append(b);
+    }
+    log.append(d);
+  }
+
+  const ERRORS: Record<string, [string, boolean]> = {
+    inactive: ['Ask PromdiPreneur is resting right now. A person can help you instead.', true],
+    budget_reached: ['Ask PromdiPreneur has reached today’s limit. A person can still help you.', true],
+    rate_limited: ['You’re sending questions very fast. Please wait a few minutes and try again.', false],
+    session_limit: ['You’ve reached today’s question limit for this chat. A person can take it from here.', true],
+    too_long: ['That message is too long. Please keep it under 1,000 characters.', false],
+    ai_unavailable: ['Sorry, I couldn’t answer just now. Please try again in a moment, or talk to a person.', true],
+    empty_reply: ['Sorry, I couldn’t answer just now. Please try again in a moment, or talk to a person.', true],
+  };
+
+  let busy = false;
+  async function ask(text: string) {
+    const q = text.trim().slice(0, 1000);
+    if (!q || busy) return;
+    busy = true;
+    starters.hidden = true;
+    addUser(q);
+    history.push({ role: 'user', content: q });
+    input.value = '';
+    send.disabled = true;
+    const typing = document.createElement('div');
+    typing.className = 'ask-msg ask-ai ask-typing';
+    typing.setAttribute('aria-label', 'Ask PromdiPreneur is typing');
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    log.append(typing);
+    status.textContent = 'Thinking…';
+    typing.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    track('ask_question_submitted');
+    try {
+      const res = await fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, messages: history.slice(-12) }),
+      });
+      const data = await res.json().catch(() => ({ ok: false, error: 'ai_unavailable' }));
+      typing.remove();
+      if (data.ok) {
+        const box = renderReply(String(data.reply));
+        log.append(box);
+        history.push({ role: 'assistant', content: String(data.reply).slice(0, 4000) });
+        if (data.redacted)
+          addNotice(
+            'Note: I removed personal details (like emails or phone numbers) before answering. Please don’t share them here.'
+          );
+        status.textContent = 'Answer received.';
+        track('ask_response_delivered');
+      } else {
+        history.pop();
+        const [msg, withHuman] = ERRORS[data.error] ?? ERRORS.ai_unavailable;
+        addNotice(msg, withHuman);
+        status.textContent = '';
+      }
+    } catch {
+      typing.remove();
+      history.pop();
+      addNotice('No connection. Please check your internet and try again.', false);
+      status.textContent = '';
+    } finally {
+      busy = false;
+      send.disabled = false;
+      input.focus();
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    ask(input.value);
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      ask(input.value);
+    }
+  });
+  document
+    .querySelectorAll<HTMLButtonElement>('.ask-starter')
+    .forEach((b) => b.addEventListener('click', () => ask(b.textContent || '')));
+
+  // ---- Talk to a Person
+  const qWrap = $('ac-questions-wrap');
+  const qList = $('ac-questions');
+  const include = $<HTMLInputElement>('ac-include');
+  let openedAt = 0;
+  function openHuman() {
+    contact.hidden = false;
+    human.setAttribute('aria-expanded', 'true');
+    openedAt = Date.now();
+    const qs = history
+      .filter((m) => m.role === 'user')
+      .slice(-5)
+      .map((m) => m.content);
+    qWrap.hidden = qs.length === 0;
+    qList.replaceChildren(
+      ...qs.map((q) => {
+        const li = document.createElement('li');
+        li.textContent = q;
+        return li;
+      })
+    );
+    track('ask_human_help_clicked');
+    contact.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    $<HTMLInputElement>('ac-name').focus({ preventScroll: true });
+  }
+  human.addEventListener('click', openHuman);
+  include.addEventListener('change', () => (qList.hidden = !include.checked));
+
+  const cform = $<HTMLFormElement>('ask-contact-form');
+  const cerr = $('ac-error');
+  cform.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    cerr.textContent = '';
+    const fd = new FormData(cform);
+    const val = (k: string) => String(fd.get(k) || '').trim();
+    if (!val('name') || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val('email')) || !val('businessType'))
+      return void (cerr.textContent = 'Please fill in your name, a valid email and your type of business.');
+    if (!$<HTMLInputElement>('ac-reply').checked)
+      return void (cerr.textContent = 'Please agree that we may email you about this request.');
+    const btn = cform.querySelector('button[type=submit]') as HTMLButtonElement;
+    btn.disabled = true;
+    try {
+      const res = await fetch('/api/ask-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: val('name'),
+          email: val('email'),
+          businessType: val('businessType'),
+          summary: val('summary'),
+          pp_extra_info: val('pp_extra_info'),
+          replyConsent: true,
+          marketingConsent: $<HTMLInputElement>('ac-marketing').checked,
+          includeQuestions: include.checked,
+          questions: include.checked
+            ? history
+                .filter((m) => m.role === 'user')
+                .slice(-5)
+                .map((m) => m.content)
+            : undefined,
+          elapsedMs: Date.now() - openedAt,
+        }),
+      });
+      const data = await res.json().catch(() => ({ ok: false }));
+      if (data.ok) {
+        cform.hidden = true;
+        $('ac-done').hidden = false;
+        track('ask_contact_submitted');
+      } else {
+        cerr.textContent =
+          data.error === 'too_fast'
+            ? 'Please take a moment to check your details, then send again.'
+            : data.error === 'validation'
+              ? 'Please check the highlighted details and try again.'
+              : 'Sorry, this didn’t go through. Please email admin@promdipreneur.com or message us on Messenger.';
+      }
+    } catch {
+      cerr.textContent = 'No connection. Please try again, or email admin@promdipreneur.com.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>

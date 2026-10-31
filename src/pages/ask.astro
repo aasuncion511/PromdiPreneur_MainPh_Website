@@ -1,0 +1,45 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import AskChat from '~/components/promdi/AskChat.astro';
+import { FEATURES } from '~/data/brand';
+import { getPermalink } from '~/utils/permalinks';
+
+const metadata = {
+  title: 'Ask PromdiPreneur — AI Business Guide for Filipino Entrepreneurs',
+  description:
+    'Free AI business guide for Filipino entrepreneurs: practical ideas on starting, organizing and improving your business. Talk to a person anytime.',
+};
+---
+
+<Layout metadata={metadata}>
+  <section class="bg-page">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-6 md:pt-14 text-center">
+      <p class="font-heading text-sm font-bold tracking-[0.08em] text-[#663300]">
+        ASK PROMDIPRENEUR · AI BUSINESS GUIDE
+      </p>
+      <h1 class="mt-2.5 !text-[#00330f] text-3xl md:text-[2.6rem] font-extrabold leading-tight">
+        May tanong sa negosyo mo? Ask away.
+      </h1>
+      <p class="mt-3 text-lg text-muted">
+        Practical ideas for starting, organizing and growing your business — free, any time. No sign-up needed.
+      </p>
+    </div>
+  </section>
+  <section class="bg-page">
+    <div class="px-4 sm:px-6 pb-16 md:pb-24">
+      {
+        FEATURES.askLive ? (
+          <AskChat />
+        ) : (
+          <p class="mx-auto max-w-xl text-center text-muted">
+            Ask PromdiPreneur is coming soon. Meanwhile,{' '}
+            <a href={getPermalink('/discovery')} class="underline">
+              book a free Discovery Call
+            </a>
+            .
+          </p>
+        )
+      }
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,60 @@
+{
+  "$comment": "Curated official Philippine sources the assistant may link. Every URL comes from the references in The Business Opening Checklist PH (pages 155-158), except where 'origin' says otherwise. Re-check links before launch (npm run check:pdf-links).",
+  "sources": [
+    {
+      "agency": "BIR (Bureau of Internal Revenue)",
+      "topics": ["tax", "registration", "receipts", "invoices", "withholding", "books of accounts", "bir"],
+      "url": "https://www.bir.gov.ph/",
+      "origin": "ebook p.156 (www.bir.gov.ph)"
+    },
+    {
+      "agency": "DTI Business Name Registration (BNRS)",
+      "topics": ["business name", "sole proprietorship", "dti", "registration"],
+      "url": "https://bnrs.dti.gov.ph/faq",
+      "origin": "ebook p.155"
+    },
+    {
+      "agency": "SEC eSPARC (corporations, partnerships, OPC)",
+      "topics": ["corporation", "partnership", "one person corporation", "sec", "registration"],
+      "url": "https://esparc.sec.gov.ph/application/selection",
+      "origin": "ebook p.155"
+    },
+    {
+      "agency": "SSS employer registration and contributions",
+      "topics": ["sss", "employer", "employee", "contributions", "payroll"],
+      "url": "https://www.sss.gov.ph/employer-er/",
+      "origin": "ebook p.157"
+    },
+    {
+      "agency": "PhilHealth employer payment procedures",
+      "topics": ["philhealth", "employer", "contributions", "payroll"],
+      "url": "https://www.philhealth.gov.ph/partners/employers/pay_procedures.php",
+      "origin": "ebook p.157"
+    },
+    {
+      "agency": "DOLE: Labor Code Book III, conditions of employment",
+      "topics": ["dole", "labor", "employment", "working hours", "overtime", "rest day", "scheduling"],
+      "url": "https://blr.dole.gov.ph/2014/12/11/book-iii-conditions-of-employment/",
+      "origin": "ebook p.157"
+    },
+    {
+      "agency": "DOLE-NWPC Handbook on Workers' Statutory Monetary Benefits",
+      "topics": ["minimum wage", "13th month", "holiday pay", "benefits", "payroll"],
+      "url": "https://nwpc.dole.gov.ph/wp-content/uploads/2023/08/2023-07-25-Handbook-on-Workers-Statutory-Monetary-Benefits-2023_edition.pdf",
+      "origin": "ebook p.157"
+    },
+    {
+      "agency": "PCO: official holiday proclamations",
+      "topics": ["holidays", "holiday pay", "scheduling"],
+      "url": "https://pco.gov.ph/news_releases/pbbm-declares-2027-regular-and-special-holidays/",
+      "origin": "ebook p.158"
+    },
+    {
+      "agency": "BFP: Fire Code of the Philippines (RA 9514 IRR)",
+      "topics": ["fire safety", "fire inspection", "bfp", "permit"],
+      "url": "https://bfp.gov.ph/wp-content/uploads/2019/10/RA9514-RIRR-rev-2019.pdf",
+      "origin": "ebook p.158"
+    }
+  ],
+  "lgu": "Mayor's/business permits, barangay clearance, sanitary and zoning rules are set by each city or municipality. Tell the visitor to confirm requirements and fees with their city or municipal Business Permits and Licensing Office (BPLO); do not invent an LGU URL."
+}

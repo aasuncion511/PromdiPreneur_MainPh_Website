@@ -1,0 +1,19 @@
+{
+  "$comment": "Approved knowledge for Ask PromdiPreneur. Only status=approved documents are used. To update: add a new file with a new version, switch status here, run npm run build:knowledge, commit. See docs/ASK_PROMDIPRENEUR.md.",
+  "documents": [
+    {
+      "id": "business-opening-checklist-ph",
+      "title": "The Business Opening Checklist PH",
+      "version": 1,
+      "file": "docs/business-opening-checklist-ph.v1.md",
+      "status": "approved",
+      "approvedBy": "Allan Asuncion",
+      "approvedAt": "2026-11-01",
+      "regulatoryReviewPending": true,
+      "note": "Allan approved use before the regulatory review, with a verify-with-the-agency warning on permits, taxes, registration and employment rules.",
+      "excludeHeadings": ["Page 1", "Page 155", "Page 156", "Page 157", "Page 158", "Page 159"],
+      "downweightHeadingsFrom": "Page 133",
+      "downweightNote": "Pages 133-154 are fill-in legal templates: still searchable, ranked lower. Pages 155-159 are the reference list (used via official-sources.json) and the closing page."
+    }
+  ]
+}

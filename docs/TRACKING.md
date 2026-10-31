@@ -22,6 +22,12 @@ Allowed event properties: `placement`, `link_destination`, `form`, `error_type`.
 | `contact_messenger_click`      | Messenger link (m.me/Promdipreneur), incl. the sticky phone button               | Facebook inbox                       |
 | `contact_facebook_click`       | Facebook page link                                                               | n/a                                  |
 | `contact_linkedin_click`       | Allan's LinkedIn                                                                 | n/a                                  |
+| `ask_chat_open`                | Ask PromdiPreneur page opened (once per session)                                 | n/a                                  |
+| `ask_question_submitted`       | Visitor sends a question (no text is sent to analytics)                          | `/api/ask-report`                    |
+| `ask_response_delivered`       | An AI answer was shown                                                           | `/api/ask-report`                    |
+| `ask_resource_clicked`         | Visitor clicks a link inside an AI answer                                        | n/a                                  |
+| `ask_human_help_clicked`       | "Talk to a Person" opened                                                        | n/a                                  |
+| `ask_contact_submitted`        | Talk-to-a-Person form accepted by the server (email sent)                        | Inbox / GHL tag `Ask PromdiPreneur`  |
 | `industry_tile_click`          | Homepage "Ano ang negosyo mo?" tile (`placement=industry_<slug>`)                | n/a                                  |
 | `contact_email_click`          | mailto admin@                                                                    | Inbox                                |
 | `lead_form_start`              | First focus in the contact form                                                  | n/a                                  |

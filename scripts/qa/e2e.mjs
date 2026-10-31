@@ -39,6 +39,7 @@ const PAGES = [
   '/terms',
   '/thank-you',
   '/resources/free-ebook/thank-you',
+  '/ask',
 ];
 const PII = {
   name: 'Maria QA Santos',
@@ -516,6 +517,109 @@ for (const [label, q, txt] of [
       g.fields?.marketing_consent === 'no'
   );
   await mode('guide=inactive&reset=1');
+  await ctx.close();
+}
+
+// ---------------------------------------------------------------- Ask PromdiPreneur (simulated AI; Feature Addendum 01)
+{
+  const { ctx, page } = await open();
+  await mode('ask=mock&mail=capture&reset=1');
+  clear();
+  await page.goto(BASE + '/');
+  check(
+    'ask: desktop launcher on the homepage → /ask',
+    (await page.locator('a[data-placement=ask_launcher]').getAttribute('href')) === '/ask'
+  );
+  await consent(page, 'granted');
+  await page.goto(BASE + '/ask');
+  check(
+    'ask: AI notice, exact opening message, 4 starters, Talk to a Person; no launcher on /ask',
+    (await page.locator('[role=note]', { hasText: 'AI assistant, not a person' }).count()) === 1 &&
+      (await page.locator('#ask-log .ask-ai').first().innerText()).includes(
+        'Hi! I’m the PromdiPreneur AI Business Guide.'
+      ) &&
+      (await page.locator('.ask-starter').count()) === 4 &&
+      (await page.locator('#ask-human').isVisible()) &&
+      (await page.locator('a[data-placement=ask_launcher]').count()) === 0
+  );
+  await page.locator('.ask-starter').first().click();
+  await page.waitForSelector('#ask-log .ask-ai:not(.ask-typing) >> nth=1');
+  const html = await page.locator('#ask-log').innerHTML();
+  check(
+    'ask: reply rendered safely — allowed links kept, unknown link and HTML dropped, list markup built',
+    html.includes('href="https://www.bir.gov.ph/"') &&
+      html.includes('href="/resources/free-ebook"') &&
+      !html.includes('evil.example') &&
+      !/<b>html<\/b>/.test(html) &&
+      /<ol>/.test(html),
+    html.slice(0, 200)
+  );
+  await page.fill('#ask-input', 'Call me at 09171234567 or juan@example.com — how do I do payroll?');
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('text=I removed personal details');
+  const lastAi = await page.locator('#ask-log .ask-ai:not(.ask-typing)').nth(2).innerText();
+  check(
+    'ask: personal data never reaches the AI (redacted) and the visitor is told',
+    lastAi.includes('[phone removed]') && lastAi.includes('[email removed]')
+  );
+  const ev = (await events(page)).map((e) => e[0]);
+  check(
+    'analytics: ask_chat_open, ask_question_submitted, ask_response_delivered fired with no question text',
+    ev.includes('ask_chat_open') &&
+      ev.includes('ask_question_submitted') &&
+      ev.includes('ask_response_delivered') &&
+      !JSON.stringify(await events(page)).includes('payroll'),
+    JSON.stringify(ev)
+  );
+
+  // Talk to a Person: questions only when ticked; separate marketing opt-in; source label
+  await page.click('#ask-human');
+  await page.fill('#ac-name', PII.name);
+  await page.fill('#ac-email', PII.email);
+  await page.selectOption('#ac-type', 'Café, restaurant or food stall');
+  await page.fill('#ac-summary', 'Need help with follow-ups');
+  await page.waitForTimeout(2600);
+  await page.click('#ask-contact-form button[type=submit]');
+  check(
+    'ask-contact: refuses without the reply consent tick',
+    (await page.locator('#ac-error').innerText()).includes('agree')
+  );
+  await page.check('#ac-reply');
+  await page.click('#ask-contact-form button[type=submit]');
+  await page.waitForSelector('#ac-done:not([hidden])');
+  const mail = JSON.parse(readFileSync(join(data, 'outbox', readdirSync(join(data, 'outbox')).sort().at(-1)), 'utf8'));
+  check(
+    'ask-contact: reaches the inbox as "Ask PromdiPreneur"; chat questions NOT included unless ticked; marketing = No',
+    /Ask PromdiPreneur/.test(mail.subject) &&
+      /Chat questions: not shared/.test(mail.text) &&
+      /Marketing emails: No/.test(mail.text),
+    mail.subject
+  );
+  {
+    const names = (await events(page)).map((e) => e[0]);
+    check(
+      'analytics: ask_human_help_clicked + ask_contact_submitted',
+      names.includes('ask_human_help_clicked') && names.includes('ask_contact_submitted')
+    );
+  }
+
+  // Honest failure states
+  for (const [m, expect] of [
+    ['inactive', 'resting right now'],
+    ['budget', 'reached today’s limit'],
+    ['fail', 'couldn’t answer just now'],
+  ]) {
+    await mode(`ask=${m}&reset=1`);
+    await page.goto(BASE + '/ask');
+    await page.fill('#ask-input', 'How do I manage inventory?');
+    await page.keyboard.press('Enter');
+    await page.waitForSelector(`text=${expect}`);
+    check(
+      `ask: ${m} → honest message with Talk to a Person (no fake answer)`,
+      (await page.locator('#ask-log button', { hasText: 'Talk to a Person' }).count()) === 1
+    );
+  }
+  await mode('ask=mock&reset=1');
   await ctx.close();
 }
 

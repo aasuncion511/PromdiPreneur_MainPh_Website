@@ -182,4 +182,10 @@ export const FEATURES = {
   ebookLive: false,
   /** Discovery calendar verified and its URL set in DESTINATIONS.discoveryBooking. */
   bookingLive: false,
+  /**
+   * Ask PromdiPreneur AI assistant (Feature Addendum 01): shows the /ask page content and the floating launcher.
+   * The server only answers when Netlify has ASK_ACTIVE=true + OPENAI_API_KEY + OPENAI_MODEL (docs/ASK_PROMDIPRENEUR.md);
+   * otherwise the chat honestly says it is resting and offers "Talk to a Person".
+   */
+  askLive: true,
 } as const;

@@ -2,3 +2,6 @@ dist
 node_modules
 .github
 .changeset
+# Ask PromdiPreneur: extracted source text and generated index (do not reformat)
+knowledge/docs/
+server/generated/

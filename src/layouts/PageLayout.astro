@@ -4,6 +4,8 @@ import Header from '~/components/promdi/Header.astro';
 import Footer from '~/components/promdi/Footer.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import { Icon } from 'astro-icon/components';
+import { FEATURES } from '~/data/brand';
+import { getPermalink } from '~/utils/permalinks';
 
 import type { MetaData } from '~/types';
 
@@ -16,6 +18,8 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1';
 const { metadata = {} } = Astro.props;
 // Sticky Messenger button on phones (Allan, 2026-11-01). Hidden on thank-you pages, where the visitor already acted.
 const showSticky = !/thank-you/.test(Astro.url.pathname);
+// Ask PromdiPreneur launcher (Feature Addendum 01): everywhere except the chat page itself and thank-you pages.
+const showAsk = FEATURES.askLive && showSticky && !/^\/ask\/?$/.test(Astro.url.pathname);
 const meta: MetaData = preview ? { ...metadata, robots: { index: false, follow: false } } : metadata;
 ---
 
@@ -43,6 +47,16 @@ const meta: MetaData = preview ? { ...metadata, robots: { index: false, follow: 
       <>
         <div class="h-20 lg:hidden" aria-hidden="true" />
         <aside aria-label="Quick contact" class="lg:hidden">
+          {showAsk && (
+            <a
+              href={getPermalink('/ask')}
+              class="fixed bottom-4 left-4 z-30 inline-flex items-center gap-2 min-h-[52px] rounded-full bg-white px-4 font-heading text-[15px] font-bold text-[#00441b] shadow-[0_10px_30px_rgba(0,0,0,.25)] ring-2 ring-[#00441b]"
+              data-placement="ask_launcher_mobile"
+            >
+              <Icon name="tabler:sparkles" class="w-5 h-5" aria-hidden="true" />
+              Ask AI
+            </a>
+          )}
           <TrackedLink
             dest="messenger"
             placement="sticky_mobile"
@@ -53,6 +67,21 @@ const meta: MetaData = preview ? { ...metadata, robots: { index: false, follow: 
           </TrackedLink>
         </aside>
       </>
+    )
+  }
+  {
+    showAsk && (
+      <aside aria-label="Ask PromdiPreneur" class="hidden lg:block">
+        <a
+          href={getPermalink('/ask')}
+          class="fixed bottom-6 right-6 z-30 inline-flex items-center gap-2.5 min-h-[52px] rounded-full bg-[#00441b] pl-4 pr-5 font-heading text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(0,0,0,.3)] ring-2 ring-white hover:bg-[#00330f]"
+          data-placement="ask_launcher"
+        >
+          <Icon name="tabler:sparkles" class="w-5 h-5 text-[#5fd68f]" aria-hidden="true" />
+          Ask PromdiPreneur
+          <span class="rounded-full bg-[#1db259] px-2 py-0.5 text-[11px] font-extrabold text-[#00330f]">AI</span>
+        </a>
+      </aside>
     )
   }
 </Layout>
