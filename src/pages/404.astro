@@ -1,4 +1,5 @@
 ---
+import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import Layout from '~/layouts/PageLayout.astro';
 import { CTA } from '~/data/brand';
 import { getPermalink } from '~/utils/permalinks';
@@ -13,7 +14,7 @@ const metadata = { title: 'Page not found', robots: { index: false, follow: fals
     <div class="mt-8 flex flex-wrap gap-3 justify-center">
       <a href={getPermalink('/')} class="btn-primary">Homepage</a>
       <a href={getPermalink('/products')} class="btn">{CTA.store}</a>
-      <a href={getPermalink('/discovery')} class="btn">{CTA.primary}</a>
+      <TrackedLink dest="discovery" placement="404" sameTab class="btn">{CTA.primary}</TrackedLink>
     </div>
   </section>
 </Layout>

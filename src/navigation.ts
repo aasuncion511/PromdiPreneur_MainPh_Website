@@ -17,5 +17,5 @@ export const headerData = {
     { text: 'Pricing', href: `${getPermalink('/')}#pricing` },
     { text: 'Store', href: `${getPermalink('/')}#store` },
   ],
-  cta: { text: CTA.primary, short: CTA.primaryShort, href: getPermalink('/discovery') },
+  cta: { text: CTA.primary, short: CTA.primaryShort },
 };

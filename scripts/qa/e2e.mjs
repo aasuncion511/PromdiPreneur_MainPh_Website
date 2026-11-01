@@ -33,7 +33,7 @@ const PAGES = [
   '/about',
   '/resources',
   '/resources/free-ebook',
-  '/discovery',
+  '/diagnostic',
   '/contact',
   '/privacy',
   '/terms',
@@ -93,7 +93,9 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
       `h1=${h1} desc=${desc.length} ${errors.join(' ')}`
     );
     for (const href of await page.$$eval('a[href]', (as) => as.map((a) => a.getAttribute('href')))) {
-      if (href.startsWith('/') && !href.startsWith('//')) internal.add(href.split('#')[0] || '/');
+      // /go/ links are outbound redirects (checked separately below)
+      if (href.startsWith('/') && !href.startsWith('//') && !href.startsWith('/go/'))
+        internal.add(href.split('#')[0] || '/');
     }
   }
   const broken = [];
@@ -116,6 +118,25 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
     r404.status() === 404 && empty404 === 0 && (await page.locator('main a').count()) === 3
   );
 
+  // Addendum 1: old /discovery path and every /go/ destination redirect correctly
+  {
+    const r = await fetch(BASE + '/discovery', { redirect: 'manual' });
+    check('redirect: /discovery → /diagnostic (301)', r.status === 301 && r.headers.get('location') === '/diagnostic');
+    const want = {
+      dst_discovery: 'https://promdipreneur-diagnostic-page.netlify.app/',
+      dst_messenger: 'https://m.me/Promdipreneur',
+      dst_portfolio: 'https://portfolio.promdipreneur.com/',
+      dst_linkedin_allan: 'https://www.linkedin.com/in/allan-asuncion-39878434/',
+      dst_facebook_page: 'https://www.facebook.com/Promdipreneur',
+    };
+    const bad = [];
+    for (const [id, url] of Object.entries(want)) {
+      const g = await fetch(`${BASE}/go/${id}`, { redirect: 'manual' });
+      if (g.status !== 302 || g.headers.get('location') !== url)
+        bad.push(`${id}=${g.status} ${g.headers.get('location')}`);
+    }
+    check('redirect: /go/ ids (Addendum 1 §3) → the right destinations (302)', bad.length === 0, bad.join(' '));
+  }
   // Navigation
   await page.goto(BASE + '/');
   const navLinks = await page
@@ -127,9 +148,10 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
       JSON.stringify(['Solutions=/#solutions', 'Results=/#results', 'Pricing=/#pricing', 'Store=/#store'])
   );
   check(
-    'nav: header CTA "Free Discovery Call" → /discovery',
-    (await page.locator('header a[data-placement=header]').getAttribute('href')) === '/discovery' &&
-      (await page.locator('header a[data-placement=header]').innerText()).includes('Free Discovery Call')
+    'nav: header CTA "Start My Discovery" → /go/dst_discovery, same tab',
+    (await page.locator('header a[data-placement=header]').getAttribute('href')) === '/go/dst_discovery' &&
+      (await page.locator('header a[data-placement=header]').getAttribute('target')) === null &&
+      (await page.locator('header a[data-placement=header]').innerText()).includes('Start My Discovery')
   );
 
   // Brand + content rules on the rendered homepage
@@ -143,10 +165,9 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
     'home: v2 hero (H1, Discovery CTA → /discovery, Messenger → m.me)',
     (await page.locator('h1').innerText()).includes('Kulang ka sa sistema.') &&
       (await page
-        .locator('section a[data-placement=hero]', { hasText: 'Book a Free Discovery Call' })
-        .getAttribute('href')) === '/discovery' &&
-      (await page.locator('a[data-dest=messenger][data-placement=hero]').getAttribute('href')) ===
-        'https://m.me/Promdipreneur'
+        .locator('section a[data-placement=hero]', { hasText: 'Start My Free Business Discovery' })
+        .getAttribute('href')) === '/go/dst_discovery' &&
+      (await page.locator('a[data-dest=messenger][data-placement=hero]').getAttribute('href')) === '/go/dst_messenger'
   );
   check(
     'home: pricing shows 5 packages with exact §3.9 prices; GROW marked most popular; cost box says Metro Manila',
@@ -158,20 +179,19 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
   );
   check(
     'home: DIY strip → payroll, kits (tracked outbound) and the free ebook page',
-    (await page.locator('#store a[data-dest=payroll]').getAttribute('href')) === 'https://payroll.promdipreneur.com/' &&
-      (await page.locator('#store a[data-dest=kits]').getAttribute('href')) === 'https://kits.promdipreneur.com/' &&
+    (await page.locator('#store a[data-dest=payroll]').getAttribute('href')) === '/go/dst_payroll' &&
+      (await page.locator('#store a[data-dest=kits]').getAttribute('href')) === '/go/dst_cleaning_kits' &&
       (await page.locator('#store a[data-track=ebook_cta_click]').getAttribute('href')) === '/resources/free-ebook'
   );
   check(
     'home: founder (LinkedIn/Facebook/portfolio tracked), 9 native FAQ items, final CTA → /discovery + m.me + contact',
-    (await page.locator('#about a[data-dest=linkedin]').getAttribute('href')) ===
-      'https://www.linkedin.com/in/allan-asuncion-39878434/' &&
+    (await page.locator('#about a[data-dest=linkedin]').getAttribute('href')) === '/go/dst_linkedin_allan' &&
       (await page.locator('#faq details > summary').count()) === 9 &&
       (await page
-        .locator('#book a[data-placement=home_final]', { hasText: 'Book a Free Discovery Call' })
-        .getAttribute('href')) === '/discovery' &&
-      (await page.locator('#book a[data-dest=messenger]').getAttribute('href')) === 'https://m.me/Promdipreneur' &&
-      (await page.locator('#book a', { hasText: 'Send a question' }).getAttribute('href')) === '/contact'
+        .locator('#book a[data-placement=home_final]', { hasText: 'Start My Free Business Discovery' })
+        .getAttribute('href')) === '/go/dst_discovery' &&
+      (await page.locator('#book a[data-dest=messenger]').getAttribute('href')) === '/go/dst_messenger' &&
+      (await page.locator('#book a', { hasText: 'Business Systems Diagnostic' }).getAttribute('href')) === '/diagnostic'
   );
   check(
     'footer: no "Cagayan de Oro" (Allan), tagline line, Privacy + Terms kept, About + Free Ebook still reachable',
@@ -217,13 +237,17 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
   };
   for (const [dest, url] of Object.entries(want)) {
     const href = await page.locator(`a[data-dest=${dest}]`).first().getAttribute('href');
-    const u = new URL(href);
+    const u = new URL(href, BASE);
+    const hop = await fetch(u, { redirect: 'manual' });
+    const loc = new URL(hop.headers.get('location') || 'about:blank');
     check(
-      `link: ${dest} → ${url} + forwarded UTMs, no fbclid`,
-      `${u.origin}${u.pathname}` === url &&
-        u.searchParams.get('utm_campaign') === 'qa-oct' &&
-        !u.searchParams.has('fbclid'),
-      href
+      `link: ${dest} → /go/ → ${url} + forwarded UTMs, no fbclid`,
+      u.pathname.startsWith('/go/dst_') &&
+        hop.status === 302 &&
+        `${loc.origin}${loc.pathname}` === url &&
+        loc.searchParams.get('utm_campaign') === 'qa-oct' &&
+        !loc.searchParams.has('fbclid'),
+      `${href} -> ${hop.status} ${loc}`
     );
   }
   const ext = await page.$$eval(
@@ -268,18 +292,18 @@ const consent = (page, v) => page.evaluate((v) => localStorage.setItem('pp-analy
     'analytics: case_study_click fired',
     (await events(page)).some((x) => x[0] === 'case_study_click')
   );
-  // Homepage v2: Discovery and Messenger clicks are separate events (navigation blocked so the log survives).
+  // Addendum 1: "Start My Discovery" and Messenger clicks are separate events (navigation blocked so the log survives).
   await page.goto(BASE + '/');
   await page.evaluate(() => window.addEventListener('click', (e) => e.preventDefault()));
-  await page.locator('section a[data-placement=hero]', { hasText: 'Book a Free Discovery Call' }).click();
+  await page.locator('section a[data-placement=hero]', { hasText: 'Start My Free Business Discovery' }).click();
   await page.locator('header a[data-placement=header]').click();
   await page.locator('a[data-dest=messenger][data-placement=hero]').click();
   {
     const ev = await events(page);
-    const d = ev.filter((x) => x[0] === 'discovery_cta_click').map((x) => x[1].placement);
+    const d = ev.filter((x) => x[0] === 'discovery_start_click').map((x) => x[1].placement);
     const m = ev.filter((x) => x[0] === 'contact_messenger_click').map((x) => x[1].placement);
     check(
-      'analytics: discovery_cta_click (hero, header) and contact_messenger_click (hero) are separate events',
+      'analytics: discovery_start_click (hero, header) and contact_messenger_click (hero) are separate events',
       JSON.stringify(d) === '["hero","header"]' && JSON.stringify(m) === '["hero"]',
       JSON.stringify(ev)
     );
@@ -316,8 +340,8 @@ async function submitInquiry(page) {
       read('inquiries').length === 0
   );
   check(
-    'contact: discovery block links to /discovery (no invented calendar URL)',
-    (await page.locator('#discovery a').getAttribute('href')) === '/discovery'
+    'contact: Diagnostic block links to /diagnostic (no invented calendar URL)',
+    (await page.locator('#diagnostic a').getAttribute('href')) === '/diagnostic'
   );
   await page.check('input[value=messenger]');
   check(
@@ -544,12 +568,12 @@ for (const [label, q, txt] of [
     'mobile menu: opens with aria-expanded, lists Solutions/Results/Pricing/Store + Discovery CTA',
     (await page.locator('#pp-menu-toggle').getAttribute('aria-expanded')) === 'true' &&
       (await page.locator('#pp-mobile-nav a', { hasText: 'Pricing' }).isVisible()) &&
-      (await page.locator('#pp-mobile-nav a[data-placement=mobile_nav]').getAttribute('href')) === '/discovery'
+      (await page.locator('#pp-mobile-nav a[data-placement=mobile_nav]').getAttribute('href')) === '/go/dst_discovery'
   );
   check(
     'mobile: sticky Messenger button visible on phones → m.me (tracked sticky_mobile)',
     (await page.locator('a[data-placement=sticky_mobile]').isVisible()) &&
-      (await page.locator('a[data-placement=sticky_mobile]').getAttribute('href')) === 'https://m.me/Promdipreneur'
+      (await page.locator('a[data-placement=sticky_mobile]').getAttribute('href')) === '/go/dst_messenger'
   );
   await page.screenshot({ path: join(out, 'mobile-menu-open.png') });
   await page.keyboard.press('Escape');
@@ -614,7 +638,7 @@ for (const [label, q, txt] of [
     '/products',
     '/about',
     '/resources/free-ebook',
-    '/discovery',
+    '/diagnostic',
     '/contact',
   ]) {
     await p.goto(BASE + path, { waitUntil: 'networkidle' });

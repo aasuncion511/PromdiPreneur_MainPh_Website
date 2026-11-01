@@ -13,11 +13,14 @@ export interface Props {
   event?: string;
   class?: string;
   ariaLabel?: string;
+  /** Open in the same tab (main funnel CTAs such as "Start My Discovery"). Default: new tab. */
+  sameTab?: boolean;
 }
 
-const { dest, placement, href, event, class: className, ariaLabel } = Astro.props;
+const { dest, placement, href, event, class: className, ariaLabel, sameTab } = Astro.props;
 const d = DESTINATIONS[dest];
-const url = href ?? d.url;
+const url = href ?? (d.url && d.goId ? `/go/${d.goId}` : d.url);
+const destHost = d.url && !d.url.startsWith('mailto:') ? new URL(d.url).host : undefined;
 const isMail = url?.startsWith('mailto:');
 ---
 
@@ -30,11 +33,12 @@ const isMail = url?.startsWith('mailto:');
       data-dest={dest}
       data-event={event ?? d.event}
       data-placement={placement}
+      data-dest-host={destHost}
       data-forward-utm={d.forwardUtm ? '' : undefined}
-      {...(isMail ? {} : { target: '_blank', rel: 'noopener' })}
+      {...(isMail || sameTab ? {} : { target: '_blank', rel: 'noopener' })}
     >
       <slot />
-      {!isMail && <span class="sr-only"> (opens in a new tab)</span>}
+      {!isMail && !sameTab && <span class="sr-only"> (opens in a new tab)</span>}
     </a>
   ) : (
     <span class={className} aria-disabled="true" data-dest={dest} data-pending>

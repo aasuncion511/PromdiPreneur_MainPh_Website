@@ -150,15 +150,17 @@ const anyAnalytics = Boolean(config.ga4 || config.umamiSrc);
     }
 
     // Click tracking: outbound links rendered by TrackedLink, plus internal CTAs with data-track.
-    // Homepage v2 (Allan, 2026-11-01): every link to /discovery without its own event counts as discovery_cta_click,
-    // so Discovery and Messenger clicks are separate events.
+    // Addendum 1 (Allan, 2026-11-01): "Start My Discovery" links carry discovery_start_click (via TrackedLink); any
+    // link to the free Diagnostic booking page without its own event counts as diagnostic_cta_click. Messenger stays separate.
     document.addEventListener('click', (e) => {
       const a =
         e.target.closest &&
-        e.target.closest('a[data-event], [data-track], a[href="/discovery"], a[href^="/discovery#"]');
+        e.target.closest('a[data-event], [data-track], a[href="/diagnostic"], a[href^="/diagnostic#"]');
       if (!a) return;
-      const name = a.getAttribute('data-event') || a.getAttribute('data-track') || 'discovery_cta_click';
-      const host = safely(() => (a.href && a.href.startsWith('mailto:') ? 'email' : new URL(a.href).host), '');
+      const name = a.getAttribute('data-event') || a.getAttribute('data-track') || 'diagnostic_cta_click';
+      const host =
+        a.getAttribute('data-dest-host') ||
+        safely(() => (a.href && a.href.startsWith('mailto:') ? 'email' : new URL(a.href).host), '');
       window.ppTrack(name, { placement: a.getAttribute('data-placement') || '', link_destination: host });
     });
   })();

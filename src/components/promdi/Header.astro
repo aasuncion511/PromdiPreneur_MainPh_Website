@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import Logo from '~/components/Logo.astro';
+import TrackedLink from './TrackedLink.astro';
 import { headerData } from '~/navigation';
 import { getPermalink, trimSlash } from '~/utils/permalinks';
 
@@ -66,13 +67,14 @@ const isActive = (href?: string) =>
       </ul>
     </nav>
 
-    <a
-      href={headerData.cta.href}
+    <TrackedLink
+      dest="discovery"
+      placement="header"
+      sameTab
       class="btn-primary ml-auto lg:ml-3 !py-2.5 !px-3.5 sm:!px-5 text-[0.8rem] sm:text-sm whitespace-nowrap"
-      data-placement="header"
     >
       {headerData.cta.short}
-    </a>
+    </TrackedLink>
 
     <button
       type="button"
@@ -110,7 +112,8 @@ const isActive = (href?: string) =>
           )
         }
       </ul>
-      <a href={headerData.cta.href} class="btn-primary w-full mt-5" data-placement="mobile_nav">{headerData.cta.text}</a
+      <TrackedLink dest="discovery" placement="mobile_nav" sameTab class="btn-primary w-full mt-5"
+        >{headerData.cta.text}</TrackedLink
       >
     </nav>
   </div>

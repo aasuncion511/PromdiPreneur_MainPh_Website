@@ -5,12 +5,13 @@ import InquiryForm from '~/components/promdi/InquiryForm.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import { DESTINATIONS, FEATURES } from '~/data/brand';
 
-// v3 §3: stable route for the Discovery Session. It links/embeds the EXISTING verified GHL calendar only when
-// FEATURES.bookingLive is true; until then it never shows a fake booking widget (calendar URL: TODO: VERIFY).
+// Addendum 1 (Allan, 2026-11-01): the free 30-minute Business Systems Diagnostic with Allan, weekdays 1:30–3:30 PM
+// (Philippine time). /discovery redirects here. It embeds the GHL calendar only when FEATURES.bookingLive is true;
+// until then it never shows a fake booking widget (calendar URL: TODO: VERIFY).
 const metadata = {
-  title: 'Book a Discovery Session',
+  title: 'Book a free Business Systems Diagnostic',
   description:
-    'A short, free conversation about your business: where inquiries, follow-ups or admin time are being lost, and what to fix first.',
+    'A free 30-minute session with Allan to map how your inquiries, sales and daily work move, and what to fix first. Weekdays, 1:30–3:30 PM.',
 };
 const booking = DESTINATIONS.discoveryBooking;
 const expect = [
@@ -24,12 +25,25 @@ const expect = [
   <section class="py-12 md:py-20" aria-labelledby="disc-title">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-[.9fr_1.1fr] gap-10 lg:gap-16 items-start">
       <div>
-        <p class="pp-eyebrow">Discovery Session</p>
+        <p class="pp-eyebrow">Business Systems Diagnostic</p>
         <h1 id="disc-title" class="text-4xl md:text-5xl font-extrabold leading-tight">
-          Find out what’s causing missed leads or wasted admin time.
+          Map your process with Allan before anything gets built.
         </h1>
-        <p class="mt-5 text-lg text-muted">
-          A short, free conversation about your business. No obligation and no hard sell.
+        <p class="mt-5 text-lg text-muted">A free 30-minute session. No obligation and no hard sell.</p>
+        <ul class="mt-5 flex flex-wrap gap-2 text-sm font-semibold text-[#00441b]">
+          <li class="rounded-full bg-[#eef4ee] px-3 py-1.5">30 minutes</li>
+          <li class="rounded-full bg-[#eef4ee] px-3 py-1.5">Weekdays, 1:30–3:30 PM (PH time)</li>
+          <li class="rounded-full bg-[#eef4ee] px-3 py-1.5">Free</li>
+        </ul>
+        <p class="mt-5 text-[15px] text-muted">
+          Not sure yet? Take the{' '}
+          <TrackedLink
+            dest="discovery"
+            placement="diagnostic_page"
+            sameTab
+            class="underline text-[#00441b] font-semibold">free 5-minute Business Discovery</TrackedLink
+          >{' '}
+          first. No call needed.
         </p>
         <h2 class="mt-8 text-lg font-bold">What to expect</h2>
         <ul class="mt-3 space-y-2">
@@ -43,8 +57,8 @@ const expect = [
           }
         </ul>
         <p class="mt-8 text-sm text-muted">
-          Prefer chat? <TrackedLink dest="messenger" placement="discovery" class="underline text-[#00441b]"
-            >Message us on Facebook</TrackedLink
+          Prefer chat? <TrackedLink dest="messenger" placement="diagnostic" class="underline text-[#00441b]"
+            >Message us on Messenger</TrackedLink
           >.
         </p>
       </div>
@@ -57,14 +71,14 @@ const expect = [
               {/* The existing GHL calendar, embedded as-is (no copy of its logic on this site). */}
               <iframe
                 src={booking.url}
-                title="Book a Discovery Session with PromdiPreneur"
+                title="Book a free Business Systems Diagnostic with PromdiPreneur"
                 class="w-full min-h-[760px] rounded-xl border border-black/10 bg-white"
                 loading="lazy"
-                data-track-view="discovery_calendar_view"
+                data-track-view="diagnostic_calendar_view"
               />
               <p class="mt-3 text-sm text-muted text-center">
                 Calendar not loading?{' '}
-                <TrackedLink dest="discoveryBooking" placement="discovery_fallback" class="underline text-[#00441b]">
+                <TrackedLink dest="discoveryBooking" placement="diagnostic_fallback" class="underline text-[#00441b]">
                   Open it in a new tab
                 </TrackedLink>
                 .
@@ -72,10 +86,10 @@ const expect = [
             </>
           ) : (
             <>
-              <h2 class="text-2xl font-bold">Request a Discovery Session</h2>
+              <h2 class="text-2xl font-bold">Request your Diagnostic</h2>
               <p class="mt-1 mb-5 text-muted">
-                Online booking is being set up. Tell us a little about your business and when you’re usually free, and
-                we’ll reply to schedule a time.
+                Online booking is being set up. Tell us a little about your business, and we’ll reply to schedule a
+                weekday slot between 1:30 and 3:30 PM.
               </p>
               <InquiryForm />
             </>

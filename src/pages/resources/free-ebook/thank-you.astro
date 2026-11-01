@@ -5,7 +5,6 @@ import Section from '~/components/promdi/Section.astro';
 import EbookCover from '~/components/promdi/EbookCover.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import { BRAND, CTA, EBOOK, FEATURES } from '~/data/brand';
-import { getPermalink } from '~/utils/permalinks';
 
 // v3 §8.5. Live copy only when the guide is live; the download link appears only after a confirmed submission
 // in this browser session (sessionStorage flag set by EbookForm on server success) and only if the file ships.
@@ -53,8 +52,12 @@ const metadata = { title: 'Your Free Guide', robots: { index: false, follow: fal
     </div>
     <div class="mt-12 rounded-2xl bg-[#eef4ee] p-6">
       <h2 class="text-xl font-bold">Want a hand putting it into practice?</h2>
-      <p class="mt-2 text-muted">A Discovery Session is a short conversation about your business. No obligation.</p>
-      <a href={getPermalink('/discovery')} class="btn mt-4 bg-white" data-placement="ebook_thank_you">{CTA.primary}</a>
+      <p class="mt-2 text-muted">
+        The free Business Discovery takes about 5 minutes online and shows where to start. No call needed.
+      </p>
+      <TrackedLink dest="discovery" placement="ebook_thank_you" sameTab class="btn mt-4 bg-white"
+        >{CTA.primary}</TrackedLink
+      >
     </div>
   </Section>
 </Layout>

@@ -66,6 +66,12 @@ ${preview ? '  X-Robots-Tag: noindex, nofollow\n' : ''}
   X-Robots-Tag: noindex
 `
 );
+// /go/ layer: one 302 per destination with a goId (src/data/brand.ts is the single source of truth).
+const { DESTINATIONS } = await import(new URL('../src/data/brand.ts', import.meta.url).href);
+const goRedirects = Object.values(DESTINATIONS)
+  .filter((d) => d.goId && d.url && /^https:\/\//.test(d.url))
+  .map((d) => `/go/${d.goId}  ${d.url}  302`);
+if (goRedirects.length < 8) throw new Error(`postbuild: expected the /go/ destinations, got ${goRedirects.length}`);
 // Relative redirects (Netlify). Astro's own static redirects resolve to the absolute production domain, which would
 // send preview visitors to the live site, so redirects live here instead. Paths from earlier review previews only.
 writeFileSync(
@@ -74,6 +80,10 @@ writeFileSync(
     '/our-work  /work  301',
     '/free-guide  /resources/free-ebook  301',
     '/free-guide/thank-you  /resources/free-ebook/thank-you  301',
+    // Addendum 1: "Discovery" is now the online questionnaire; the 30-min session with Allan is the Diagnostic.
+    '/discovery  /diagnostic  301',
+    // Addendum 1 §3: outbound /go/<destination_id> links (302 so a destination can change without cache problems).
+    ...goRedirects,
     '',
   ].join('\n')
 );

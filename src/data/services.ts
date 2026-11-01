@@ -127,7 +127,7 @@ export const SERVICE_FAQS = [
   {
     title: 'How much does it cost?',
     description:
-      'It depends on what your business needs, so we don’t publish fixed packages here. A Discovery Session helps us understand your situation first; you get a written scope and price before anything starts.',
+      'Our packages and monthly care plans are listed on the homepage. Not sure which fits? Take the free 5-minute Business Discovery for a recommendation, or book a free Business Systems Diagnostic with Allan. You get a written scope and price before anything starts.',
   },
   {
     title: 'Do I need to buy new software?',

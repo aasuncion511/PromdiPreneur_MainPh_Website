@@ -1,9 +1,10 @@
 ---
 import { CTA } from '~/data/brand';
 import { getPermalink } from '~/utils/permalinks';
+import TrackedLink from './TrackedLink.astro';
 const {
   title = 'What’s causing missed leads or wasted admin time in your business?',
-  body = 'Let’s find out together in a short, free Discovery Session.',
+  body = 'Take the free 5-minute Business Discovery. You’ll see your biggest leak and where to start.',
   placement = 'final_cta',
 } = Astro.props;
 ---
@@ -13,11 +14,11 @@ const {
     <h2 class="!text-white text-3xl md:text-4xl font-extrabold">{title}</h2>
     <p class="mt-4 text-lg">{body}</p>
     <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-      <a href={getPermalink('/discovery')} class="btn-light" data-placement={placement}>{CTA.primary}</a>
+      <TrackedLink dest="discovery" placement={placement} sameTab class="btn-light">{CTA.primary}</TrackedLink>
       <a
-        href={getPermalink('/contact')}
+        href={getPermalink('/diagnostic')}
         class="btn !text-white !border-white/40 hover:!bg-white/10"
-        data-placement={placement}>Not ready to book? Send a question</a
+        data-placement={placement}>Talk to Allan: free Diagnostic</a
       >
     </div>
   </div>

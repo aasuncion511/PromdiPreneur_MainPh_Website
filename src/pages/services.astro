@@ -1,4 +1,5 @@
 ---
+import TrackedLink from '~/components/promdi/TrackedLink.astro';
 import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 import Section from '~/components/promdi/Section.astro';
@@ -74,7 +75,7 @@ const metadata = {
             </div>
           </dl>
           <div class="lg:col-start-2 -mt-4">
-            <a href={getPermalink('/discovery')} class="pp-text-link" data-placement={`services_${g.id}`}>
+            <a href={getPermalink('/diagnostic')} class="pp-text-link" data-placement={`services_${g.id}`}>
               Discuss your business <Icon name="tabler:arrow-right" class="w-4 h-4" />
             </a>
           </div>
@@ -113,8 +114,9 @@ const metadata = {
   <section class="bg-gradient-to-r from-[#00330f] via-[#00441b] to-[#0a5c32] text-[#e1ece5] py-16 text-center">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
       <h2 class="!text-white text-3xl md:text-4xl font-extrabold">Not sure where to start?</h2>
-      <p class="mt-4 text-lg">That’s what the Discovery Session is for. Short, free, no obligation.</p>
-      <a href={getPermalink('/discovery')} class="btn-light mt-8" data-placement="services_final">{CTA.primary}</a>
+      <p class="mt-4 text-lg">Take the free Business Discovery: about 5 minutes online, no call needed.</p>
+      <TrackedLink dest="discovery" placement="services_final" sameTab class="btn-light mt-8">{CTA.primary}</TrackedLink
+      >
     </div>
   </section>
 </Layout>

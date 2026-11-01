@@ -3,6 +3,8 @@ import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import Layout from '~/layouts/PageLayout.astro';
 import TrackedLink from '~/components/promdi/TrackedLink.astro';
+import StatusBadge from '~/components/promdi/StatusBadge.astro';
+import { WORK } from '~/data/catalog';
 import headshot from '~/assets/images/profile/allan-minbizcon-800.webp';
 import crewPhoto from '~/assets/images/hub/fresh-start-crew-1512.webp';
 import steamClean from '~/assets/images/hub/fresh-start-steam-clean.webp';
@@ -75,8 +77,8 @@ const FAQS = [
     a: 'We’re based in Cagayan de Oro, but we work online with businesses anywhere in the Philippines and abroad.',
   },
   {
-    q: 'Ano ang mangyayari sa Discovery Call?',
-    a: 'We talk through how inquiries, sales and daily work move in your business, and where they leak. You get a straight answer on what to fix first — even if you don’t hire us.',
+    q: 'Ano ang Business Discovery? Kailangan ko bang makipag-usap agad?',
+    a: 'Hindi. The Discovery is a free online check, about 5 minutes. You see your biggest leak and the package that fits — no call needed. When you’re ready to go deeper, book a free 30-minute Business Systems Diagnostic with Allan.',
   },
 ];
 // Client quotes supplied by Allan with names (2026-11-01).
@@ -94,6 +96,8 @@ const TESTIMONIALS = [
     context: '35th MinBizCon organizing team · digital QR check-in',
   },
 ];
+// Addendum 1 §4: MinBizCon keeps the badge the catalog already assigns.
+const minbizStatus = WORK.find((w) => w.id === 'minbizcon')?.status ?? 'Designed and supported';
 // Homepage v2 §3.6
 const INDUSTRIES = [
   { slug: 'cleaning', name: 'Cleaning & Services', setup: 'Booking, quotes, crew schedule' },
@@ -105,8 +109,15 @@ const INDUSTRIES = [
 ];
 // Homepage v2 §3.8
 const STEPS = [
-  { title: 'Free Discovery Call', body: 'We find where your sales and time are leaking.' },
-  { title: 'Map the Process', body: 'A clear map: steps, owners, tools — before we build.' },
+  // Addendum 1 §2: Discovery (online, ~5 min) → Diagnostic (30 min with Allan). No Diagnostic price on the homepage.
+  {
+    title: 'Free Business Discovery',
+    body: 'Answer simple questions online in about 5 minutes. See your biggest leak and the package that fits.',
+  },
+  {
+    title: 'Business Systems Diagnostic',
+    body: 'Ready to go deeper? A 30-minute session with Allan to map your process before we build.',
+  },
   { title: 'Build, Train, Improve', body: 'We set it up, train your team, and stay to fine-tune.' },
 ];
 ---
@@ -134,7 +145,9 @@ const STEPS = [
           Para makauwi ka nang maaga — at may pumapasok pa ring sales habang kasama mo ang pamilya.
         </p>
         <div class="flex flex-col sm:flex-row flex-wrap gap-3">
-          <a href={getPermalink('/discovery')} class="btn-bright text-lg !px-7" data-placement="hero">{CTA.primary}</a>
+          <TrackedLink dest="discovery" placement="hero" sameTab class="btn-bright text-lg !px-7"
+            >{CTA.primary}</TrackedLink
+          >
           <TrackedLink dest="messenger" placement="hero" class="btn-ghost-dark text-lg gap-2.5">
             <Icon name="tabler:brand-messenger" class="w-5 h-5" aria-hidden="true" />
             Message us on Messenger
@@ -150,8 +163,8 @@ const STEPS = [
             loading="eager"
           />
           <p class="text-sm leading-snug text-[#9fbfab]">
-            <span class="font-semibold text-white">Diretso kay Allan ang usapan.</span><br />Free · Walang obligasyon ·
-            We reply within the day
+            <span class="font-semibold text-white">Alamin kung saan nag-le-leak ang negosyo mo.</span><br />About 5
+            minutes · Free · Get your result + recommended package
           </p>
         </div>
       </div>
@@ -409,7 +422,10 @@ const STEPS = [
           INDUSTRIES.map((t) => (
             <li>
               <a
-                href={getPermalink('/discovery')}
+                href="/go/dst_discovery"
+                data-dest="discovery"
+                data-dest-host="promdipreneur-diagnostic-page.netlify.app"
+                data-forward-utm=""
                 class="flex h-full flex-col gap-1.5 rounded-2xl border border-white/20 bg-white/[0.08] p-[22px] text-white transition-colors hover:bg-white/[0.14] hover:border-white/40"
                 data-event="industry_tile_click"
                 data-placement={`industry_${t.slug}`}
@@ -441,9 +457,11 @@ const STEPS = [
             class="w-full h-60 object-cover object-[center_40%] rounded-[18px]"
             loading="lazy"
           />
-          <p class="font-heading text-[13px] font-bold text-[#00441b]">FRESH START CLEANING · CDO</p>
+          <p class="flex flex-wrap items-center gap-2 font-heading text-[13px] font-bold text-[#00441b]">
+            FRESH START CLEANING · CDO <StatusBadge status="LIVE" />
+          </p>
           <h3 class="!text-default text-[22px] font-bold leading-snug">Instant replies, 24/7 — handled by AI</h3>
-          <p class="text-muted">About 7 bookings every week: 4 sofa, 2 house/apartment, 1 mattress.</p>
+          <p class="text-muted">About 7 bookings a week to handle: 4 sofa, 2 house/apartment, 1 mattress.</p>
         </li>
         <li class="flex flex-col gap-3.5">
           <div class="relative h-60 rounded-[18px] overflow-hidden border border-[#e3e8e4] bg-white">
@@ -468,7 +486,9 @@ const STEPS = [
               >Demo data</span
             >
           </div>
-          <p class="font-heading text-[13px] font-bold text-[#00441b]">PROMDIPRENEUR PAYROLL</p>
+          <p class="flex flex-wrap items-center gap-2 font-heading text-[13px] font-bold text-[#00441b]">
+            PROMDIPRENEUR PAYROLL <StatusBadge status="LIVE" />
+          </p>
           <h3 class="!text-default text-[22px] font-bold leading-snug">Payroll in 4 clicks every cutoff</h3>
           <p class="text-muted">
             Prepare → validate → finalize → mark paid. Payslips emailed straight from Google Sheets.
@@ -493,8 +513,8 @@ const STEPS = [
               loading="lazy"
             />
           </div>
-          <p class="font-heading text-[13px] font-bold text-[#00441b]">
-            MINBIZCON 2026 · 35TH MINDANAO BUSINESS CONFERENCE
+          <p class="flex flex-wrap items-center gap-2 font-heading text-[13px] font-bold text-[#00441b]">
+            MINBIZCON 2026 · 35TH MINDANAO BUSINESS CONFERENCE <StatusBadge status={minbizStatus} />
           </p>
           <h3 class="!text-default text-[22px] font-bold leading-snug">1 attendee. 1 QR. 1 scan.</h3>
           <p class="text-muted">
@@ -673,11 +693,11 @@ const STEPS = [
 
       <div class="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-page px-6 py-5">
         <p class="text-[15px] text-default">
-          <span class="font-bold">Hindi sigurado kung alin?</span> Start with a free Discovery Call — we’ll recommend the
-          right package.
+          <span class="font-bold">Hindi sigurado kung alin?</span> Take the free 5-minute Discovery — it recommends the right
+          package for you.
         </p>
-        <a href={getPermalink('/discovery')} class="btn-primary !py-3 !px-5 text-[15px]" data-placement="pricing"
-          >Book Free Call</a
+        <TrackedLink dest="discovery" placement="pricing" sameTab class="btn-primary !py-3 !px-5 text-[15px]"
+          >{CTA.primaryShort}</TrackedLink
         >
       </div>
       <p class="mt-6 text-center text-[13px] text-muted">
@@ -819,10 +839,10 @@ const STEPS = [
       <h2 class="!text-white text-3xl md:text-[2.75rem] font-extrabold leading-tight">
         Ilang inquiry pa ang mawawala <span class="sm:block">bago natin ayusin?</span>
       </h2>
-      <p class="text-lg text-[#c9dccf]">Book a free Discovery Call. We’ll show you exactly where to start.</p>
+      <p class="text-lg text-[#c9dccf]">Take the free 5-minute Discovery. You’ll see exactly where to start.</p>
       <div class="mt-2 flex flex-col sm:flex-row gap-3 justify-center">
-        <a href={getPermalink('/discovery')} class="btn-bright text-lg !px-7" data-placement="home_final"
-          >{CTA.primary}</a
+        <TrackedLink dest="discovery" placement="home_final" sameTab class="btn-bright text-lg !px-7"
+          >{CTA.primary}</TrackedLink
         >
         <TrackedLink dest="messenger" placement="home_final" class="btn-ghost-dark text-lg gap-2.5">
           <Icon name="tabler:brand-messenger" class="w-5 h-5" aria-hidden="true" />
@@ -830,9 +850,9 @@ const STEPS = [
         </TrackedLink>
       </div>
       <a
-        href={getPermalink('/contact')}
+        href={getPermalink('/diagnostic')}
         class="inline-flex items-center min-h-[44px] text-[15px] text-[#c9dccf] underline underline-offset-4 hover:text-white"
-        data-placement="home_final">Not ready to book? Send a question →</a
+        data-placement="home_final">Ready to talk? Book a free Business Systems Diagnostic with Allan →</a
       >
     </div>
   </section>

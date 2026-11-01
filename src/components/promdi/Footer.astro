@@ -3,7 +3,7 @@ import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 import logoWhite from '~/assets/images/brand/promdipreneur-logo-white-1200.webp';
 import TrackedLink from './TrackedLink.astro';
-import { BRAND, CTA } from '~/data/brand';
+import { BRAND } from '~/data/brand';
 import { getPermalink } from '~/utils/permalinks';
 
 const year = new Date().getFullYear();
@@ -13,7 +13,8 @@ const explore = col('Explore', [
   { text: 'Our Work', href: getPermalink('/work') },
   { text: 'Digital Store', href: getPermalink('/products') },
   { text: 'About', href: getPermalink('/about') },
-  { text: CTA.primary, href: getPermalink('/discovery') },
+  { text: 'Free Business Discovery', href: '/go/dst_discovery' },
+  { text: 'Book a free Diagnostic', href: getPermalink('/diagnostic') },
   { text: 'Contact', href: getPermalink('/contact') },
 ]);
 const resources = col('Resources', [
