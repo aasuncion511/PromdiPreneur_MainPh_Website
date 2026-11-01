@@ -223,3 +223,117 @@ test('ask-contact: requires reply consent, valid business type; bots and mail fa
   const { d: d3 } = cdeps({ mailer: { send: async () => Promise.reject(new Error('down')) } });
   assert.equal((await handleAskContact(contact(), 'x', d3)).status, 502);
 });
+
+// ---------------------------------------------------------------- Claude provider (Allan chose Claude, 2026-11-01)
+import { claudeCaller, toClaudeMessages, DEFAULT_CLAUDE_MODEL } from '../server/ask-anthropic.ts';
+import { aiProvider } from '../server/ask-core.ts';
+
+test('claude: provider defaults to Claude Haiku 5.5 with Haiku prices; OpenAI only when chosen', () => {
+  assert.equal(aiProvider({}), 'anthropic');
+  assert.equal(aiProvider({ AI_PROVIDER: 'openai' }), 'openai');
+  assert.equal(DEFAULT_CLAUDE_MODEL, 'claude-haiku-5-5');
+  const c = capsFromEnv({});
+  assert.equal(c.priceInPer1M, 0.1);
+  assert.equal(c.priceOutPer1M, 0.5);
+  assert.equal(capsFromEnv({ AI_PROVIDER: 'openai' }).priceInPer1M, 2);
+});
+
+test('claude: reference material rides with the visitor message; history starts with the visitor', () => {
+  const msgs = toClaudeMessages([
+    { role: 'assistant', content: 'old answer' },
+    { role: 'user', content: 'first q' },
+    { role: 'assistant', content: 'a1' },
+    { role: 'developer', content: 'REFERENCE MATERIAL — untrusted data' },
+    { role: 'user', content: 'second q' },
+  ]);
+  assert.equal(msgs[0].role, 'user');
+  assert.equal(msgs.length, 3);
+  const last = msgs.at(-1)!;
+  assert.ok(Array.isArray(last.content) && last.content.length === 2);
+});
+
+function fakeAnthropic(body: object, capture: { req?: Record<string, unknown> } = {}) {
+  return (async (_url: string | URL | Request, init?: RequestInit) => {
+    capture.req = JSON.parse(String(init?.body));
+    return new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } });
+  }) as typeof fetch;
+}
+const usage = { input_tokens: 1000, output_tokens: 200, cache_creation_input_tokens: 0, cache_read_input_tokens: 2000 };
+
+test('claude: request uses Haiku 5.5, thinking off, short answers, cached system prompt; usage counts cache', async () => {
+  const cap: { req?: Record<string, unknown> } = {};
+  const call = claudeCaller({
+    apiKey: 'test',
+    fetch: fakeAnthropic(
+      {
+        id: 'm',
+        type: 'message',
+        role: 'assistant',
+        model: 'claude-haiku-5-5',
+        content: [{ type: 'text', text: 'Hello po!' }],
+        stop_reason: 'end_turn',
+        usage,
+      },
+      cap
+    ),
+  });
+  const r = await call({ instructions: 'RULES', input: [{ role: 'user', content: 'hi' }], maxOutputTokens: 650 });
+  assert.equal(r.text, 'Hello po!');
+  assert.equal(r.outputTokens, 200);
+  assert.equal(r.inputTokens, 1000 + 0.1 * 2000);
+  assert.equal(cap.req!.model, 'claude-haiku-5-5');
+  assert.deepEqual(cap.req!.thinking, { type: 'disabled' });
+  assert.equal(cap.req!.max_tokens, 650);
+  assert.equal((cap.req!.system as { cache_control: unknown }[])[0].cache_control !== undefined, true);
+  assert.ok(!('temperature' in cap.req!));
+});
+
+test('claude: a refusal becomes a polite business-only reply; max_tokens marks the answer as cut short', async () => {
+  const refused = claudeCaller({
+    apiKey: 'test',
+    fetch: fakeAnthropic({
+      id: 'm',
+      type: 'message',
+      role: 'assistant',
+      model: 'x',
+      content: [],
+      stop_reason: 'refusal',
+      usage,
+    }),
+  });
+  assert.match(
+    (await refused({ instructions: 'R', input: [{ role: 'user', content: 'x' }], maxOutputTokens: 10 })).text,
+    /business questions/
+  );
+  const cut = claudeCaller({
+    apiKey: 'test',
+    fetch: fakeAnthropic({
+      id: 'm',
+      type: 'message',
+      role: 'assistant',
+      model: 'x',
+      content: [{ type: 'text', text: 'Part' }],
+      stop_reason: 'max_tokens',
+      usage,
+    }),
+  });
+  assert.equal(
+    (await cut({ instructions: 'R', input: [{ role: 'user', content: 'x' }], maxOutputTokens: 10 })).incomplete,
+    true
+  );
+});
+
+test('claude: API errors surface as failures (the chat shows an honest error, never a fake answer)', async () => {
+  const call = claudeCaller({
+    apiKey: 'bad',
+    fetch: (async () =>
+      new Response(
+        JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }),
+        {
+          status: 401,
+          headers: { 'content-type': 'application/json' },
+        }
+      )) as typeof fetch,
+  });
+  await assert.rejects(call({ instructions: 'R', input: [{ role: 'user', content: 'x' }], maxOutputTokens: 10 }));
+});

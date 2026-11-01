@@ -1,8 +1,12 @@
 /**
  * Netlify wiring for Ask PromdiPreneur: Netlify Blobs for counters, spend and rate limits; Resend for email;
- * OpenAI Responses API for answers. Secrets come from Netlify environment variables only.
+ * Claude (default) or OpenAI for answers. Secrets come from Netlify environment variables only.
  *
  *   ASK_ACTIVE=true            switch (anything else = assistant shows "temporarily unavailable")
+ *   AI_PROVIDER                "anthropic" (default, Claude) or "openai"
+ *   ANTHROPIC_API_KEY          secret, server only (Claude)
+ *   ASK_MODEL                  optional Claude model id (default claude-haiku-5-5)
+ *   ASK_PRICE_INPUT_PER_1M / ASK_PRICE_OUTPUT_PER_1M  optional; default to Claude Haiku 5.5 list prices
  *   OPENAI_API_KEY             secret, server only
  *   OPENAI_MODEL               e.g. a fast, low-cost non-reasoning model from your OpenAI account
  *   OPENAI_REASONING_EFFORT    optional; only for reasoning models (e.g. "low")
@@ -10,7 +14,8 @@
  *   ASK_DAILY_CAP_USD (1) / ASK_MONTHLY_CAP_USD (10) / ASK_MAX_PER_HOUR (30) / ASK_MAX_PER_SESSION (20)
  */
 import { getStore } from '@netlify/blobs';
-import { capsFromEnv, openaiCaller, type AskDeps, type CounterField } from './ask-core.ts';
+import { aiProvider, capsFromEnv, openaiCaller, type AskDeps, type CounterField } from './ask-core.ts';
+import { claudeCaller } from './ask-anthropic.ts';
 import type { AskContactDeps, AskContactRecord } from './ask-contact.ts';
 import { ASK_SOURCE } from './ask-contact.ts';
 import { netlifyDeps } from './netlify-deps.ts';
@@ -47,17 +52,20 @@ function hitter(storeName: string, window: (d: Date) => string) {
 
 export function askDeps(): AskDeps {
   const base = netlifyDeps(); // reuse IP hashing and the Resend mailer
-  const apiKey = env('OPENAI_API_KEY');
-  const model = env('OPENAI_MODEL');
   const { stats, incr } = askCounters();
+  const timeoutMs = Number(env('ASK_TIMEOUT_MS')) || undefined;
+  const useClaude = aiProvider(process.env) === 'anthropic';
+  const ready = useClaude ? Boolean(env('ANTHROPIC_API_KEY')) : Boolean(env('OPENAI_API_KEY') && env('OPENAI_MODEL'));
   return {
-    active: env('ASK_ACTIVE') === 'true' && Boolean(apiKey && model),
-    callModel: openaiCaller({
-      apiKey,
-      model,
-      reasoningEffort: env('OPENAI_REASONING_EFFORT') || undefined,
-      timeoutMs: Number(env('ASK_TIMEOUT_MS')) || undefined,
-    }),
+    active: env('ASK_ACTIVE') === 'true' && ready,
+    callModel: useClaude
+      ? claudeCaller({ apiKey: env('ANTHROPIC_API_KEY'), model: env('ASK_MODEL') || undefined, timeoutMs })
+      : openaiCaller({
+          apiKey: env('OPENAI_API_KEY'),
+          model: env('OPENAI_MODEL'),
+          reasoningEffort: env('OPENAI_REASONING_EFFORT') || undefined,
+          timeoutMs,
+        }),
     spend: {
       async get(key) {
         return (((await stats.get(`spend:${key}`, { type: 'json' })) as { usd: number } | null)?.usd ?? 0) as number;

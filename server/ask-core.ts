@@ -57,6 +57,11 @@ export type AskResult = {
   body: { ok: true; reply: string; redacted?: boolean } | { ok: false; error: string; message?: string };
 };
 
+/** Which AI answers: "anthropic" (Claude, default since Allan chose Claude on 2026-11-01) or "openai". */
+export function aiProvider(env: Record<string, string | undefined>): 'anthropic' | 'openai' {
+  return (env.AI_PROVIDER || 'anthropic').toLowerCase() === 'openai' ? 'openai' : 'anthropic';
+}
+
 export function capsFromEnv(env: Record<string, string | undefined>): AskCaps {
   const n = (k: string, d: number) => {
     const v = Number(env[k]);
@@ -67,8 +72,16 @@ export function capsFromEnv(env: Record<string, string | undefined>): AskCaps {
     monthlyUsd: n('ASK_MONTHLY_CAP_USD', 10), // Allan, 2026-11-01: US$10/month
     perHour: n('ASK_MAX_PER_HOUR', 30),
     perSessionPerDay: n('ASK_MAX_PER_SESSION', 20),
-    priceInPer1M: n('OPENAI_PRICE_INPUT_PER_1M', 2),
-    priceOutPer1M: n('OPENAI_PRICE_OUTPUT_PER_1M', 8),
+    // USD per 1M tokens for the chosen model. Claude Haiku 5.5 list prices are the default for the Claude provider;
+    // for OpenAI, unknown prices default high so the caps trigger early rather than late.
+    priceInPer1M: n(
+      'ASK_PRICE_INPUT_PER_1M',
+      n('OPENAI_PRICE_INPUT_PER_1M', aiProvider(env) === 'anthropic' ? 0.1 : 2)
+    ),
+    priceOutPer1M: n(
+      'ASK_PRICE_OUTPUT_PER_1M',
+      n('OPENAI_PRICE_OUTPUT_PER_1M', aiProvider(env) === 'anthropic' ? 0.5 : 8)
+    ),
   };
 }
 

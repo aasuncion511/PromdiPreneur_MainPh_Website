@@ -8,7 +8,8 @@ on a preview and Allan approves.** The website launch does not wait for it (Alla
 - `/ask`: a chat page. A floating launcher on every page (desktop: bottom-right "Ask PromdiPreneur · AI"; phones:
   bottom-left "Ask AI", next to the Messenger button).
 - Clearly labelled AI. "Talk to a Person" is always visible.
-- Answers come from OpenAI (Responses API) through a server function. The key never reaches the browser.
+- Answers come from **Claude Haiku 5.5** (Anthropic API, official SDK) through a server function. The key never reaches the
+  browser. Allan chose Claude on 1 Nov 2026; OpenAI remains available as a switch (`AI_PROVIDER=openai`).
 - Knowledge: approved PromdiPreneur documents in `knowledge/` (now: _The Business Opening Checklist PH_) plus a list
   of official government pages taken from the ebook's own references.
 
@@ -21,35 +22,37 @@ on a preview and Allan approves.** The website launch does not wait for it (Alla
 | Government sources | Curated official links only (`knowledge/official-sources.json`); no live web search              |
 | Spending cap       | **US$1/day, US$10/month** (hard stop; the chat then offers "Talk to a Person")                   |
 
-## Setup (about 15 minutes, Allan)
+## Setup (about 10 minutes, Allan)
 
-1. **OpenAI account** → platform.openai.com → create a **Project** named `promdipreneur-website`.
-2. In that project: **Limits** → set a **monthly budget of US$10** and an **email alert at US$8**. This is the
-   provider-side safety net; the site also stops itself (below).
-3. **API keys** → create a key **in that project**. Copy it once.
-4. **Pick the model.** In OpenAI's model list, choose a **fast, low-cost, non-reasoning "mini" model** your account
-   has. Note its input and output price per 1M tokens. Reasoning models are slower and can exceed Netlify's
-   ~10-second function limit.
+1. **Anthropic account**: go to **console.anthropic.com** and sign up with admin@promdipreneur.com. This is
+   separate from a Claude Pro subscription, which does not include API access.
+2. **Billing**: add a payment method and a small prepaid credit (e.g. US$5).
+3. **Limits**: set a **monthly spend limit of US$10**. This is the provider-side safety net; the site also stops
+   itself (below).
+4. **API keys**: create a key named `promdipreneur-website`. Copy it once.
 5. **Netlify → promdipreneur-ph → Environment variables** (no "secret" tick on the free plan, All scopes):
 
-   | Key                          | Value                                               |
-   | ---------------------------- | --------------------------------------------------- |
-   | `OPENAI_API_KEY`             | the key from step 3 (paste only here)               |
-   | `OPENAI_MODEL`               | the model id from step 4                            |
-   | `OPENAI_PRICE_INPUT_PER_1M`  | its input price in USD, e.g. `0.4`                  |
-   | `OPENAI_PRICE_OUTPUT_PER_1M` | its output price in USD, e.g. `1.6`                 |
-   | `ASK_DAILY_CAP_USD`          | `1`                                                 |
-   | `ASK_MONTHLY_CAP_USD`        | `10`                                                |
-   | `ASK_ACTIVE`                 | `true` (set `false` to switch the AI off instantly) |
+   | Key                   | Value                                                |
+   | --------------------- | ---------------------------------------------------- |
+   | `ANTHROPIC_API_KEY`   | the key from step 4 (paste only here, never in chat) |
+   | `ASK_DAILY_CAP_USD`   | `1`                                                  |
+   | `ASK_MONTHLY_CAP_USD` | `10`                                                 |
+   | `ASK_ACTIVE`          | `true` (set `false` to switch the AI off instantly)  |
 
-   Optional: `OPENAI_REASONING_EFFORT` (only for reasoning models), `ASK_MAX_PER_HOUR` (30 per visitor),
-   `ASK_MAX_PER_SESSION` (20 per chat per day), `ASK_TIMEOUT_MS` (9500).
-
-   If the price variables are missing, the site assumes high prices (US$2 / US$8 per 1M), so the caps trigger early
-   rather than late.
+   Defaults you don't need to set: `AI_PROVIDER=anthropic`, `ASK_MODEL=claude-haiku-5-5`, and prices
+   US$0.10 input / US$0.50 output per 1M tokens (Claude Haiku 5.5 list prices). Optional: `ASK_MAX_PER_HOUR` (30 per
+   visitor), `ASK_MAX_PER_SESSION` (20 per chat per day), `ASK_TIMEOUT_MS` (9500).
 
 6. Redeploy, open `https://<preview>/ask/qa`, press **Run all tests**, then **Copy results** and paste them to
    Claude Code.
+
+**Cost guide:** a typical answer is about 3,500 tokens in and 400 out, which is about **US$0.0006 per answer**
+(roughly 18,000 answers for US$10).
+
+### Switching to OpenAI instead (optional)
+
+Set `AI_PROVIDER=openai`, `OPENAI_API_KEY`, `OPENAI_MODEL` (a fast, low-cost non-reasoning model) and its prices in
+`ASK_PRICE_INPUT_PER_1M` / `ASK_PRICE_OUTPUT_PER_1M`. Then update the privacy policy's provider name.
 
 ## How the cost is controlled
 
@@ -59,7 +62,7 @@ on a preview and Allan approves.** The website launch does not wait for it (Alla
 - Whole site: after every answer the site adds the real token usage × your prices to a daily and monthly total. When
   either cap is reached, the chat stops answering until the next day or month and offers "Talk to a Person".
 - At **80% of the monthly cap**, an email goes to admin@promdipreneur.com (once per month).
-- The OpenAI project budget (setup step 2) is the second, independent limit.
+- The Anthropic Console spend limit (setup step 3) is the second, independent limit.
 
 ## Reports
 
@@ -94,12 +97,13 @@ with tag **`Ask PromdiPreneur`**.
 - The AI is told it is an AI, never Allan; no invented laws, fees, sources, stories or prices; no pressure to buy;
   general guidance only on legal, tax, employment, financial and safety topics, with verification and professional
   referral; one follow-up question at most; business topics only.
-- Emails, phone numbers and ID or card-like numbers are **removed before** the question reaches OpenAI. The visitor
+- Emails, phone numbers and ID or card-like numbers are **removed before** the question reaches the AI provider. The visitor
   is told.
 - Knowledge excerpts are marked as untrusted data. A secret marker detects prompt leaks: a reply that leaks
   instructions is replaced.
 - Replies are shown as text only. Links survive only to promdipreneur.com, its subdomains, site pages and `*.gov.ph`.
-- OpenAI is called with `store: false`. Conversations exist only in the visitor's open tab.
+- Claude answers directly (thinking off, max 650 output tokens). Conversations exist only in the visitor's open tab;
+  the site stores no chat text.
 
 ## Switching it off
 
