@@ -1,6 +1,6 @@
 # BASA branding audit — 1 Nov 2026
 
-**Decision (Allan):** the brand is **PromdiPreneur**. The new legal name will be **Promdipreneur Business Automation
+**Decision (Allan):** the brand is **PromdiPreneur**. The new legal name will be **Promdipreneur AI Automation
 Digital Solutions**, but it is **not registered yet**. So:
 
 - **Marketing copy:** BASA is removed now.
@@ -42,7 +42,7 @@ rebrand branch into **that** branch.
 
 ## C. Legal name (answered 3 Nov 2026)
 
-**New trade name under AJDA Enterprises, Inc.:** "AJDA Enterprises, Inc., doing business as **Promdipreneur Business
+**New trade name under AJDA Enterprises, Inc.:** "AJDA Enterprises, Inc., doing business as **Promdipreneur AI
 Automation Digital Solutions**." Not registered yet.
 
 Prepared, **not merged**: branch **`legal/new-trade-name`** in
