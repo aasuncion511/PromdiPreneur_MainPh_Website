@@ -40,17 +40,17 @@ rebrand branch into **that** branch.
 | **Google Drive client-facing files**                     | `BASA_Service_Menu_Client.docx`, `BASA Consultancy - Package & Pricing Architecture v1`, `BASA_Client_Journey_Pricing` (doc, PDF and docx copies), `Bugbusters_IPM_BASA_Proposal_Pack` (2 copies), résumés (`AllanAsuncion_AI_Automation_Resume`, `AllanAsuncionResume_CRM_AI_Automation_Specialist`, `Allan_Asuncion_AI_Automation_Resume_2026`, PDFs and docx copies), `PromdiPreneur_Top_10_Local_Business_Growth_Services_Playbook` (doc and docx) | Update before sending to anyone again                                                                      |
 | **Google Drive internal files** (optional)               | `BASA_Master_Strategy_*`, `BASA_AI_Operating_System`, `Master Template BASA Blueprint`, `International_Client_Acquisition_Strategy_BASA` (2), `PromdiPreneur_BASA_Offer_Strategy`, `Promdipreneur_BASA_Internal_Operations_Manual_Bugbusters`, `BASA_*Daily_FB_Posts*` (7 sheets), `BASA_30Day_FB_Content_Calendar`, website architecture drafts and handoffs, ebook drafts                                                                            | Rename only if you still use them; old versions can stay as history                                        |
 
-## C. Legal name: questions for Allan before the registration
+## C. Legal name (answered 3 Nov 2026)
 
-1. **Is "Promdipreneur Business Automation Digital Solutions" a new trade name (DBA) under AJDA Enterprises, Inc., or a
-   new company?** It changes the footer/privacy/terms wording ("AJDA Enterprises, Inc., doing business as …" vs. the new
-   company name alone).
-2. **When it's registered:** tell Claude Code. It's a 5-minute change in two places:
+**New trade name under AJDA Enterprises, Inc.:** "AJDA Enterprises, Inc., doing business as **Promdipreneur Business
+Automation Digital Solutions**." Not registered yet.
 
-   - Discovery site: `src/lib/site.ts` (`legalName`, `dba`), `content/legal/privacy.md`, `content/legal/terms.md`
-   - Portfolio: `src/content/site.ts` (`legalTradeName`)
+Prepared, **not merged**: branch **`legal/new-trade-name`** in
 
-   The new main website shows no legal entity name, so nothing changes there.
+- `promdipreneur_diagnostic_page`: `src/lib/site.ts` (`dba`), `content/legal/privacy.md`, `content/legal/terms.md`
+- `Promdipreneur_International_Folio`: `src/content/site.ts` (`legalTradeName`)
+
+**Merge only after DTI approves the registration.** The new main website shows no legal entity name.
 
 ## D. Related item found during the audit (not BASA)
 
