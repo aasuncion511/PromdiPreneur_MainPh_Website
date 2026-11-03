@@ -58,7 +58,7 @@ Check each item and report a table to Allan: **exists / missing / exists but dif
 | The 10 custom fields in §5                                                                                                                               | Settings → Custom Fields (Contact)                                                   |
 | Tags `LM \| Ebook`, `website-inquiry`, `discovery-booked`                                                                                                | Settings → Tags                                                                      |
 | Private Integration named `promdipreneur.com website`                                                                                                    | Settings → Private Integrations (just check whether it exists; don't open the token) |
-| A calendar named "Business Systems Diagnostic" (or an older "Discovery Session" calendar; report it, don't edit it)                                      | Calendars → Calendar Settings                                                        |
+| The calendar "PromdiPreneur Business Systems Diagnostic" (exists, inactive, ₱500 payment on) and any other Discovery/Diagnostic calendar                 | Calendars → Calendar Settings                                                        |
 | Existing sales pipeline and its stage names                                                                                                              | Opportunities → Pipelines                                                            |
 | Workflows named `Diagnostic — Booked` (or an older `Discovery — Booked`), `Ebook — Business Opening Checklist PH — Delivery`, `Website Inquiry — Notify` | Automation → Workflows                                                               |
 
@@ -140,12 +140,12 @@ Never paste the token into any chat, Claude Code included.
 
 **Updated 1 Nov 2026 (Allan):** the 30-minute session with Allan is now called the **Business Systems Diagnostic**. It is **free** (no payment step) and bookable **weekdays 1:30–3:30 PM only**. "Discovery" now means the free online questionnaire on the Discovery site. Never call this calendar a "Discovery Call".
 
-Calendars → Calendar Settings → **Create calendar**. Choose a simple 1-on-1 type (Personal booking, or the closest equivalent). Don't reuse the international portfolio's calendar. **No payment** on this calendar.
+**Use the EXISTING calendar "PromdiPreneur Business Systems Diagnostic"** (booking link ID `x4FLSgAai54kGsJJVsPI`; set up 6 Oct with ₱500 via SaligPay, TEST mode, inactive). **Allan approved editing it (3 Nov 2026):** turn **payment OFF**, apply the settings below, then activate it. Both websites already point to this calendar. Do **not** create a second Diagnostic calendar, and don't reuse the international portfolio's calendar.
 
 | Setting                         | Value                                                                                                                             |
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Calendar name                   | **Business Systems Diagnostic**                                                                                                   |
-| URL slug                        | `business-systems-diagnostic`                                                                                                     |
+| Calendar name                   | Keep **PromdiPreneur Business Systems Diagnostic** (don't rename; the link stays the same)                                        |
+| URL slug                        | Keep the current one                                                                                                              |
 | Description (visitors see this) | "A free 30-minute session with Allan to map how your inquiries, sales and daily work move, and what to fix first. No obligation." |
 | Duration                        | **30 minutes**                                                                                                                    |
 | ★ Meeting location              | Google Meet or Zoom link, auto-generated (or phone). Not blank                                                                    |
@@ -157,7 +157,7 @@ Calendars → Calendar Settings → **Create calendar**. Choose a simple 1-on-1 
 | Minimum scheduling notice       | 12 hours                                                                                                                          |
 | Booking window                  | next 30 days                                                                                                                      |
 | Max bookings per day            | 4                                                                                                                                 |
-| Payment                         | **Off** (free)                                                                                                                    |
+| Payment                         | **Turn OFF** (was ₱500 via SaligPay)                                                                                              |
 
 **Booking form** (short; this is a free first call):
 
@@ -187,7 +187,7 @@ Calendars → Calendar Settings → **Create calendar**. Choose a simple 1-on-1 
 
 Automation → Workflows → **Create workflow → Start from scratch**. (Name: `Diagnostic — Booked`.)
 
-- **Trigger:** Customer Booked Appointment. Filter: calendar = Business Systems Diagnostic.
+- **Trigger:** Customer Booked Appointment. Filter: calendar = PromdiPreneur Business Systems Diagnostic.
 - **Actions:**
   1. Add tag `discovery-booked`.
   2. Create/Update Opportunity in the **existing** sales pipeline, at its first stage that means "Diagnostic booked" (or "Discovery booked") (or the closest existing stage). **Don't create a pipeline or stage.** If none fits, stop and ask Allan.

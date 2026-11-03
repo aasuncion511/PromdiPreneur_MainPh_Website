@@ -175,8 +175,10 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
   },
   discoveryBooking: {
     // The free 30-min Business Systems Diagnostic with Allan (weekdays 1:30–3:30 PM PH; Allan 2026-11-01: no payment).
-    // TODO: VERIFY — GHL calendar URL not supplied yet (never invent a booking URL). Set it to activate the embed.
-    url: null,
+    // The existing GHL calendar "PromdiPreneur Business Systems Diagnostic", shared with the Discovery site
+    // (dst_diagnostic_booking there). It is still INACTIVE in GHL: keep FEATURES.bookingLive = false until Allan turns
+    // payment off, sets Mon–Fri 1:30–3:30 PM, activates it and a test booking works. Until then /diagnostic shows a form.
+    url: 'https://api.leadconnectorhq.com/widget/booking/x4FLSgAai54kGsJJVsPI',
     label: 'Book a free Business Systems Diagnostic',
     event: 'diagnostic_booking_click',
     kind: 'ghl-calendar',
