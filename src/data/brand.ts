@@ -174,16 +174,17 @@ export const DESTINATIONS: Record<DestinationId, Destination> = {
     status: 'verified',
   },
   discoveryBooking: {
+    goId: 'dst_diagnostic_booking', // same id as on the Discovery site
     // The free 30-min Business Systems Diagnostic with Allan (weekdays 1:30–3:30 PM PH; Allan 2026-11-01: no payment).
     // The existing GHL calendar "PromdiPreneur Business Systems Diagnostic", shared with the Discovery site
-    // (dst_diagnostic_booking there). It is still INACTIVE in GHL: keep FEATURES.bookingLive = false until Allan turns
-    // payment off, sets Mon–Fri 1:30–3:30 PM, activates it and a test booking works. Until then /diagnostic shows a form.
-    url: 'https://api.leadconnectorhq.com/widget/booking/x4FLSgAai54kGsJJVsPI',
+    // (dst_diagnostic_booking there). Free, Mon–Fri 1:30–3:30 PM, Google Meet; Allan confirmed "calendar live" 2026-11-03.
+    url: 'https://api.leadconnectorhq.com/widget/bookings/promdipreneur-business-systems',
     label: 'Book a free Business Systems Diagnostic',
     event: 'diagnostic_booking_click',
     kind: 'ghl-calendar',
     forwardUtm: true,
-    status: 'pending',
+    status: 'verified',
+    verifiedAt: '2026-11-03',
   },
   discovery: {
     // Addendum 1 §2 (Allan, 2026-11-01): the free ~5-minute online Business Discovery lives on the Discovery site.
@@ -208,5 +209,5 @@ export const FEATURES = {
    */
   ebookLive: false,
   /** Discovery calendar verified and its URL set in DESTINATIONS.discoveryBooking. */
-  bookingLive: false,
+  bookingLive: true,
 } as const;
